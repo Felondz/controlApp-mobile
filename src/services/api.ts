@@ -68,6 +68,15 @@ export const authApi = {
 
     getUser: () =>
         api.get('/user'),
+
+    verifyEmail: (id: string, hash: string, expires: string, signature: string) =>
+        api.get(`/email/verify/${id}/${hash}?expires=${expires}&signature=${signature}`),
+
+    forgotPassword: (email: string) =>
+        api.post('/forgot-password', { email }),
+
+    resetPassword: (data: { token: string; email: string; password: string; password_confirmation: string }) =>
+        api.post('/reset-password', data),
 };
 
 // Projects API endpoints

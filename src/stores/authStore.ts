@@ -72,7 +72,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await authApi.login(email, password);
-            const { token, user } = response.data;
+            const { access_token: token, user } = response.data;
 
             // Store in secure storage
             await SecureStore.setItemAsync(TOKEN_KEY, token);
@@ -96,24 +96,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     register: async (name: string, email: string, password: string, passwordConfirmation: string) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await authApi.register({
+            // 1. Register
+            await authApi.register({
                 name,
                 email,
                 password,
                 password_confirmation: passwordConfirmation,
             });
-            const { token, user } = response.data;
 
-            // Store in secure storage
-            await SecureStore.setItemAsync(TOKEN_KEY, token);
-            await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+            // No token expected. Registration successful.
 
-            set({
-                user,
-                token,
-                isAuthenticated: true,
-                isLoading: false,
-            });
             return true;
         } catch (error: any) {
             const message = error.response?.data?.message || 'Error al registrarse';

@@ -12,31 +12,46 @@ import {
     useWindowDimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuthStore } from "../../src/stores/authStore";
 import { getTheme } from "../../src/shared/themes";
 import { useTranslate } from "../../src/shared/hooks";
 import { ThemeToggle } from "../../src/shared/components/ThemeToggle";
 import { ApplicationLogo } from "../../src/shared/components/ApplicationLogo";
+import { authApi } from "../../src/services/api";
 import PrimaryButton from "../../src/shared/components/PrimaryButton";
 import Input from "../../src/shared/components/Input";
 
-export default function LoginScreen() {
+export default function ForgotPasswordScreen() {
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const { login, isLoading, error, clearError } = useAuthStore();
+    const [isLoading, setIsLoading] = useState(false);
+    const [status, setStatus] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const { width } = useWindowDimensions();
     const { t } = useTranslate();
     const insets = useSafeAreaInsets();
 
-    const isTablet = width >= 768;
+    // TODO: Integrate global dark mode state here when available
     const theme = getTheme("purple-modern");
+    const isTablet = width >= 768;
 
-    const handleLogin = async () => {
-        if (!email || !password) return;
-        const success = await login(email, password);
-        if (success) {
-            router.replace("/(app)");
+    const handleSubmit = async () => {
+        if (!email) {
+            setError(t('validation.required') || 'El email es requerido');
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        setStatus(null);
+
+        try {
+            await authApi.forgotPassword(email);
+            setStatus(t('auth.verification_link_sent') || 'Enlace enviado.');
+        } catch (err: any) {
+            console.error(err);
+            setError(err.response?.data?.message || err.response?.data?.email?.[0] || t('common.error'));
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -72,7 +87,7 @@ export default function LoginScreen() {
                                 ControlApp
                             </Text>
                             <Text className="text-xl text-white/80 text-center">
-                                {t('auth.login_subtitle') || 'Ingresa tus credenciales para continuar'}
+                                {t('common.app_tagline')}
                             </Text>
                         </View>
                     )}
@@ -83,32 +98,34 @@ export default function LoginScreen() {
                     >
 
 
-                        {/* Logo Header */}
                         {!isTablet && (
                             <View className="items-center mb-8">
                                 <ApplicationLogo size={42} showText={true} />
                             </View>
                         )}
 
-                        {isTablet && (
-                            <View className="mb-8">
-                                <Text className="text-3xl font-bold text-gray-800 mb-2">
-                                    {t('auth.welcome_back')}
-                                </Text>
-                                <Text className="text-gray-500 text-base">
-                                    {t('auth.login_subtitle')}
+                        <View className="mb-6">
+                            <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                                {t('auth.forgot_password_title')}
+                            </Text>
+                            <Text className="text-gray-500 dark:text-gray-400 text-base leading-6">
+                                {t('auth.forgot_password_description')}
+                            </Text>
+                        </View>
+
+                        {/* Status Message */}
+                        {status && (
+                            <View className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 mb-6">
+                                <Text className="text-green-700 dark:text-green-400 font-medium text-center">
+                                    {status}
                                 </Text>
                             </View>
                         )}
 
+                        {/* Error Message */}
                         {error && (
-                            <View className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
-                                <Text className="text-red-600 text-center">{error}</Text>
-                                <TouchableOpacity onPress={clearError} className="mt-2">
-                                    <Text className="text-red-400 text-center text-sm">
-                                        {t('common.close')}
-                                    </Text>
-                                </TouchableOpacity>
+                            <View className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
+                                <Text className="text-red-600 dark:text-red-400 text-center">{error}</Text>
                             </View>
                         )}
 
@@ -120,43 +137,24 @@ export default function LoginScreen() {
                             keyboardType="email-address"
                             autoCapitalize="none"
                             autoComplete="email"
+                            className="mb-6"
                         />
-
-                        <Input
-                            label={t('auth.password')}
-                            placeholder="••••••••"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
-
-                        <View className="mb-6 flex-row justify-end">
-                            <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
-                                <Text
-                                    style={{ color: theme.primary600 }}
-                                    className="font-medium text-sm"
-                                >
-                                    {t('auth.forgot_password') || '¿Olvidaste tu contraseña?'}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
 
                         <PrimaryButton
-                            onPress={handleLogin}
+                            onPress={handleSubmit}
                             loading={isLoading}
-                            className="mb-4"
+                            className="mb-6"
                         >
-                            {t('auth.login_button')}
+                            {t('auth.forgot_password_submit')}
                         </PrimaryButton>
 
-                        <View className="flex-row justify-center mt-4">
-                            <Text className="text-gray-500">{t('auth.dont_have_account')} </Text>
-                            <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+                        <View className="flex-row justify-center">
+                            <TouchableOpacity onPress={() => router.back()}>
                                 <Text
                                     style={{ color: theme.primary600 }}
-                                    className="font-semibold"
+                                    className="font-medium text-base"
                                 >
-                                    {t('auth.register')}
+                                    {t('auth.back_to_login')}
                                 </Text>
                             </TouchableOpacity>
                         </View>

@@ -43,3 +43,5 @@ yarn-error.*
 /docs web para referencia   
 
 PROGRESS.md
+AGENTS.md
+setup_env.sh

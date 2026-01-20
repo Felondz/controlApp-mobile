@@ -1,13 +1,36 @@
 # AGENTS.md - ControlApp Mobile
 
-## Reglas de Trabajo
+## 🏆 REGLAS DE ORO (GOLDEN RULES)
 
-### 🔴 REGLA PRINCIPAL
-El usuario es nuevo en React Native. Antes de CUALQUIER acción:
-1. **Explicar QUÉ** se va a hacer
-2. **Explicar POR QUÉ** es necesario
-3. **Mostrar opciones** si las hay
-4. **Esperar aprobación** antes de ejecutar
+Estas 3 reglas son **INVIOLABLES** y deben verificarse en cada paso del desarrollo:
+
+### 1. 🎨 UI & Temas son Prioridad
+La estética no es negociable. La aplicación debe verse profesional, moderna y consistente.
+- **Respetar el Sistema de Diseño:** Usar siempre los componentes base (`PrimaryButton`, `SecondaryButton`, `Input`).
+- **Dark Mode First:** Verificar siempre cómo se ve el componente en modo oscuro (`dark:` classes).
+- **Temas:** La aplicación soporta múltiples temas. Asegurar que los colores principales provengan de la configuración del tema.
+
+### 2. 🖥️ Paridad con Diseño Web
+Para cada vista o componente nuevo, **SIEMPRE verificar el diseño de la versión web** (`controlApp/resources/js/...`).
+- El objetivo es que la experiencia móvil sea un reflejo fiel pero adaptado de la web.
+- Si existe en la web, debe existir en móvil con el mismo "look & feel".
+- **Consultar código web:** Usar `view_file` en el código fuente web antes de implementar en móvil.
+
+### 3. 🌍 Traducciones Estrictas
+**NUNCA** hardcodear textos.
+- Usar siempre el hook `useTranslate`: `const { t } = useTranslate();`.
+- Estructura: `{t('auth.login_button')}`.
+- Si falta una clave, agregarla a `src/shared/translations/en.json` y `es.json` **antes** de usarla.
+- Mantener la misma estructura de claves que en el backend/web.
+
+---
+
+## 🚦 Protocolo de Trabajo AI
+El usuario es nuevo en React Native. Antes de actuar:
+1. **Explicar QUÉ** se va a hacer.
+2. **Explicar POR QUÉ** es necesario.
+3. **Mostrar opciones** si las hay.
+4. **Esperar aprobación** antes de ejecutar cambios complejos.
 
 ---
 
@@ -68,24 +91,11 @@ controlApp-mobile/
 
 ---
 
-## Documentación de Referencia
-
-### Web Docs (en `docs web para referencia/docs/`)
-| Documento | Ruta | Contenido |
-|-----------|------|-----------|
-| API | `public/es/API.md` | Endpoints y ejemplos |
-| Auth | `public/es/AUTHENTICATION.md` | Flujo Sanctum |
-| Database | `public/es/DATABASE.md` | Esquema y relaciones |
-| Dev Overview | `public/es/dev-overview.md` | Arquitectura backend |
-| IA Collaboration | `private/es/03-ia-collaboration/` | Guías para IAs |
-
----
-
 ## Design System
 
 ### Componentes (`src/shared/components/`)
-- `Button` - primary, secondary, danger, outline
-- `TextInput` - con label y error
+- `PrimaryButton` / `SecondaryButton` - Estilo Web (Ghost/Soft)
+- `Input` - Standarizado (Height + Dark Mode)
 - `PasswordInput` - con toggle show/hide
 - `Alert` - info, warning, success, error
 - `Modal` - con sizes y backdrop

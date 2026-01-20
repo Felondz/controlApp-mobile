@@ -38,6 +38,8 @@
         "no_recent_messages": "No recent messages"
     },
     "settings": {
+        "your_account": "Your Account",
+        "preferences": "Preferences",
         "theme": {
             "title": "Global Theme",
             "subtitle": "Customize the application appearance according to your preferences",
@@ -86,10 +88,13 @@
         "session_expired": "Session Expired",
         "session_expired_desc": "Your session has ended due to inactivity. Please log in again to continue.",
         "login_again": "Log In",
+        "login_subtitle": "Enter your credentials to continue",
+        "welcome_back": "Welcome back!",
         "login": "Log in",
         "logout": "Log Out",
         "register": "Register",
         "email": "Email Address",
+        "email_placeholder": "your@email.com",
         "password": "Password",
         "confirm_password": "Confirm Password",
         "password_confirmation": "Confirm Password",
@@ -140,7 +145,21 @@
         "already_verified": "This email is already verified",
         "show_password": "Show password",
         "hide_password": "Hide password",
-        "verification_email_sent": "A new verification email has been sent to your inbox"
+        "verification_email_sent": "A new verification email has been sent to your inbox",
+        "registration_success_message": "Registration successful. Please verify your email.",
+        "register_tagline": "Project management simplified",
+        "create_account": "Create Account",
+        "register_subtitle": "Create your account to get started",
+        "name_placeholder": "Your full name",
+        "verifying_email": "Verifying your email...",
+        "verification_invalid_link": "Verification link is invalid.",
+        "verification_success": "Email verified successfully!",
+        "verification_error": "Error verifying email.",
+        "verified_title": "Verified!",
+        "go_to_login": "Go to Login",
+        "go_to_login": "Go to Login",
+        "error_title": "Error",
+        "password_placeholder": "••••••••"
     },
     "docs": {
         "hub_title": "Learning Center",
@@ -195,6 +214,7 @@
         "delete": "Delete Category"
     },
     "common": {
+        "app_tagline": "Project management simplified",
         "documentation": "Guides",
         "security_note_title": "Security Note",
         "security_note_desc": "Detailed technical documentation is restricted to verified collaborators.",
@@ -275,10 +295,12 @@
         "tomorrow": "Tomorrow",
         "saving": "Saving...",
         "general_info": "General Information",
+        "widgets_coming_soon": "Widgets coming soon...",
         "overdue": "Overdue"
     },
     "dashboard": {
         "title": "Dashboard",
+        "subtitle": "Overview of your projects and tasks",
         "welcome": "Welcome, :name",
         "my_projects": "My Projects",
         "activity_summary": "Activity Summary",
@@ -706,6 +728,7 @@
     },
     "tasks": {
         "pending": "Pending Tasks",
+        "pending_tasks": "Pending Tasks",
         "due_today": "due today",
         "board": "Task Board",
         "create": "New Task",
@@ -790,6 +813,7 @@
     },
     "projects": {
         "title": "Projects",
+        "your_projects": "Your Projects",
         "name": "Project Name",
         "description": "Description",
         "overview": "Overview",

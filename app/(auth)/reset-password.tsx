@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useRouter } from "expo-router";
+import { useState, useEffect } from "react";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import {
     View,
     Text,
@@ -12,20 +12,21 @@ import {
     useWindowDimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuthStore } from "../../src/stores/authStore";
 import { getTheme } from "../../src/shared/themes";
 import { useTranslate } from "../../src/shared/hooks";
 import { ThemeToggle } from "../../src/shared/components/ThemeToggle";
 import { ApplicationLogo } from "../../src/shared/components/ApplicationLogo";
+import { authApi } from "../../src/services/api";
 import PrimaryButton from "../../src/shared/components/PrimaryButton";
 import Input from "../../src/shared/components/Input";
 
-export default function RegisterScreen() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+export default function ResetPasswordScreen() {
+    const { token, email: initialEmail } = useLocalSearchParams<{ token: string; email: string }>();
     const [password, setPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
-    const { register, isLoading, error, clearError } = useAuthStore();
+    const [isLoading, setIsLoading] = useState(false);
+    const [status, setStatus] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const { width } = useWindowDimensions();
     const { t } = useTranslate();
@@ -34,13 +35,37 @@ export default function RegisterScreen() {
     const isTablet = width >= 768;
     const theme = getTheme("purple-modern");
 
-    const handleRegister = async () => {
-        if (!name || !email || !password || !passwordConfirmation) return;
-        if (password !== passwordConfirmation) return;
-        const success = await register(name, email, password, passwordConfirmation);
-        if (success) {
-            alert(t('auth.registration_success_message') || "Registro exitoso. Por favor verifica tu email.");
-            router.replace("/(auth)/login");
+    const handleSubmit = async () => {
+        if (!password || !passwordConfirmation) {
+            setError(t('validation.required') || 'Todos los campos son requeridos');
+            return;
+        }
+
+        if (password !== passwordConfirmation) {
+            setError(t('validation.password_mismatch') || 'Las contraseñas no coinciden');
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        setStatus(null);
+
+        try {
+            await authApi.resetPassword({
+                token,
+                email: initialEmail,
+                password,
+                password_confirmation: passwordConfirmation,
+            });
+            setStatus(t('auth.password_reset_success') || 'Contraseña restablecida correctamente.');
+            setTimeout(() => {
+                router.replace("/(auth)/login");
+            }, 2000);
+        } catch (err: any) {
+            console.error(err);
+            setError(err.response?.data?.message || t('common.error'));
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -66,6 +91,7 @@ export default function RegisterScreen() {
                 keyboardShouldPersistTaps="handled"
             >
                 <View className={`flex-1 ${isTablet ? "flex-row" : ""}`}>
+                    {/* Hero Section (Tablet Only) */}
                     {isTablet && (
                         <View
                             className="flex-1 justify-center items-center p-12"
@@ -75,100 +101,82 @@ export default function RegisterScreen() {
                                 ControlApp
                             </Text>
                             <Text className="text-xl text-white/80 text-center">
-                                {t('auth.register_tagline')}
+                                {t('common.app_tagline')}
                             </Text>
                         </View>
                     )}
 
+                    {/* Form Section */}
                     <View
                         className={`flex-1 justify-center px-6 ${isTablet ? "px-16" : "py-8"} relative`}
                     >
 
 
                         {!isTablet && (
-                            <View className="items-center mb-6">
+                            <View className="items-center mb-8">
                                 <ApplicationLogo size={42} showText={true} />
-                                <Text className="text-gray-500 text-base mt-2">
-                                    {t('auth.create_account')}
+                            </View>
+                        )}
+
+                        <View className="mb-6">
+                            <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                                {t('auth.reset_password_title') || 'Restablecer Contraseña'}
+                            </Text>
+                            <Text className="text-gray-500 dark:text-gray-400 text-base leading-6">
+                                {t('auth.reset_password_instructions') || 'Ingresa tu nueva contraseña.'}
+                            </Text>
+                        </View>
+
+                        {/* Status Message */}
+                        {status && (
+                            <View className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 mb-6">
+                                <Text className="text-green-700 dark:text-green-400 font-medium text-center">
+                                    {status}
                                 </Text>
                             </View>
                         )}
 
-                        {isTablet && (
-                            <View className="mb-6">
-                                <Text className="text-3xl font-bold text-gray-800 mb-2">
-                                    {t('auth.create_account')}
-                                </Text>
-                                <Text className="text-gray-500 text-base">
-                                    {t('auth.register_subtitle')}
-                                </Text>
-                            </View>
-                        )}
-
+                        {/* Error Message */}
                         {error && (
-                            <View className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
-                                <Text className="text-red-600 text-center">{error}</Text>
-                                <TouchableOpacity onPress={clearError} className="mt-2">
-                                    <Text className="text-red-400 text-center text-sm">
-                                        {t('common.close')}
-                                    </Text>
-                                </TouchableOpacity>
+                            <View className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
+                                <Text className="text-red-600 dark:text-red-400 text-center">{error}</Text>
                             </View>
                         )}
 
                         <Input
-                            label={t('auth.name')}
-                            placeholder={t('auth.name_placeholder')}
-                            value={name}
-                            onChangeText={setName}
-                            autoComplete="name"
-                        />
-
-                        <Input
-                            label={t('auth.email')}
-                            placeholder={t('auth.email_placeholder')}
-                            value={email}
-                            onChangeText={setEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoComplete="email"
-                        />
-
-                        <Input
-                            label={t('auth.password')}
-                            placeholder="••••••••"
+                            label={t('auth.new_password') || 'Nueva Contraseña'}
+                            placeholder={t('auth.password_placeholder') || '••••••••'}
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
-                            autoComplete="password-new"
+                            autoCapitalize="none"
                         />
 
                         <Input
-                            label={t('auth.confirm_password')}
-                            placeholder="••••••••"
+                            label={t('auth.confirm_password') || 'Confirmar Contraseña'}
+                            placeholder={t('auth.password_placeholder') || '••••••••'}
                             value={passwordConfirmation}
                             onChangeText={setPasswordConfirmation}
                             secureTextEntry
-                            autoComplete="password-new"
+                            autoCapitalize="none"
                             className="mb-6"
                         />
 
                         <PrimaryButton
-                            onPress={handleRegister}
+                            onPress={handleSubmit}
                             loading={isLoading}
-                            className="mb-4"
+                            className="mb-6"
                         >
-                            {t('auth.register_button')}
+                            {t('auth.reset_password_submit') || 'Restablecer Contraseña'}
                         </PrimaryButton>
 
-                        <View className="flex-row justify-center mt-4">
-                            <Text className="text-gray-500">{t('auth.already_have_account')} </Text>
-                            <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
+                        <View className="flex-row justify-center">
+                            <TouchableOpacity onPress={() => router.replace("/(auth)/login")}>
                                 <Text
                                     style={{ color: theme.primary600 }}
-                                    className="font-semibold"
+                                    className="font-medium text-base"
                                 >
-                                    {t('auth.login')}
+                                    {t('auth.back_to_login')}
                                 </Text>
                             </TouchableOpacity>
                         </View>

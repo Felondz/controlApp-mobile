@@ -1,77 +1,48 @@
-/**
- * Settings store for app preferences (theme, locale, etc.)
- * Uses Zustand with persistence via AsyncStorage
- */
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SETTINGS_KEY = 'controlapp_settings';
-
-export interface SettingsState {
-    locale: 'es' | 'en';
+interface SettingsState {
     theme: string;
-    darkMode: boolean;
+    isDark: boolean;
     isInitialized: boolean;
-
-    // Actions
-    initialize: () => Promise<void>;
-    setLocale: (locale: 'es' | 'en') => Promise<void>;
     setTheme: (theme: string) => Promise<void>;
-    setDarkMode: (enabled: boolean) => Promise<void>;
+    toggleDarkMode: () => Promise<void>;
+    initialize: () => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
-    locale: 'es',
     theme: 'purple-modern',
-    darkMode: false,
+    isDark: false,
     isInitialized: false,
 
+    setTheme: async (theme: string) => {
+        set({ theme });
+        await AsyncStorage.setItem('settings_theme', theme);
+    },
+
+    toggleDarkMode: async () => {
+        const newIsDark = !get().isDark;
+        set({ isDark: newIsDark });
+        await AsyncStorage.setItem('settings_is_dark', String(newIsDark));
+    },
+
     initialize: async () => {
+        if (get().isInitialized) return;
+
         try {
-            const stored = await AsyncStorage.getItem(SETTINGS_KEY);
-            if (stored) {
-                const settings = JSON.parse(stored);
-                set({
-                    locale: settings.locale || 'es',
-                    theme: settings.theme || 'purple-modern',
-                    darkMode: settings.darkMode || false,
-                    isInitialized: true,
-                });
-            } else {
-                set({ isInitialized: true });
-            }
+            const [storedTheme, storedIsDark] = await Promise.all([
+                AsyncStorage.getItem('settings_theme'),
+                AsyncStorage.getItem('settings_is_dark'),
+            ]);
+
+            set({
+                theme: storedTheme || 'purple-modern',
+                isDark: storedIsDark === 'true',
+                isInitialized: true,
+            });
         } catch (error) {
             console.error('Failed to load settings:', error);
             set({ isInitialized: true });
         }
     },
-
-    setLocale: async (locale) => {
-        set({ locale });
-        await saveSettings(get());
-    },
-
-    setTheme: async (theme) => {
-        set({ theme });
-        await saveSettings(get());
-    },
-
-    setDarkMode: async (darkMode) => {
-        set({ darkMode });
-        await saveSettings(get());
-    },
 }));
-
-// Helper to persist settings
-async function saveSettings(state: SettingsState) {
-    try {
-        const data = {
-            locale: state.locale,
-            theme: state.theme,
-            darkMode: state.darkMode,
-        };
-        await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
-    } catch (error) {
-        console.error('Failed to save settings:', error);
-    }
-}

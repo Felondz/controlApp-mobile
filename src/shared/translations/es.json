@@ -70,10 +70,13 @@
         "session_expired": "Sesión Expirada",
         "session_expired_desc": "Tu sesión ha terminado debido a inactividad. Por favor, inicia sesión nuevamente para continuar.",
         "login_again": "Iniciar Sesión",
+        "login_subtitle": "Ingresa tus credenciales para continuar",
+        "welcome_back": "¡Bienvenido de nuevo!",
         "login": "Iniciar sesión",
         "logout": "Cerrar sesión",
         "register": "Registrarse",
         "email": "Correo electrónico",
+        "email_placeholder": "tu@email.com",
         "password": "Contraseña",
         "confirm_password": "Confirmar contraseña",
         "password_confirmation": "Confirmar contraseña",
@@ -124,7 +127,21 @@
         "already_verified": "Este email ya está verificado",
         "show_password": "Mostrar contraseña",
         "hide_password": "Ocultar contraseña",
-        "verification_email_sent": "Se ha enviado un nuevo email de verificación a tu correo"
+        "verification_email_sent": "Se ha enviado un nuevo email de verificación a tu correo",
+        "registration_success_message": "Registro exitoso. Por favor verifica tu email.",
+        "register_tagline": "Gestión de proyectos simplificada",
+        "create_account": "Crear Cuenta",
+        "register_subtitle": "Crea tu cuenta para comenzar",
+        "name_placeholder": "Tu nombre completo",
+        "verifying_email": "Verificando tu correo electrónico...",
+        "verification_invalid_link": "Enlace de verificación inválido.",
+        "verification_success": "¡Correo verificado exitosamente!",
+        "verification_error": "Error al verificar el correo.",
+        "verified_title": "¡Verificado!",
+        "go_to_login": "Ir a Iniciar Sesión",
+        "go_to_login": "Ir a Iniciar Sesión",
+        "error_title": "Error",
+        "password_placeholder": "••••••••"
     },
     "categories": {
         "title": "Categorías",
@@ -136,6 +153,7 @@
         "delete": "Eliminar Categoría"
     },
     "common": {
+        "app_tagline": "Gestión de proyectos simplificada",
         "documentation": "Guías",
         "security_note_title": "Nota de Seguridad",
         "security_note_desc": "La documentación técnica detallada está restringida a colaboradores verificados.",
@@ -214,6 +232,7 @@
         "cost": "Costo",
         "stage": "Etapa",
         "unassigned": "Sin asignar",
+        "widgets_coming_soon": "Widgets próximamente...",
         "save_changes": "Guardar Cambios",
         "status": "Estado",
         "select_product": "Seleccionar Producto Final..."
@@ -272,6 +291,7 @@
     },
     "dashboard": {
         "title": "Panel de Control",
+        "subtitle": "Vista general de tus proyectos y tareas",
         "welcome": "Bienvenido, :name",
         "my_projects": "Mis Proyectos",
         "activity_summary": "Resumen de Actividad",
@@ -656,6 +676,8 @@
         "investment_balance_hint": "Ingresa el valor actual de tu inversión (capital + rendimientos)."
     },
     "settings": {
+        "your_account": "Tu Cuenta",
+        "preferences": "Preferencias",
         "theme": {
             "title": "Tema Global",
             "subtitle": "Personaliza la apariencia de la aplicación según tus preferencias",
@@ -707,6 +729,7 @@
     },
     "tasks": {
         "pending": "Tareas Pendientes",
+        "pending_tasks": "Tareas Pendientes",
         "due_today": "vencen hoy",
         "board": "Tablero de Tareas",
         "create": "Nueva Tarea",
@@ -789,6 +812,7 @@
     },
     "projects": {
         "title": "Proyectos",
+        "your_projects": "Tus Proyectos",
         "name": "Nombre del Proyecto",
         "description": "Descripción",
         "overview": "Resumen General",

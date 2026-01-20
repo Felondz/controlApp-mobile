@@ -35,7 +35,7 @@ export default function SettingsScreen() {
                 {/* Theme Selection */}
                 <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-4">
                     <Text className="text-lg font-semibold text-gray-800 mb-4">
-                        {t('settings.theme')}
+                        {t('settings.theme.title')}
                     </Text>
                     <View className="flex-row flex-wrap gap-3">
                         {THEME_OPTIONS.map((option) => (
@@ -56,7 +56,7 @@ export default function SettingsScreen() {
                         {t('settings.preferences')}
                     </Text>
                     <View className="flex-row items-center justify-between py-2">
-                        <Text className="text-gray-700">{t('settings.dark_mode')}</Text>
+                        <Text className="text-gray-700">{t('settings.theme.dark_mode')}</Text>
                         <Switch
                             value={darkMode}
                             onValueChange={setDarkMode}
