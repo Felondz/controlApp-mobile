@@ -12,6 +12,19 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL || 'https://controlapp.io/api';
 // Token key for secure storage
 export const TOKEN_KEY = 'auth_token';
 export const USER_KEY = 'auth_user';
+export const CREDENTIALS_KEY = 'auth_credentials';
+
+// Callback to handle silent login from store (to avoid circular dependency)
+let silentLoginCallback: (() => Promise<string | null>) | null = null;
+let logoutCallback: (() => void) | null = null;
+
+export const setAuthCallbacks = (
+    silentLogin: () => Promise<string | null>,
+    logout: () => void
+) => {
+    silentLoginCallback = silentLogin;
+    logoutCallback = logout;
+};
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
@@ -41,15 +54,47 @@ api.interceptors.request.use(
     }
 );
 
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+    _retry?: boolean;
+}
+
 // Response interceptor - handle 401 errors
 api.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError) => {
-        if (error.response?.status === 401) {
-            // Token expired or invalid, clear storage
+        const originalRequest = error.config as CustomAxiosRequestConfig;
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            // Attempt silent login if callback configurd
+            if (silentLoginCallback) {
+                try {
+                    console.log('Token expired (401), attempting silent login...');
+                    const newToken = await silentLoginCallback();
+
+                    if (newToken) {
+                        console.log('Silent login successful, retrying request...');
+                        // Update header and retry
+                        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                        return api(originalRequest);
+                    }
+                } catch (refreshError) {
+                    console.error('Silent login failed:', refreshError);
+                }
+            }
+
+            // If we get here, silent login failed or wasn't possible
+            console.log('Silent login failed or not configured, logging out...');
             await SecureStore.deleteItemAsync(TOKEN_KEY);
             await SecureStore.deleteItemAsync(USER_KEY);
-            // Navigation to login will be handled by AuthContext
+            // Don't delete credentials here, let the user decide if they want to clear them on next login screen visit
+            // actually, if silent login failed (e.g. password changed), we SHOULD clear them?
+            // No, maybe network error. But if auth failed (401 on login), authStore logic will handle it.
+
+            if (logoutCallback) {
+                logoutCallback();
+            }
         }
         return Promise.reject(error);
     }
@@ -57,8 +102,8 @@ api.interceptors.response.use(
 
 // Auth API endpoints
 export const authApi = {
-    login: (email: string, password: string) =>
-        api.post('/login', { email, password }),
+    login: (email: string, password: string, remember_me: boolean, device_name: string) =>
+        api.post('/login', { email, password, remember_me, device_name }),
 
     register: (data: { name: string; email: string; password: string; password_confirmation: string }) =>
         api.post('/register', data),

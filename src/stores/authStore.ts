@@ -1,11 +1,8 @@
-/**
- * Auth Store - Zustand store for authentication state
- * Uses expo-secure-store for persistent token storage
- */
-
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
-import { authApi, TOKEN_KEY, USER_KEY } from '../services/api';
+import { authApi, TOKEN_KEY, USER_KEY, CREDENTIALS_KEY, setAuthCallbacks } from '../services/api';
+import * as Device from 'expo-device';
+import { Platform } from 'react-native';
 
 export interface User {
     id: number;
@@ -24,11 +21,17 @@ interface AuthState {
 
     // Actions
     initialize: () => Promise<void>;
-    login: (email: string, password: string) => Promise<boolean>;
+    login: (email: string, password: string, remember: boolean) => Promise<boolean>;
     register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<boolean>;
     logout: () => Promise<void>;
     clearError: () => void;
 }
+
+// Helper to get device name
+const getDeviceName = () => {
+    if (Platform.OS === 'web') return 'Web Browser';
+    return `${Device.brand || 'Unknown'} ${Device.modelName || 'Device'}`;
+};
 
 export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
@@ -40,6 +43,38 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // Initialize auth state from secure storage
     initialize: async () => {
         try {
+            // Setup callbacks for API
+            setAuthCallbacks(
+                // Silent Login Callback
+                async () => {
+                    try {
+                        const credentialsJson = await SecureStore.getItemAsync(CREDENTIALS_KEY);
+                        if (!credentialsJson) return null;
+
+                        const { email, password } = JSON.parse(credentialsJson);
+                        // Force remember=true for auto-renewal to get another long-lived token
+                        const deviceName = getDeviceName();
+                        const response = await authApi.login(email, password, true, deviceName);
+                        const { access_token: token, user } = response.data;
+
+                        // Update store
+                        await SecureStore.setItemAsync(TOKEN_KEY, token);
+                        await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+                        // Credentials remain stored since we want to keep renewing
+
+                        set({ user, token, isAuthenticated: true });
+                        return token;
+                    } catch (error) {
+                        console.error('Silent login failed:', error);
+                        return null;
+                    }
+                },
+                // Logout Callback
+                () => {
+                    set({ user: null, token: null, isAuthenticated: false });
+                }
+            );
+
             const token = await SecureStore.getItemAsync(TOKEN_KEY);
             const userJson = await SecureStore.getItemAsync(USER_KEY);
 
@@ -53,10 +88,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                     set({ user: response.data });
                     await SecureStore.setItemAsync(USER_KEY, JSON.stringify(response.data));
                 } catch (error) {
-                    // Token invalid, clear everything
-                    await SecureStore.deleteItemAsync(TOKEN_KEY);
-                    await SecureStore.deleteItemAsync(USER_KEY);
-                    set({ user: null, token: null, isAuthenticated: false });
+                    // Token invalid/expired will be handled by interceptor -> silent login attempt
+                    // If that fails, interceptor calls logout callback which updates state
                 }
             } else {
                 set({ isLoading: false });
@@ -68,15 +101,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     },
 
     // Login
-    login: async (email: string, password: string) => {
+    login: async (email: string, password: string, remember: boolean) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await authApi.login(email, password);
+            const deviceName = getDeviceName();
+            const response = await authApi.login(email, password, remember, deviceName);
             const { access_token: token, user } = response.data;
 
-            // Store in secure storage
+            // Store token and user
             await SecureStore.setItemAsync(TOKEN_KEY, token);
             await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+
+            // Store/Remove credentials based on remember me
+            if (remember) {
+                await SecureStore.setItemAsync(CREDENTIALS_KEY, JSON.stringify({ email, password }));
+            } else {
+                await SecureStore.deleteItemAsync(CREDENTIALS_KEY);
+            }
 
             set({
                 user,
@@ -123,9 +164,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             // Ignore logout API errors
         }
 
-        // Clear secure storage
+        // Clear all secure storage
         await SecureStore.deleteItemAsync(TOKEN_KEY);
         await SecureStore.deleteItemAsync(USER_KEY);
+        await SecureStore.deleteItemAsync(CREDENTIALS_KEY); // User explicitly logged out, forget credentials
 
         set({
             user: null,

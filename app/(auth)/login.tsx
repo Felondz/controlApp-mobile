@@ -19,10 +19,12 @@ import { ThemeToggle } from "../../src/shared/components/ThemeToggle";
 import { ApplicationLogo } from "../../src/shared/components/ApplicationLogo";
 import PrimaryButton from "../../src/shared/components/PrimaryButton";
 import Input from "../../src/shared/components/Input";
+import { Checkbox } from "../../src/shared/components/Checkbox";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState(false);
     const { login, isLoading, error, clearError } = useAuthStore();
     const router = useRouter();
     const { width } = useWindowDimensions();
@@ -34,7 +36,7 @@ export default function LoginScreen() {
 
     const handleLogin = async () => {
         if (!email || !password) return;
-        const success = await login(email, password);
+        const success = await login(email, password, rememberMe);
         if (success) {
             router.replace("/(app)");
         }
@@ -130,7 +132,13 @@ export default function LoginScreen() {
                             secureTextEntry
                         />
 
-                        <View className="mb-6 flex-row justify-end">
+                        <View className="mb-6 flex-row justify-between items-center">
+                            <Checkbox
+                                checked={rememberMe}
+                                onChange={setRememberMe}
+                                label={t('auth.remember_me')}
+                            />
+
                             <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
                                 <Text
                                     style={{ color: theme.primary600 }}
