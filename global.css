@@ -4,7 +4,6 @@
 
 @layer base {
     :root {
-        /* Default: Purple Modern */
         --color-primary-50: 250 245 255;
         --color-primary-100: 243 232 255;
         --color-primary-200: 233 213 255;
@@ -16,6 +15,30 @@
         --color-primary-800: 107 33 168;
         --color-primary-900: 88 28 135;
         --color-primary-950: 59 7 100;
+
+        --color-secondary-50: 249 250 251;
+        --color-secondary-100: 243 244 244;
+        --color-secondary-200: 229 231 235;
+        --color-secondary-300: 209 213 219;
+        --color-secondary-400: 156 163 175;
+        --color-secondary-500: 107 114 128;
+        --color-secondary-600: 75 85 99;
+        --color-secondary-700: 55 65 81;
+        --color-secondary-800: 31 41 55;
+        --color-secondary-900: 17 24 39;
+        --color-secondary-950: 15 23 42;
+
+        --color-danger-50: 254 242 242;
+        --color-danger-100: 254 226 226;
+        --color-danger-200: 254 202 202;
+        --color-danger-300: 252 165 165;
+        --color-danger-400: 248 113 113;
+        --color-danger-500: 239 68 68;
+        --color-danger-600: 220 38 38;
+        --color-danger-700: 185 28 28;
+        --color-danger-800: 153 27 27;
+        --color-danger-900: 127 29 29;
+        --color-danger-950: 69 10 10;
     }
 
     [data-theme="purple-modern"] {
@@ -33,7 +56,6 @@
     }
 
     [data-theme="ocean-blue"] {
-        /* Cyan */
         --color-primary-50: 236 254 255;
         --color-primary-100: 207 250 254;
         --color-primary-200: 165 243 252;
@@ -48,7 +70,6 @@
     }
 
     [data-theme="forest-green"] {
-        /* Emerald */
         --color-primary-50: 236 253 245;
         --color-primary-100: 209 250 229;
         --color-primary-200: 167 243 208;
@@ -63,7 +84,6 @@
     }
 
     [data-theme="scarlet-red"] {
-        /* Red */
         --color-primary-50: 254 242 242;
         --color-primary-100: 254 226 226;
         --color-primary-200: 254 202 202;
@@ -78,7 +98,6 @@
     }
 
     [data-theme="amber-gold"] {
-        /* Amber */
         --color-primary-50: 255 251 235;
         --color-primary-100: 254 243 199;
         --color-primary-200: 253 230 138;
@@ -93,7 +112,6 @@
     }
 
     [data-theme="pink-rose"] {
-        /* Pink */
         --color-primary-50: 253 242 248;
         --color-primary-100: 252 231 243;
         --color-primary-200: 251 204 231;
@@ -105,5 +123,13 @@
         --color-primary-800: 157 23 77;
         --color-primary-900: 131 24 67;
         --color-primary-950: 80 7 36;
+    }
+
+    .dark {
+        color-scheme: dark;
+    }
+
+    body {
+        @apply bg-secondary-50 dark:bg-secondary-900;
     }
 }

@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import {
     View,
     Text,
-    TextInput,
     TouchableOpacity,
-    ActivityIndicator,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
     useWindowDimensions,
+    TouchableWithoutFeedback,
+    Keyboard,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getTheme } from "../../src/shared/themes";
@@ -19,6 +19,8 @@ import { ApplicationLogo } from "../../src/shared/components/ApplicationLogo";
 import { authApi } from "../../src/services/api";
 import PrimaryButton from "../../src/shared/components/PrimaryButton";
 import Input from "../../src/shared/components/Input";
+import PasswordInput from "../../src/shared/components/PasswordInput";
+import { ChevronLeftIcon } from "../../src/shared/icons";
 
 export default function ResetPasswordScreen() {
     const { token, email: initialEmail } = useLocalSearchParams<{ token: string; email: string }>();
@@ -32,8 +34,8 @@ export default function ResetPasswordScreen() {
     const { t } = useTranslate();
     const insets = useSafeAreaInsets();
 
-    const isTablet = width >= 768;
     const theme = getTheme("purple-modern");
+    const isTablet = width >= 768;
 
     const handleSubmit = async () => {
         if (!password || !passwordConfirmation) {
@@ -70,119 +72,111 @@ export default function ResetPasswordScreen() {
     };
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            className="flex-1 bg-gray-50 dark:bg-gray-900 relative"
-        >
-            {/* Theme Toggle - Fixed Top Right */}
-            {/* Theme Toggle - Fixed Top Right with Safe Area */}
-            <View
-                style={{
-                    position: 'absolute',
-                    top: insets.top + 10,
-                    right: 20,
-                    zIndex: 50
-                }}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                className="flex-1 bg-secondary-50 dark:bg-secondary-950"
             >
-                <ThemeToggle />
-            </View>
-            <ScrollView
-                contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top }}
-                keyboardShouldPersistTaps="handled"
-            >
-                <View className={`flex-1 ${isTablet ? "flex-row" : ""}`}>
-                    {/* Hero Section (Tablet Only) */}
-                    {isTablet && (
-                        <View
-                            className="flex-1 justify-center items-center p-12"
-                            style={{ backgroundColor: theme.primary500 }}
-                        >
-                            <Text className="text-5xl font-bold text-white mb-4">
-                                ControlApp
-                            </Text>
-                            <Text className="text-xl text-white/80 text-center">
-                                {t('common.app_tagline')}
-                            </Text>
-                        </View>
-                    )}
+                <View
+                    style={{
+                        position: 'absolute',
+                        top: insets.top + 10,
+                        right: 20,
+                        zIndex: 50
+                    }}
+                >
+                    <ThemeToggle />
+                </View>
 
-                    {/* Form Section */}
-                    <View
-                        className={`flex-1 justify-center px-6 ${isTablet ? "px-16" : "py-8"} relative`}
-                    >
-
-
-                        {!isTablet && (
-                            <View className="items-center mb-8">
-                                <ApplicationLogo size={42} showText={true} />
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top }}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    <View className={`flex-1 ${isTablet ? "flex-row" : ""}`}>
+                        {isTablet && (
+                            <View
+                                className="flex-1 justify-center items-center p-12"
+                                style={{ backgroundColor: theme.primary600 }}
+                            >
+                                <View className="bg-white/10 p-8 rounded-[40px] backdrop-blur-md border border-white/20 items-center">
+                                    <ApplicationLogo size={80} color="white" showText={false} />
+                                    <Text className="text-4xl font-black text-white mt-6 tracking-tighter text-center">
+                                        Nueva Contraseña
+                                    </Text>
+                                    <Text className="text-lg text-white/70 text-center max-w-xs mt-4 leading-6 font-medium">
+                                        Asegura tu cuenta con una contraseña robusta y fácil de recordar.
+                                    </Text>
+                                </View>
                             </View>
                         )}
 
-                        <View className="mb-6">
-                            <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-                                {t('auth.reset_password_title') || 'Restablecer Contraseña'}
-                            </Text>
-                            <Text className="text-gray-500 dark:text-gray-400 text-base leading-6">
-                                {t('auth.reset_password_instructions') || 'Ingresa tu nueva contraseña.'}
-                            </Text>
-                        </View>
-
-                        {/* Status Message */}
-                        {status && (
-                            <View className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 mb-6">
-                                <Text className="text-green-700 dark:text-green-400 font-medium text-center">
-                                    {status}
-                                </Text>
-                            </View>
-                        )}
-
-                        {/* Error Message */}
-                        {error && (
-                            <View className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
-                                <Text className="text-red-600 dark:text-red-400 text-center">{error}</Text>
-                            </View>
-                        )}
-
-                        <Input
-                            label={t('auth.new_password') || 'Nueva Contraseña'}
-                            placeholder={t('auth.password_placeholder') || '••••••••'}
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                            autoCapitalize="none"
-                        />
-
-                        <Input
-                            label={t('auth.confirm_password') || 'Confirmar Contraseña'}
-                            placeholder={t('auth.password_placeholder') || '••••••••'}
-                            value={passwordConfirmation}
-                            onChangeText={setPasswordConfirmation}
-                            secureTextEntry
-                            autoCapitalize="none"
-                            className="mb-6"
-                        />
-
-                        <PrimaryButton
-                            onPress={handleSubmit}
-                            loading={isLoading}
-                            className="mb-6"
-                        >
-                            {t('auth.reset_password_submit') || 'Restablecer Contraseña'}
-                        </PrimaryButton>
-
-                        <View className="flex-row justify-center">
-                            <TouchableOpacity onPress={() => router.replace("/(auth)/login")}>
-                                <Text
-                                    style={{ color: theme.primary600 }}
-                                    className="font-medium text-base"
-                                >
+                        <View className={`flex-1 justify-center px-8 ${isTablet ? "px-20" : "py-12"}`}>
+                            <TouchableOpacity 
+                                onPress={() => router.replace("/(auth)/login")}
+                                className="flex-row items-center mb-8"
+                            >
+                                <ChevronLeftIcon size={20} color={theme.primary600} />
+                                <Text className="ml-1 font-bold text-sm" style={{ color: theme.primary600 }}>
                                     {t('auth.back_to_login')}
                                 </Text>
                             </TouchableOpacity>
+
+                            <View className="mb-10">
+                                <Text className="text-4xl font-black text-secondary-900 dark:text-secondary-50 tracking-tighter mb-2">
+                                    {t('auth.reset_password_title')}
+                                </Text>
+                                <Text className="text-lg text-secondary-500 dark:text-secondary-400 font-medium leading-6">
+                                    {t('auth.reset_password_instructions')}
+                                </Text>
+                            </View>
+
+                            {status && (
+                                <View className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 mb-8">
+                                    <Text className="text-green-700 dark:text-green-400 font-bold text-sm text-center leading-5">
+                                        {status}
+                                    </Text>
+                                </View>
+                            )}
+
+                            {error && (
+                                <View className="bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-2xl p-5 mb-8">
+                                    <Text className="text-danger-600 dark:text-danger-400 font-bold text-sm text-center">
+                                        {error}
+                                    </Text>
+                                </View>
+                            )}
+
+                            <PasswordInput
+                                label={t('auth.new_password')}
+                                placeholder="••••••••"
+                                value={password}
+                                onChangeText={setPassword}
+                                returnKeyType="next"
+                            />
+
+                            <PasswordInput
+                                label={t('auth.confirm_password')}
+                                placeholder="••••••••"
+                                value={passwordConfirmation}
+                                onChangeText={setPasswordConfirmation}
+                                returnKeyType="done"
+                                onSubmitEditing={handleSubmit}
+                            />
+
+                            <PrimaryButton
+                                onPress={handleSubmit}
+                                loading={isLoading}
+                                variant="filled"
+                                size="lg"
+                                className="mt-4 shadow-xl shadow-primary-600/20"
+                            >
+                                {t('auth.reset_password_submit')}
+                            </PrimaryButton>
                         </View>
                     </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
     );
 }

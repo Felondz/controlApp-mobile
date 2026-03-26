@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, Stack } from "expo-router";
 import { getTheme } from "../../../../src/shared/themes";
 
@@ -15,7 +15,7 @@ export default function ProjectDetailScreen() {
                     headerTintColor: "white",
                 }}
             />
-            <ScrollView className="flex-1 bg-gray-50">
+            <ScrollView className="flex-1 bg-gray-50" showsVerticalScrollIndicator={false}>
                 <View className="p-4">
                     {/* Project Header */}
                     <View
@@ -41,9 +41,9 @@ export default function ProjectDetailScreen() {
                             { name: "Inventario", color: "#3b82f6" },
                             { name: "Operaciones", color: "#8b5cf6" },
                         ].map((module) => (
-                            <TouchableOpacity
+                            <Pressable
                                 key={module.name}
-                                className="flex-1 min-w-[45%] p-4 rounded-xl bg-white border border-gray-100 shadow-sm"
+                                className="flex-1 min-w-[45%] p-4 rounded-xl bg-white border border-gray-100 shadow-sm active:bg-gray-50 active:scale-95 transition-all"
                             >
                                 <View
                                     className="w-10 h-10 rounded-lg mb-3 items-center justify-center"
@@ -56,7 +56,7 @@ export default function ProjectDetailScreen() {
                                 </View>
                                 <Text className="text-gray-800 font-medium">{module.name}</Text>
                                 <Text className="text-gray-500 text-sm mt-1">Ver más →</Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         ))}
                     </View>
 

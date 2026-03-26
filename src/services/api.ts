@@ -128,7 +128,9 @@ export const authApi = {
 export const projectsApi = {
     getAll: () => api.get('/proyectos'),
     getOne: (id: number) => api.get(`/proyectos/${id}`),
-    create: (data: any) => api.post('/proyectos', data),
+    create: (data: any) => api.post('/proyectos', data, {
+        headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+    }),
     update: (id: number, data: any) => api.put(`/proyectos/${id}`, data),
     delete: (id: number) => api.delete(`/proyectos/${id}`),
 };
@@ -172,6 +174,23 @@ export const operationsApi = {
         api.put(`/proyectos/${projectId}/operations/lotes/${loteId}/stage`, data),
     finishLote: (projectId: number, loteId: number) =>
         api.post(`/proyectos/${projectId}/operations/lotes/${loteId}/finish`),
+};
+
+// Preferences API endpoints
+export const preferencesApi = {
+    updateTheme: (global_theme: string) => api.post('/preferences/theme/update', { global_theme }),
+    updateDashboard: (settings: any) => api.post('/preferences/dashboard/update', { settings }),
+};
+
+// Bug Reporter (PTR) API endpoints
+export const ptrApi = {
+    reportBug: (data: any) => api.post('/ptr/bug-reports', data),
+    getStats: () => api.get('/ptr/bug-reports/stats'),
+};
+
+// Search API endpoints
+export const searchApi = {
+    search: (query: string) => api.get(`/search?query=${encodeURIComponent(query)}`),
 };
 
 export default api;

@@ -23,7 +23,12 @@ export type ThemeId =
     | 'ocean-blue'
     | 'amber-gold'
     | 'pink-rose'
-    | 'scarlet-red';
+    | 'scarlet-red'
+    | 'emerald-nature'
+    | 'blue-ocean'
+    | 'cyan-tech'
+    | 'amber-warm'
+    | 'rose-romantic';
 
 // Convert RGB "R G B" to HEX "#RRGGBB"
 const rgbToHex = (rgb: string): string => {
@@ -110,6 +115,72 @@ export const THEMES: Record<ThemeId, ThemeColors> = {
         primary800: '#991b1b',
         primary900: '#7f1d1d',
         primary950: '#450a0a',
+    },
+    // Aliases for Web Compatibility
+    'emerald-nature': { // Alias for forest-green
+        primary50: '#ecfdf5',
+        primary100: '#d1fae5',
+        primary200: '#a7f3d0',
+        primary300: '#6ee7b7',
+        primary400: '#34d399',
+        primary500: '#10b981',
+        primary600: '#059669',
+        primary700: '#047857',
+        primary800: '#065f46',
+        primary900: '#064e3b',
+        primary950: '#022c22',
+    },
+    'blue-ocean': { // Alias for ocean-blue
+        primary50: '#ecfeff',
+        primary100: '#cffafe',
+        primary200: '#a5f3fc',
+        primary300: '#67e8f9',
+        primary400: '#22d3ee',
+        primary500: '#06b6d4',
+        primary600: '#0891b2',
+        primary700: '#0e7490',
+        primary800: '#155e75',
+        primary900: '#164e63',
+        primary950: '#083344',
+    },
+    'cyan-tech': { // Alias for ocean-blue
+        primary50: '#ecfeff',
+        primary100: '#cffafe',
+        primary200: '#a5f3fc',
+        primary300: '#67e8f9',
+        primary400: '#22d3ee',
+        primary500: '#06b6d4',
+        primary600: '#0891b2',
+        primary700: '#0e7490',
+        primary800: '#155e75',
+        primary900: '#164e63',
+        primary950: '#083344',
+    },
+    'amber-warm': { // Alias for amber-gold
+        primary50: '#fffbeb',
+        primary100: '#fef3c7',
+        primary200: '#fde68a',
+        primary300: '#fcd34d',
+        primary400: '#fbbf24',
+        primary500: '#f59e0b',
+        primary600: '#d97706',
+        primary700: '#b45309',
+        primary800: '#92400e',
+        primary900: '#78350f',
+        primary950: '#451a03',
+    },
+    'rose-romantic': { // Alias for pink-rose
+        primary50: '#fdf2f8',
+        primary100: '#fce7f3',
+        primary200: '#fbcce7',
+        primary300: '#f9a8d4',
+        primary400: '#f472b6',
+        primary500: '#ec4899',
+        primary600: '#db2777',
+        primary700: '#be185d',
+        primary800: '#9d174d',
+        primary900: '#831843',
+        primary950: '#500724',
     },
 };
 

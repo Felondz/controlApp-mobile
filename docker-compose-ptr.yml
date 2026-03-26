@@ -1,0 +1,151 @@
+services:
+  # --- APLICACIÓN PRINCIPAL ---
+  app:
+    image: ghcr.io/felondz/controlapp:${IMAGE_TAG:-latest}
+    container_name: controlapp_app_${APP_ENV}
+    restart: unless-stopped
+    env_file: ./.env
+    
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+
+    volumes:
+      - ./storage:/var/www/html/storage
+    
+    networks:
+      - proxy
+      - internal
+
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 750M
+        reservations:
+          cpus: '0.40'
+          memory: 384M
+
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+
+      # Middleware CORS global
+      - traefik.http.middlewares.cors-api.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS,PATCH
+      - traefik.http.middlewares.cors-api.headers.accesscontrolallowheaders=Authorization,Content-Type,Accept,Origin,X-Requested-With,X-CSRF-Token
+      - traefik.http.middlewares.cors-api.headers.accesscontrolalloworiginlist=*
+      - traefik.http.middlewares.cors-api.headers.accesscontrolexposeheaders=Content-Length,Content-Type,X-Total-Count,X-Page-Count,X-Current-Page
+      - traefik.http.middlewares.cors-api.headers.accesscontrolmaxage=86400
+
+      # Router Principal (HTTPS)
+      - traefik.http.routers.controlapp-root-https-${APP_ENV}.rule=Host(`${APP_DOMAIN}`)
+      - traefik.http.routers.controlapp-root-https-${APP_ENV}.entrypoints=websecure
+      - traefik.http.routers.controlapp-root-https-${APP_ENV}.middlewares=cors-api
+      - traefik.http.routers.controlapp-root-https-${APP_ENV}.tls.certresolver=letsencrypt
+
+      # Router API
+      - traefik.http.routers.controlapp-api-https-${APP_ENV}.rule=Host(`api.${APP_DOMAIN}`)
+      - traefik.http.routers.controlapp-api-https-${APP_ENV}.entrypoints=websecure
+      - traefik.http.routers.controlapp-api-https-${APP_ENV}.middlewares=cors-api
+      - traefik.http.routers.controlapp-api-https-${APP_ENV}.tls.certresolver=letsencrypt
+
+      # Servicio
+      - traefik.http.services.controlapp-service-${APP_ENV}.loadbalancer.server.port=8000
+
+  # --- WORKERS ---
+  worker:
+    image: ghcr.io/felondz/controlapp:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file: ./.env
+    command: php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 256M
+        reservations:
+          cpus: '0.10'
+          memory: 128M
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+    volumes:
+      - ./storage:/var/www/html/storage
+    networks:
+      - internal
+
+  # --- BASE DE DATOS ---
+  db:
+    image: mysql:8.0
+    container_name: controlapp_db_${APP_ENV}
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+  # --- REDIS ---
+  redis:
+    image: redis:alpine
+    container_name: controlapp_redis_${APP_ENV}
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # --- MEILISEARCH ---
+  meilisearch:
+    image: getmeili/meilisearch:v1.10
+    container_name: controlapp_meilisearch_${APP_ENV}
+    restart: unless-stopped
+    environment:
+      - MEILI_MASTER_KEY=${MEILISEARCH_KEY}
+      - MEILI_ENV=production
+    volumes:
+      - meili_data:/meili_data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  proxy:
+    external: true
+  internal:
+    driver: bridge
+
+volumes:
+  db_data:
+  redis_data:
+  meili_data:

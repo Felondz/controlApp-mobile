@@ -40,8 +40,113 @@ yarn-error.*
 # generated native folders
 /ios
 /android
-/docs web para referencia   
+!/docs web para referencia   
 
-PROGRESS.md
+!PROGRESS.md
 
 setup_env.sh
+AGENTS.md
+GEMINI.md
+PROGRESS.md
+.agents/skills/find-skills/SKILL.md
+.agents/skills/laravel-security-audit/SKILL.md
+.agents/skills/laravel-specialist/SKILL.md
+docs web para referencia/docs/architecture/event_driven_migration.md
+docs web para referencia/docs/development/operations_module_log.md
+docs web para referencia/docs/guides/managing_workers.md
+docs web para referencia/docs/private/ARCHITECTURE_MODULES.md
+docs web para referencia/docs/private/README_SETUP.md
+docs web para referencia/docs/private/en/README.md
+docs web para referencia/docs/private/en/01-core/CHANGELOG.md
+docs web para referencia/docs/private/en/01-core/INDEX.md
+docs web para referencia/docs/private/en/01-core/MODULES_ARCHITECTURE.md
+docs web para referencia/docs/private/en/01-core/QUICK_REFERENCE.md
+docs web para referencia/docs/private/en/01-core/README.md
+docs web para referencia/docs/private/en/01-core/SEARCH_IMPLEMENTATION.md
+docs web para referencia/docs/private/en/01-core/VERSIONING_POLICY.md
+docs web para referencia/docs/private/en/02-development/API.md
+docs web para referencia/docs/private/en/02-development/AUTHENTICATION.md
+docs web para referencia/docs/private/en/02-development/AUTHORIZATION_VALIDATION.md
+docs web para referencia/docs/private/en/02-development/CONTRIBUTING.md
+docs web para referencia/docs/private/en/02-development/DATABASE.md
+docs web para referencia/docs/private/en/02-development/FRONTEND.md
+docs web para referencia/docs/private/en/02-development/I18N_IMPLEMENTATION.md
+docs web para referencia/docs/private/en/02-development/I18N_QUICK_REFERENCE.md
+docs web para referencia/docs/private/en/02-development/INSTALLATION.md
+docs web para referencia/docs/private/en/02-development/README.md
+docs web para referencia/docs/private/en/02-development/THEMING_SYSTEM.md
+docs web para referencia/docs/private/en/03-ia-collaboration/HOW_TO_SWITCH_TO_NEW_AI.md
+docs web para referencia/docs/private/en/03-ia-collaboration/LOCALE_RESOLVER_SYSTEM.md
+docs web para referencia/docs/private/en/03-ia-collaboration/ONBOARDING_FOR_NEW_AIs.md
+docs web para referencia/docs/private/en/03-ia-collaboration/README.md
+docs web para referencia/docs/private/en/04-testing/README.md
+docs web para referencia/docs/private/en/04-testing/TESTING_ARCHITECTURE.md
+docs web para referencia/docs/private/en/05-reference/FRONTEND_GALLERY.md
+docs web para referencia/docs/private/en/05-reference/MAILPIT_GUIDE.md
+docs web para referencia/docs/private/en/05-reference/MAILTRAP_GUIDE.md
+docs web para referencia/docs/private/en/05-reference/MAILTRAP_VISUALIZATION.md
+docs web para referencia/docs/private/en/05-reference/README.md
+docs web para referencia/docs/private/en/05-reference/SECURITY/COMPLETION_SUMMARY.md
+docs web para referencia/docs/private/en/05-reference/SECURITY/PRODUCTION_DEPLOYMENT.md
+docs web para referencia/docs/private/en/05-reference/SECURITY/README.md
+docs web para referencia/docs/private/en/05-reference/SECURITY/SECURITY_AUDIT.md
+docs web para referencia/docs/private/en/05-reference/SECURITY/SECURITY_CONFIGURATION.md
+docs web para referencia/docs/private/es/README.md
+docs web para referencia/docs/private/es/01-core/CHANGELOG.md
+docs web para referencia/docs/private/es/01-core/INDEX.md
+docs web para referencia/docs/private/es/01-core/MODULES_ARCHITECTURE.md
+docs web para referencia/docs/private/es/01-core/QUICK_REFERENCE.md
+docs web para referencia/docs/private/es/01-core/README.md
+docs web para referencia/docs/private/es/01-core/SEARCH_IMPLEMENTATION.md
+docs web para referencia/docs/private/es/01-core/VERSIONING_POLICY.md
+docs web para referencia/docs/private/es/02-development/API.md
+docs web para referencia/docs/private/es/02-development/AUTHENTICATION.md
+docs web para referencia/docs/private/es/02-development/AUTHORIZATION_VALIDATION.md
+docs web para referencia/docs/private/es/02-development/CONTRIBUTING.md
+docs web para referencia/docs/private/es/02-development/DATABASE.md
+docs web para referencia/docs/private/es/02-development/FRONTEND.md
+docs web para referencia/docs/private/es/02-development/I18N_IMPLEMENTATION.md
+docs web para referencia/docs/private/es/02-development/I18N_QUICK_REFERENCE.md
+docs web para referencia/docs/private/es/02-development/INSTALLATION.md
+docs web para referencia/docs/private/es/02-development/README.md
+docs web para referencia/docs/private/es/02-development/THEMING_SYSTEM.md
+docs web para referencia/docs/private/es/03-ia-collaboration/HOW_TO_SWITCH_TO_NEW_AI.md
+docs web para referencia/docs/private/es/03-ia-collaboration/LOCALE_RESOLVER_SYSTEM.md
+docs web para referencia/docs/private/es/03-ia-collaboration/ONBOARDING_FOR_NEW_AIs.md
+docs web para referencia/docs/private/es/03-ia-collaboration/README.md
+docs web para referencia/docs/private/es/04-testing/README.md
+docs web para referencia/docs/private/es/04-testing/TESTING_ARCHITECTURE.md
+docs web para referencia/docs/private/es/05-reference/FRONTEND_GALLERY.md
+docs web para referencia/docs/private/es/05-reference/MAILPIT_GUIDE.md
+docs web para referencia/docs/private/es/05-reference/MAILTRAP_GUIDE.md
+docs web para referencia/docs/private/es/05-reference/MAILTRAP_VISUALIZATION.md
+docs web para referencia/docs/private/es/05-reference/README.md
+docs web para referencia/docs/private/es/05-reference/SECURITY/COMPLETION_SUMMARY.md
+docs web para referencia/docs/private/es/05-reference/SECURITY/PRODUCTION_DEPLOYMENT.md
+docs web para referencia/docs/private/es/05-reference/SECURITY/README.md
+docs web para referencia/docs/private/es/05-reference/SECURITY/SECURITY_AUDIT.md
+docs web para referencia/docs/private/es/05-reference/SECURITY/SECURITY_CONFIGURATION.md
+docs web para referencia/docs/public/en/CONTRIBUTING.md
+docs web para referencia/docs/public/en/dev-overview.md
+docs web para referencia/docs/public/en/README.md
+docs web para referencia/docs/public/en/user-guide.md
+docs web para referencia/docs/public/es/API.md
+docs web para referencia/docs/public/es/AUTHENTICATION.md
+docs web para referencia/docs/public/es/CONTRIBUTING.md
+docs web para referencia/docs/public/es/DATABASE.md
+docs web para referencia/docs/public/es/dev-overview.md
+.windsurf/skills/find-skills
+.gitignore
+.windsurf/skills/laravel-security-audit
+.windsurf/skills/laravel-specialist
+.agent/skills/find-skills
+.agent/skills/laravel-security-audit
+.agent/skills/laravel-specialist
+.agents/skills/laravel-specialist/references/eloquent.md
+.agents/skills/laravel-specialist/references/livewire.md
+.agents/skills/laravel-specialist/references/queues.md
+.agents/skills/laravel-specialist/references/routing.md
+.agents/skills/laravel-specialist/references/testing.md
+laravel_debug.log
+AGENTS.md
+AGENTS.md

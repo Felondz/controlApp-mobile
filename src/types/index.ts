@@ -9,6 +9,7 @@ export interface User {
     email: string;
     email_verified_at?: string;
     created_at?: string;
+    unread_messages_count?: number;
 }
 
 // Project type

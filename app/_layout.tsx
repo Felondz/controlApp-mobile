@@ -3,40 +3,48 @@ import { StatusBar } from "expo-status-bar";
 import { Slot, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import { useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
+import { ApolloProvider } from "@apollo/client/react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { apolloClient } from "../src/services/graphql/client";
 import { useAuthStore } from "../src/stores/authStore";
 import { useSettingsStore } from "../src/stores/settingsStore";
-import { getTheme } from "../src/shared/themes";
+import { useAppTheme } from "../src/shared/hooks/useAppTheme";
 import { useColorScheme } from "nativewind";
+import { ReanimatedLogLevel, configureReanimatedLogger } from "react-native-reanimated";
+
+// Disable Reanimated strict mode to avoid warnings about shared value access during render
+// especially when using libraries like NativeWind v4 which rely heavily on shared values.
+configureReanimatedLogger({
+    level: ReanimatedLogLevel.warn,
+    strict: false,
+});
 
 export default function RootLayout() {
     const { isAuthenticated, isLoading: authLoading, initialize: initAuth } = useAuthStore();
-    const { isInitialized: settingsReady, initialize: initSettings, theme, isDark } = useSettingsStore();
+    const { isInitialized: settingsReady, initialize: initSettings, isDark } = useSettingsStore();
     const segments = useSegments();
     const router = useRouter();
     const navigationState = useRootNavigationState();
-    const themeColors = getTheme(theme);
+    const { colors: themeColors } = useAppTheme();
     const { setColorScheme } = useColorScheme();
 
-    // Initialize stores on app start
     useEffect(() => {
         initAuth();
         initSettings();
     }, []);
 
-    // Sync Dark Mode with NativeWind
     useEffect(() => {
         if (settingsReady) {
             setColorScheme(isDark ? "dark" : "light");
         }
     }, [isDark, settingsReady]);
 
-    // Handle auth state changes
     useEffect(() => {
         if (authLoading || !settingsReady || !navigationState?.key) return;
 
         const inAuthGroup = segments[0] === "(auth)";
 
-        // Use setTimeout to push navigation to next tick, avoiding "navigate before mount" error
         const timer = setTimeout(() => {
             if (!isAuthenticated && !inAuthGroup) {
                 router.replace("/(auth)/login");
@@ -49,14 +57,21 @@ export default function RootLayout() {
     }, [isAuthenticated, segments, authLoading, settingsReady, navigationState?.key]);
 
     return (
-        <View className="flex-1">
-            <StatusBar style={isDark ? "light" : "dark"} />
-            <Slot />
-            {(authLoading || !settingsReady) && (
-                <View className="absolute inset-0 bg-gray-50 dark:bg-gray-900 items-center justify-center z-50">
-                    <ActivityIndicator size="large" color={themeColors.primary500} />
-                </View>
-            )}
-        </View>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+                <ApolloProvider client={apolloClient}>
+                    <View className="flex-1">
+                        <StatusBar style={isDark ? "light" : "dark"} />
+                        <Slot />
+                        {(authLoading || !settingsReady) && (
+                            <View className="absolute inset-0 bg-secondary-50 dark:bg-secondary-900 items-center justify-center z-50">
+                                <ActivityIndicator size="large" color={themeColors.primary500} />
+                            </View>
+                        )}
+                    </View>
+                </ApolloProvider>
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
     );
 }
+

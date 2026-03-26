@@ -36,7 +36,7 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
         if (!email || !password) {
             return;
         }
-        await login(email, password);
+        await login(email, password, false);
     };
 
     return (

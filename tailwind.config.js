@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-
-  // NativeWind v4 requires this
+  darkMode: 'class',
   content: [
     "./App.{js,jsx,ts,tsx}",
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -24,13 +23,38 @@ module.exports = {
           900: "rgb(var(--color-primary-900) / <alpha-value>)",
           950: "rgb(var(--color-primary-950) / <alpha-value>)",
         },
+        secondary: {
+          50: "rgb(var(--color-secondary-50) / <alpha-value>)",
+          100: "rgb(var(--color-secondary-100) / <alpha-value>)",
+          200: "rgb(var(--color-secondary-200) / <alpha-value>)",
+          300: "rgb(var(--color-secondary-300) / <alpha-value>)",
+          400: "rgb(var(--color-secondary-400) / <alpha-value>)",
+          500: "rgb(var(--color-secondary-500) / <alpha-value>)",
+          600: "rgb(var(--color-secondary-600) / <alpha-value>)",
+          700: "rgb(var(--color-secondary-700) / <alpha-value>)",
+          800: "rgb(var(--color-secondary-800) / <alpha-value>)",
+          900: "rgb(var(--color-secondary-900) / <alpha-value>)",
+          950: "rgb(var(--color-secondary-950) / <alpha-value>)",
+        },
+        danger: {
+          50: "rgb(var(--color-danger-50) / <alpha-value>)",
+          100: "rgb(var(--color-danger-100) / <alpha-value>)",
+          200: "rgb(var(--color-danger-200) / <alpha-value>)",
+          300: "rgb(var(--color-danger-300) / <alpha-value>)",
+          400: "rgb(var(--color-danger-400) / <alpha-value>)",
+          500: "rgb(var(--color-danger-500) / <alpha-value>)",
+          600: "rgb(var(--color-danger-600) / <alpha-value>)",
+          700: "rgb(var(--color-danger-700) / <alpha-value>)",
+          800: "rgb(var(--color-danger-800) / <alpha-value>)",
+          900: "rgb(var(--color-danger-900) / <alpha-value>)",
+          950: "rgb(var(--color-danger-950) / <alpha-value>)",
+        },
       },
-      // Responsive breakpoints for tablets
       screens: {
-        'sm': '375px',   // Phone
-        'md': '768px',   // Tablet (iPad Mini)
-        'lg': '1024px',  // Tablet Large (iPad Pro)
-        'xl': '1280px',  // Desktop (web)
+        'sm': '375px',   
+        'md': '768px',   
+        'lg': '1024px',  
+        'xl': '1280px',  
       },
     },
   },

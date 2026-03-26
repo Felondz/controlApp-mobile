@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { authApi, TOKEN_KEY, USER_KEY, CREDENTIALS_KEY, setAuthCallbacks } from '../services/api';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+import { useSettingsStore } from './settingsStore';
 
 export interface User {
     id: number;
@@ -10,6 +11,8 @@ export interface User {
     email: string;
     email_verified_at?: string;
     created_at?: string;
+    global_theme?: string;
+    unread_messages_count?: number;
 }
 
 interface AuthState {
@@ -62,6 +65,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                         await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
                         // Credentials remain stored since we want to keep renewing
 
+                        // Sync Global Theme
+                        if (user.global_theme) {
+                            useSettingsStore.getState().setTheme(user.global_theme, false);
+                        }
+
                         set({ user, token, isAuthenticated: true });
                         return token;
                     } catch (error) {
@@ -80,6 +88,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
             if (token && userJson) {
                 const user = JSON.parse(userJson);
+
+                // Sync Global Theme from cache
+                if (user.global_theme) {
+                    useSettingsStore.getState().setTheme(user.global_theme, false);
+                }
+
                 set({ user, token, isAuthenticated: true, isLoading: false });
 
                 // Verify token is still valid
@@ -87,6 +101,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                     const response = await authApi.getUser();
                     set({ user: response.data });
                     await SecureStore.setItemAsync(USER_KEY, JSON.stringify(response.data));
+
+                    // Sync Global Theme from fresh logic
+                    if (response.data.global_theme) {
+                        useSettingsStore.getState().setTheme(response.data.global_theme, false);
+                    }
                 } catch (error) {
                     // Token invalid/expired will be handled by interceptor -> silent login attempt
                     // If that fails, interceptor calls logout callback which updates state
@@ -111,6 +130,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             // Store token and user
             await SecureStore.setItemAsync(TOKEN_KEY, token);
             await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+
+            // Sync Global Theme
+            if (user.global_theme) {
+                useSettingsStore.getState().setTheme(user.global_theme, false);
+            }
 
             // Store/Remove credentials based on remember me
             if (remember) {

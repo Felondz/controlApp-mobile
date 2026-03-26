@@ -47,7 +47,7 @@ const replaceParams = (text: string, params?: Record<string, string | number>): 
 };
 
 export interface UseTranslateReturn {
-    t: (key: string, params?: Record<string, string | number>) => string;
+    t: (key: string, defaultValOrParams?: string | Record<string, string | number>, params?: Record<string, string | number>) => string;
     locale: 'es' | 'en';
     setLocale: (locale: 'es' | 'en') => Promise<void>;
 }
@@ -65,10 +65,18 @@ export interface UseTranslateReturn {
 export const useTranslate = (): UseTranslateReturn => {
     const { locale, setLocale } = useSettingsStore();
 
-    const t = useCallback((key: string, params?: Record<string, string | number>): string => {
+    const t = useCallback((key: string, defaultValOrParams?: string | Record<string, string | number>, params?: Record<string, string | number>): string => {
         const translation = translations[locale] || translations['es'];
-        const text = getNestedValue(translation, key);
-        return replaceParams(text, params);
+        let text = getNestedValue(translation, key);
+
+        // Handle Default Value (Web Parity: t('key', 'Default Value'))
+        if (text === key && typeof defaultValOrParams === 'string') {
+            text = defaultValOrParams;
+        }
+
+        // Handle Params
+        const actualParams = typeof defaultValOrParams === 'object' ? defaultValOrParams : params;
+        return replaceParams(text, actualParams);
     }, [locale]);
 
     return {

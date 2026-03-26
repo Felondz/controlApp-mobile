@@ -8,64 +8,44 @@ import {
     Text,
     TextInput as RNTextInput,
     TextInputProps as RNTextInputProps,
-    ViewStyle,
 } from 'react-native';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { getTheme } from '../themes';
 
 export interface TextInputProps extends RNTextInputProps {
     label?: string;
     error?: string;
-    containerStyle?: ViewStyle;
+    containerClassName?: string;
 }
 
 export const TextInput = forwardRef<RNTextInput, TextInputProps>(
-    ({ label, error, containerStyle, style, ...props }, ref) => {
-        const { theme: themeId } = useSettingsStore();
-        const theme = getTheme(themeId);
-
+    ({ label, error, containerClassName = '', className = '', ...props }, ref) => {
+        const { isDark } = useSettingsStore();
         const hasError = !!error;
 
         return (
-            <View style={containerStyle}>
+            <View className={`mb-4 ${containerClassName}`}>
                 {label && (
-                    <Text
-                        style={{
-                            color: '#374151',
-                            fontWeight: '500',
-                            marginBottom: 8,
-                            fontSize: 14,
-                        }}
-                    >
+                    <Text className="text-secondary-700 dark:text-secondary-300 font-medium mb-2 text-sm">
                         {label}
                     </Text>
                 )}
                 <RNTextInput
                     ref={ref}
-                    placeholderTextColor="#9ca3af"
-                    style={[
-                        {
-                            backgroundColor: '#ffffff',
-                            borderWidth: 1,
-                            borderColor: hasError ? '#ef4444' : '#e5e7eb',
-                            borderRadius: 12,
-                            paddingHorizontal: 16,
-                            paddingVertical: 14,
-                            fontSize: 16,
-                            color: '#1f2937',
-                        },
-                        style,
-                    ]}
+                    placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+                    className={`
+                        bg-white dark:bg-secondary-800
+                        border rounded-2xl px-5 py-4.5 text-base
+                        text-secondary-900 dark:text-secondary-100
+                        ${hasError 
+                            ? 'border-danger-500 dark:border-danger-500' 
+                            : 'border-secondary-200 dark:border-secondary-700 focus:border-primary-500'
+                        }
+                        ${className}
+                    `}
                     {...props}
                 />
                 {error && (
-                    <Text
-                        style={{
-                            color: '#ef4444',
-                            fontSize: 12,
-                            marginTop: 4,
-                        }}
-                    >
+                    <Text className="text-danger-500 text-xs mt-1 ml-1">
                         {error}
                     </Text>
                 )}

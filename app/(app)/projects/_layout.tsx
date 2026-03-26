@@ -4,8 +4,7 @@ export default function ProjectsLayout() {
     return (
         <Stack
             screenOptions={{
-                headerShown: true,
-                headerBackTitle: "Proyectos",
+                headerShown: false,
             }}
         />
     );
