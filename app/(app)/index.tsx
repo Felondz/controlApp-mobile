@@ -61,34 +61,28 @@ export default function DashboardScreen() {
         <View className="mb-8">
             <Pressable 
                 onPress={() => setShowProjectPicker(!showProjectPicker)}
-                className={`flex-row items-center justify-between p-4 bg-white dark:bg-secondary-800 rounded-3xl border border-secondary-200 dark:border-secondary-700 shadow-sm active:opacity-80 overflow-hidden relative`}
+                className={`flex-row items-center justify-between p-5 bg-white dark:bg-secondary-900 rounded-[32px] border border-secondary-200 dark:border-secondary-800 shadow-sm active:opacity-80 overflow-hidden`}
             >
-                {/* Safe opacity overlay */}
-                <View className="absolute inset-0 bg-secondary-50 dark:bg-secondary-900 opacity-20" pointerEvents="none" />
-                
-                <View className="flex-row items-center flex-1 z-10">
-                    <View 
-                        className="w-12 h-12 rounded-2xl items-center justify-center mr-4 border"
-                        style={{ backgroundColor: isDark ? theme.primary900 : theme.primary50, borderColor: isDark ? theme.primary800 : theme.primary100 }}
-                    >
-                        <FolderIcon size={24} color={theme.primary500} />
+                <View className="flex-row items-center flex-1">
+                    <View className="mr-4">
+                        <FolderIcon size={28} color={theme.primary600} />
                     </View>
                     <View className="flex-1">
-                        <Text className="text-[10px] font-black uppercase tracking-widest mb-0.5" style={{ color: theme.primary600 }}>
-                            {t('dashboard.current_project', 'Proyecto Activo')}
+                        <Text className="text-[10px] font-black uppercase tracking-[2px] mb-0.5" style={{ color: theme.primary600 }}>
+                            {t('dashboard.current_project')}
                         </Text>
-                        <Text className="text-lg font-black text-secondary-900 dark:text-secondary-100" numberOfLines={1}>
+                        <Text className="text-xl font-black text-secondary-900 dark:text-secondary-50" numberOfLines={1}>
                             {activeProject?.nombre}
                         </Text>
                     </View>
                 </View>
-                <View className="z-10">
-                    <ChevronDownIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                <View className="w-8 h-8 rounded-full bg-secondary-100 dark:bg-secondary-800 items-center justify-center">
+                    <ChevronDownIcon size={18} color={isDark ? '#9ca3af' : '#6b7280'} />
                 </View>
             </Pressable>
 
             {showProjectPicker && (
-                <View className="mt-2 bg-white dark:bg-secondary-800 rounded-3xl border border-secondary-200 dark:border-secondary-700 shadow-2xl overflow-hidden z-50">
+                <View className="mt-3 bg-white dark:bg-secondary-900 rounded-[32px] border border-secondary-200 dark:border-secondary-800 shadow-2xl overflow-hidden z-50">
                     <ScrollView className="max-h-72">
                         {projects.map((project) => {
                             const isSelected = project.id === activeProject?.id;
@@ -96,23 +90,15 @@ export default function DashboardScreen() {
                                 <Pressable
                                     key={project.id}
                                     onPress={() => handleSelectProject(project)}
-                                    className="flex-row items-center p-5 border-b border-secondary-100 dark:border-secondary-700/50 active:bg-secondary-50 dark:active:bg-secondary-700 relative overflow-hidden"
-                                    style={isSelected ? { backgroundColor: isDark ? theme.primary900 : theme.primary100 } : undefined}
+                                    className={`flex-row items-center p-5 border-b border-secondary-100 dark:border-secondary-800/50 active:bg-secondary-50 dark:active:bg-secondary-800 ${isSelected ? 'bg-primary-50/50 dark:bg-primary-900/10' : ''}`}
                                 >
-                                    {isSelected && (
-                                        <View className="absolute inset-0 bg-white dark:bg-black opacity-20" pointerEvents="none" />
-                                    )}
-                                    <View className="w-10 h-10 rounded-xl items-center justify-center mr-4 z-10" style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}>
-                                        <FolderIcon size={20} color={isSelected ? theme.primary600 : (isDark ? '#9ca3af' : '#6b7280')} />
+                                    <View className="mr-4">
+                                        <FolderIcon size={22} color={isSelected ? theme.primary600 : (isDark ? '#4b5563' : '#9ca3af')} />
                                     </View>
-                                    <Text className={`flex-1 font-bold z-10 ${isSelected ? (isDark ? 'text-white' : 'text-secondary-900') : (isDark ? 'text-secondary-400' : 'text-secondary-600')}`}>
+                                    <Text className={`flex-1 font-bold text-base ${isSelected ? (isDark ? 'text-white' : 'text-secondary-900') : (isDark ? 'text-secondary-400' : 'text-secondary-600')}`}>
                                         {project.nombre}
                                     </Text>
-                                    {isSelected && (
-                                        <View className="z-10">
-                                            <CheckIcon size={20} color={theme.primary500} />
-                                        </View>
-                                    )}
+                                    {isSelected && <CheckIcon size={20} color={theme.primary500} />}
                                 </Pressable>
                             );
                         })}
@@ -153,29 +139,21 @@ export default function DashboardScreen() {
                                 <View className="flex-row flex-wrap gap-4">
                                     <Pressable 
                                         onPress={() => router.push('/(app)/finance')}
-                                        className="bg-white dark:bg-secondary-800 rounded-2xl p-4 border border-secondary-200 dark:border-secondary-700 flex-1 min-w-[140px] items-center active:bg-secondary-50 dark:active:bg-secondary-700 overflow-hidden relative"
+                                        className="bg-white dark:bg-secondary-900 rounded-[32px] p-6 border border-secondary-200 dark:border-secondary-800 flex-1 min-w-[140px] items-center active:bg-secondary-50 dark:active:bg-secondary-800 shadow-sm"
                                     >
-                                        <View 
-                                            className="w-10 h-10 rounded-xl items-center justify-center mb-2 z-10 overflow-hidden border"
-                                            style={{ backgroundColor: theme.primary600, borderColor: theme.primary700 }}
-                                        >
-                                            <View className="absolute inset-0 bg-white opacity-80" pointerEvents="none" />
-                                            <CalculatorIcon size={24} color={theme.primary600} />
+                                        <View className="mb-3">
+                                            <CalculatorIcon size={32} color={theme.primary600} />
                                         </View>
-                                        <Text className="font-bold text-secondary-900 dark:text-secondary-100 text-xs z-10">Finanzas</Text>
+                                        <Text className="font-black text-secondary-900 dark:text-secondary-100 text-xs uppercase tracking-widest">{t('finance.title')}</Text>
                                     </Pressable>
                                     <Pressable 
                                         onPress={() => router.push('/(app)/inventory')}
-                                        className="bg-white dark:bg-secondary-800 rounded-2xl p-4 border border-secondary-200 dark:border-secondary-700 flex-1 min-w-[140px] items-center active:bg-secondary-50 dark:active:bg-secondary-700 overflow-hidden relative"
+                                        className="bg-white dark:bg-secondary-900 rounded-[32px] p-6 border border-secondary-200 dark:border-secondary-800 flex-1 min-w-[140px] items-center active:bg-secondary-50 dark:active:bg-secondary-800 shadow-sm"
                                     >
-                                        <View 
-                                            className="w-10 h-10 rounded-xl items-center justify-center mb-2 z-10 overflow-hidden border"
-                                            style={{ backgroundColor: theme.primary600, borderColor: theme.primary700 }}
-                                        >
-                                            <View className="absolute inset-0 bg-white opacity-80" pointerEvents="none" />
-                                            <PackageIcon size={24} color={theme.primary600} />
+                                        <View className="mb-3">
+                                            <PackageIcon size={32} color={theme.primary600} />
                                         </View>
-                                        <Text className="font-bold text-secondary-900 dark:text-secondary-100 text-xs z-10">Inventario</Text>
+                                        <Text className="font-black text-secondary-900 dark:text-secondary-100 text-xs uppercase tracking-widest">{t('inventory.title')}</Text>
                                     </Pressable>
                                 </View>
                             </View>

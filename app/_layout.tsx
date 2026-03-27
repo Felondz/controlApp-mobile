@@ -1,7 +1,7 @@
 import "../global.css";
 import { StatusBar } from "expo-status-bar";
-import { Slot, useRouter, useSegments, useRootNavigationState } from "expo-router";
-import { useEffect } from "react";
+import { Slot, useRouter, useSegments } from "expo-router";
+import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { ApolloProvider } from "@apollo/client/react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -25,13 +25,17 @@ export default function RootLayout() {
     const { isInitialized: settingsReady, initialize: initSettings, isDark } = useSettingsStore();
     const segments = useSegments();
     const router = useRouter();
-    const navigationState = useRootNavigationState();
     const { colors: themeColors } = useAppTheme();
     const { setColorScheme } = useColorScheme();
+    const [isAppReady, setIsAppReady] = useState(false);
 
     useEffect(() => {
-        initAuth();
-        initSettings();
+        const prepare = async () => {
+            await initAuth();
+            await initSettings();
+            setIsAppReady(true);
+        };
+        prepare();
     }, []);
 
     useEffect(() => {
@@ -41,34 +45,28 @@ export default function RootLayout() {
     }, [isDark, settingsReady]);
 
     useEffect(() => {
-        if (authLoading || !settingsReady || !navigationState?.key) return;
+        if (!isAppReady || authLoading || !settingsReady) return;
 
         const inAuthGroup = segments[0] === "(auth)";
 
-        const timer = setTimeout(() => {
-            if (!isAuthenticated && !inAuthGroup) {
-                router.replace("/(auth)/login");
-            } else if (isAuthenticated && inAuthGroup) {
-                router.replace("/(app)");
-            }
-        }, 0);
-
-        return () => clearTimeout(timer);
-    }, [isAuthenticated, segments, authLoading, settingsReady, navigationState?.key]);
+        if (!isAuthenticated && !inAuthGroup) {
+            router.replace("/(auth)/login");
+        } else if (isAuthenticated && inAuthGroup) {
+            router.replace("/(app)");
+        }
+    }, [isAuthenticated, segments, authLoading, settingsReady, isAppReady]);
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaProvider>
                 <ApolloProvider client={apolloClient}>
-                    <View className="flex-1">
-                        <StatusBar style={isDark ? "light" : "dark"} />
-                        <Slot />
-                        {(authLoading || !settingsReady) && (
-                            <View className="absolute inset-0 bg-secondary-50 dark:bg-secondary-900 items-center justify-center z-50">
-                                <ActivityIndicator size="large" color={themeColors.primary500} />
-                            </View>
-                        )}
-                    </View>
+                    <StatusBar style={isDark ? "light" : "dark"} />
+                    <Slot />
+                    {(!isAppReady || authLoading || !settingsReady) && (
+                        <View className="absolute inset-0 bg-secondary-50 dark:bg-secondary-900 items-center justify-center z-50">
+                            <ActivityIndicator size="large" color={themeColors.primary500} />
+                        </View>
+                    )}
                 </ApolloProvider>
             </SafeAreaProvider>
         </GestureHandlerRootView>

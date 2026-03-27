@@ -13,6 +13,7 @@ export interface User {
     created_at?: string;
     global_theme?: string;
     unread_messages_count?: number;
+    enabled_tools?: string[];
 }
 
 interface AuthState {

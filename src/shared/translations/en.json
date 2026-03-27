@@ -69,7 +69,10 @@
     },
     "dashboard": {
         "title": "Home",
+        "overview": "Overview",
         "global_dashboard": "Global Dashboard",
+        "current_project": "Active Project",
+        "quick_access": "Quick Access",
         "tools": "Tools",
         "projects_summary": "Projects Summary",
         "no_projects": "No projects",
@@ -127,7 +130,8 @@
             "operations": "Operations",
             "crm": "CRM",
             "available": "Available Modules"
-        }
+        },
+        "settings": "Project Settings"
     },
     "finance": {
         "title": "Finance",
@@ -154,6 +158,9 @@
             "title": "Appearance",
             "subtitle": "Customize your interface colors"
         }
+    },
+    "tools": {
+        "financial_calculator": "Financial Calculator"
     },
     "profile": {
         "edit": "Edit Profile",

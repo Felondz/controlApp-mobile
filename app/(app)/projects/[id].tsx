@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, Stack } from "expo-router";
-import { getTheme } from "../../../../src/shared/themes";
+import { getTheme } from "../../../src/shared/themes";
 
 export default function ProjectDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();

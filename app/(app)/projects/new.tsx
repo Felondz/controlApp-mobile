@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslate, useAppTheme } from '../../../src/shared/hooks';
@@ -68,7 +68,7 @@ const CURRENCIES = [
     { code: 'EUR', symbol: '€' },
 ];
 
-export default function NewProjectScreen() {
+function NewProjectScreen() {
     const { t } = useTranslate();
     const { theme, isDark } = useAppTheme();
     const router = useRouter();
@@ -159,13 +159,13 @@ export default function NewProjectScreen() {
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120, paddingTop: 24 }}>
                 {/* Image Picker */}
                 <View className="px-6 mb-8 items-center">
-                    <TouchableOpacity onPress={handlePickImage} activeOpacity={0.7} className="w-32 h-32 rounded-2xl bg-white dark:bg-secondary-800 border-2 border-dashed border-secondary-300 dark:border-secondary-600 items-center justify-center overflow-hidden shadow-sm">
+                    <Pressable onPress={handlePickImage} style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]} className="w-32 h-32 rounded-2xl bg-white dark:bg-secondary-800 border-2 border-dashed border-secondary-300 dark:border-secondary-600 items-center justify-center overflow-hidden shadow-sm">
                         {image ? <Image source={{ uri: image }} className="w-full h-full" /> : 
                         <View className="items-center">
                             <CameraIcon size={24} color={theme.primary600} />
                             <Text className="text-[10px] font-black text-secondary-500 dark:text-secondary-400 uppercase tracking-widest">Logo</Text>
                         </View>}
-                    </TouchableOpacity>
+                    </Pressable>
                 </View>
 
                 {/* Basic Info */}
@@ -181,9 +181,9 @@ export default function NewProjectScreen() {
                                     {CURRENCIES.map((curr) => {
                                         const isSel = form.moneda_default === curr.code;
                                         return (
-                                            <TouchableOpacity key={curr.code} onPress={() => setForm({ ...form, moneda_default: curr.code })} className={`flex-1 py-3 rounded-2xl border-2 items-center justify-center ${isSel ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-secondary-200 dark:border-secondary-800'}`} style={isSel ? { borderColor: theme.primary500 } : {}}>
+                                            <Pressable key={curr.code} onPress={() => setForm({ ...form, moneda_default: curr.code })} className={`flex-1 py-3 rounded-2xl border-2 items-center justify-center ${isSel ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-secondary-200 dark:border-secondary-800'}`} style={isSel ? { borderColor: theme.primary500 } : {}}>
                                                 <Text className={`font-black text-base ${isSel ? 'text-secondary-900 dark:text-white' : 'text-secondary-500 dark:text-secondary-400'}`}>{curr.code}</Text>
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         );
                                     })}
                                 </View>
@@ -198,12 +198,30 @@ export default function NewProjectScreen() {
                         <View className="flex-row items-center justify-between mb-6">
                             <Text className="text-xl font-black text-secondary-900 dark:text-white tracking-tighter">{t('projects.setup_type')}</Text>
                             <View className="flex-row bg-secondary-100 dark:bg-secondary-800 rounded-xl p-1">
-                                <TouchableOpacity onPress={() => setCreationMode('template')} className={`px-3 py-1.5 rounded-lg ${creationMode === 'template' ? 'bg-white dark:bg-secondary-700 shadow-sm' : ''}`}>
+                                <Pressable 
+                                    onPress={() => setCreationMode('template')} 
+                                    style={{
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 6,
+                                        borderRadius: 8,
+                                        backgroundColor: creationMode === 'template' ? (isDark ? '#374151' : '#ffffff') : 'transparent',
+                                        ...(creationMode === 'template' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 1 } : {})
+                                    }}
+                                >
                                     <Text className={`text-[10px] font-black uppercase ${creationMode === 'template' ? 'text-primary-600 dark:text-primary-400' : 'text-secondary-500'}`}>{t('projects.template_mode')}</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => setCreationMode('custom')} className={`px-3 py-1.5 rounded-lg ${creationMode === 'custom' ? 'bg-white dark:bg-secondary-700 shadow-sm' : ''}`}>
+                                </Pressable>
+                                <Pressable 
+                                    onPress={() => setCreationMode('custom')} 
+                                    style={{
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 6,
+                                        borderRadius: 8,
+                                        backgroundColor: creationMode === 'custom' ? (isDark ? '#374151' : '#ffffff') : 'transparent',
+                                        ...(creationMode === 'custom' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 1 } : {})
+                                    }}
+                                >
                                     <Text className={`text-[10px] font-black uppercase ${creationMode === 'custom' ? 'text-primary-600 dark:text-primary-400' : 'text-secondary-500'}`}>{t('projects.custom_mode')}</Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             </View>
                         </View>
 
@@ -213,7 +231,13 @@ export default function NewProjectScreen() {
                                     const isSel = isTemplateSelected(tmpl.modules);
                                     const IconComp = ICONS[tmpl.iconName] || FolderIcon;
                                     return (
-                                        <TouchableOpacity key={tmpl.id} activeOpacity={0.7} onPress={() => handleTemplateSelect(tmpl)} disabled={tmpl.coming_soon} className={`p-4 rounded-2xl border-2 flex-row items-center ${isSel ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-secondary-200 dark:border-secondary-800'} ${tmpl.coming_soon ? 'opacity-50' : ''}`} style={isSel ? { borderColor: theme.primary500 } : {}}>
+                                        <Pressable 
+                                            key={tmpl.id} 
+                                            style={({ pressed }) => [{ opacity: (pressed || tmpl.coming_soon) ? 0.5 : 1 }, isSel ? { borderColor: theme.primary500 } : {}]} 
+                                            onPress={() => handleTemplateSelect(tmpl)} 
+                                            disabled={tmpl.coming_soon} 
+                                            className={`p-4 rounded-2xl border-2 flex-row items-center ${isSel ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-secondary-200 dark:border-secondary-800'} ${tmpl.coming_soon ? 'opacity-50' : ''}`}
+                                        >
                                             <View className="w-12 h-12 rounded-xl bg-secondary-50 dark:bg-secondary-800 items-center justify-center mr-4">
                                                 <IconComp size={24} color={isSel ? theme.primary600 : '#6b7280'} />
                                             </View>
@@ -225,7 +249,7 @@ export default function NewProjectScreen() {
                                                 <Text className="text-[11px] text-secondary-500 dark:text-secondary-400 font-medium mt-0.5" numberOfLines={1}>{t(`projects.templates.${tmpl.id}_desc`)}</Text>
                                             </View>
                                             {isSel && <CheckIcon size={20} color={theme.primary600} />}
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     );
                                 })}
                             </View>
@@ -237,11 +261,16 @@ export default function NewProjectScreen() {
                                     const reqs = MODULE_DEPENDENCIES[mod.id] || [];
                                     const isLck = !reqs.every(d => form.modules.includes(d)) && !mod.coming_soon;
                                     return (
-                                        <TouchableOpacity key={mod.id} activeOpacity={0.7} onPress={() => !mod.coming_soon && toggleModule(mod.id)} className={`flex-1 min-w-[45%] p-4 rounded-2xl border-2 items-center ${isEn ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-secondary-200 dark:border-secondary-800'} ${mod.coming_soon || isLck ? 'opacity-50' : ''}`} style={isEn ? { borderColor: theme.primary500 } : {}}>
+                                        <Pressable 
+                                            key={mod.id} 
+                                            style={({ pressed }) => [{ opacity: (pressed || mod.coming_soon || isLck) ? 0.5 : 1 }, isEn ? { borderColor: theme.primary500 } : {}]} 
+                                            onPress={() => !mod.coming_soon && toggleModule(mod.id)} 
+                                            className={`flex-1 min-w-[45%] p-4 rounded-2xl border-2 items-center ${isEn ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-secondary-200 dark:border-secondary-800'} ${mod.coming_soon || isLck ? 'opacity-50' : ''}`}
+                                        >
                                             {isLck ? <LockClosedIcon size={24} color="#9ca3af" /> : <IconComp size={24} color={isEn ? theme.primary600 : '#6b7280'} />}
                                             <Text className={`mt-3 font-bold text-xs uppercase tracking-wider ${isEn ? 'text-secondary-900 dark:text-white' : 'text-secondary-500 dark:text-secondary-400'}`}>{t(`projects.modules.${mod.id}`)}</Text>
                                             {isLck && <Text className="text-[8px] text-red-500 font-bold mt-1 text-center">Req: {reqs.join(', ')}</Text>}
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     );
                                 })}
                             </View>
@@ -255,9 +284,19 @@ export default function NewProjectScreen() {
                         <Text className="text-xl font-black text-secondary-900 dark:text-white tracking-tighter mb-6">{t('projects.visual_style')}</Text>
                         <View className="flex-row flex-wrap gap-4">
                             {THEME_OPTIONS.map((opt) => (
-                                <TouchableOpacity key={opt.id} activeOpacity={0.8} onPress={() => setForm({ ...form, theme: opt.id })} className={`w-12 h-12 rounded-full border-[3px] items-center justify-center transition-all duration-200 ${form.theme === opt.id ? 'scale-110 shadow-md' : 'opacity-70 border-transparent'}`} style={{ backgroundColor: opt.color, borderColor: form.theme === opt.id ? (isDark ? '#ffffff' : '#111827') : 'transparent' }}>
+                                <Pressable 
+                                    key={opt.id} 
+                                    onPress={() => setForm({ ...form, theme: opt.id })} 
+                                    style={({ pressed }) => [{ 
+                                        backgroundColor: opt.color, 
+                                        borderColor: form.theme === opt.id ? (isDark ? '#ffffff' : '#111827') : 'transparent',
+                                        opacity: pressed ? 0.8 : 1,
+                                        transform: [{ scale: form.theme === opt.id ? 1.1 : 1 }]
+                                    }]}
+                                    className={`w-12 h-12 rounded-full border-[3px] items-center justify-center shadow-sm`}
+                                >
                                     {form.theme === opt.id && <CheckIcon size={18} color="white" />}
-                                </TouchableOpacity>
+                                </Pressable>
                             ))}
                         </View>
                     </View>
@@ -270,3 +309,5 @@ export default function NewProjectScreen() {
         </View>
     );
 }
+
+export default React.memo(NewProjectScreen);
