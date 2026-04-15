@@ -4,9 +4,9 @@ import { FlashList } from "@shopify/flash-list";
 // import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
 import { useTranslate, useAppTheme } from '../../../shared/hooks';
-import { useInventoryItems, useDeleteInventoryItem, InventoryItem } from '../useInventory';
+import { useTasks, Task } from '../useTasks';
 import { 
-    PackageIcon, 
+    ClipboardDocumentListIcon as TaskIcon, 
     PlusIcon, 
     SearchIcon, 
     FunnelIcon, 
@@ -14,7 +14,9 @@ import {
     PencilIcon, 
     TrashIcon,
     XIcon,
-    ChevronRightIcon
+    ChevronRightIcon,
+    ClockIcon,
+    UserCircleIcon
 } from '../../../shared/icons';
 import PrimaryButton from '../../../shared/components/PrimaryButton';
 import SecondaryButton from '../../../shared/components/SecondaryButton';
@@ -22,60 +24,71 @@ import DangerButton from '../../../shared/components/DangerButton';
 import Modal from '../../../shared/components/Modal';
 import { SkeletonList } from '../../../shared/components/Skeleton';
 
-interface InventoryListScreenProps {
+interface TasksListScreenProps {
     proyectoId: number;
     onAdd?: () => void;
-    onEdit?: (item: InventoryItem) => void;
+    onEdit?: (task: Task) => void;
 }
 
-const getTypeBadgeStyle = (type: string, isDark: boolean) => {
-    switch (type) {
-        case 'raw_material':
-            return isDark ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-100 text-blue-800';
-        case 'finished_good':
-            return isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-800';
-        case 'component':
-            return isDark ? 'bg-purple-900/30 text-purple-300' : 'bg-purple-100 text-purple-800';
-        case 'service':
-            return isDark ? 'bg-indigo-900/30 text-indigo-300' : 'bg-indigo-100 text-indigo-800';
-        case 'asset':
-            return isDark ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-100 text-gray-800';
+const getStatusBadgeStyle = (status: string, isDark: boolean) => {
+    switch (status) {
+        case 'pending':
+            return isDark ? 'bg-amber-900/30 text-amber-500' : 'bg-amber-100 text-amber-600';
+        case 'in_progress':
+            return isDark ? 'bg-sky-900/30 text-sky-500' : 'bg-sky-100 text-sky-600';
+        case 'completed':
+            return isDark ? 'bg-green-900/30 text-green-500' : 'bg-green-100 text-green-600';
         default:
             return isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800';
     }
 };
 
-export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: InventoryListScreenProps) {
+const getPriorityBadgeStyle = (priority: string, isDark: boolean) => {
+    switch (priority) {
+        case 'high':
+            return isDark ? 'bg-red-900/30 text-red-500' : 'bg-red-100 text-red-600';
+        case 'medium':
+            return isDark ? 'bg-amber-900/30 text-amber-500' : 'bg-amber-100 text-amber-600';
+        case 'low':
+            return isDark ? 'bg-blue-900/30 text-blue-500' : 'bg-blue-100 text-blue-600';
+        default:
+            return isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800';
+    }
+};
+
+export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksListScreenProps) {
     const { t } = useTranslate();
     const { theme, isDark } = useAppTheme();
     const { width } = useWindowDimensions();
     const router = useRouter();
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedType, setSelectedType] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
     const [showFilters, setShowFilters] = useState(false);
-    const [deleteModalItem, setDeleteModalItem] = useState<InventoryItem | null>(null);
+    const [deleteModalTask, setDeleteModalTask] = useState<Task | null>(null);
     const [refreshing, setRefreshing] = useState(false);
 
     const isTablet = width >= 768;
 
-    const { data, loading, refetch } = useInventoryItems(proyectoId, {
-        name: searchQuery || undefined,
-        type: selectedType || undefined,
-    });
+    const { tasks, loading, refetch } = useTasks(proyectoId);
 
-    const [deleteMutation, { loading: deleting }] = useDeleteInventoryItem();
+    const filteredTasks = useMemo(() => {
+        let result = tasks;
+        
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(task =>
+                task.title.toLowerCase().includes(query) ||
+                task.description?.toLowerCase().includes(query)
+            );
+        }
 
-    const items = data?.inventoryItems?.data || [];
+        if (selectedStatus) {
+            result = result.filter(task => task.status === selectedStatus);
+        }
 
-    const filteredItems = useMemo(() => {
-        if (!searchQuery) return items;
-        const query = searchQuery.toLowerCase();
-        return items.filter(item =>
-            item.name.toLowerCase().includes(query) ||
-            item.sku?.toLowerCase().includes(query)
-        );
-    }, [items, searchQuery]);
+        return result;
+    }, [tasks, searchQuery, selectedStatus]);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
@@ -83,43 +96,41 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
         setRefreshing(false);
     }, [refetch]);
 
-    const handleDelete = async () => {
-        if (!deleteModalItem) return;
-        try {
-            await deleteMutation({
-                variables: {
-                    id: deleteModalItem.id,
-                    proyecto_id: proyectoId,
-                },
-            });
-            setDeleteModalItem(null);
-        } catch (err) {
-            console.error('Error deleting item:', err);
-        }
-    };
-
     const handleAdd = () => {
         if (onAdd) onAdd();
-        else router.push('/(app)/inventory/new');
+        else router.push('/(app)/tasks/new');
     };
 
-    const handleEdit = (item: InventoryItem) => {
-        if (onEdit) onEdit(item);
-        else router.push(`/(app)/inventory/${item.id}`);
+    const handleEdit = (task: Task) => {
+        if (onEdit) onEdit(task);
+        else router.push(`/(app)/tasks/${task.id}`);
     };
 
-    const getTypeLabel = (type: string) => {
+    const getStatusLabel = (status: string) => {
         const labels: Record<string, string> = {
-            raw_material: t('inventory.types.raw_material', 'Materia Prima'),
-            finished_good: t('inventory.types.finished_good', 'Prod. Terminado'),
-            service: t('inventory.types.service', 'Servicio'),
-            asset: t('inventory.types.asset', 'Activo'),
+            pending: t('tasks.status.pending', 'Pendiente'),
+            in_progress: t('tasks.status.in_progress', 'En Progreso'),
+            completed: t('tasks.status.completed', 'Completada'),
         };
-        return labels[type] || type;
+        return labels[status] || status;
     };
 
-    const renderItem = ({ item }: { item: InventoryItem }) => {
-        const isLowStock = item.current_stock <= item.min_stock_level;
+    const getPriorityLabel = (priority: string) => {
+        const labels: Record<string, string> = {
+            low: t('tasks.priority.low', 'Baja'),
+            medium: t('tasks.priority.medium', 'Media'),
+            high: t('tasks.priority.high', 'Alta'),
+        };
+        return labels[priority] || priority;
+    };
+
+    const isOverdue = (dueDate?: string) => {
+        if (!dueDate) return false;
+        return new Date(dueDate) < new Date();
+    };
+
+    const renderItem = ({ item }: { item: Task }) => {
+        const overdue = isOverdue(item.due_date) && item.status !== 'completed';
         
         return (
             <View className={`p-2 ${isTablet ? 'w-1/2' : 'w-full'}`}>
@@ -129,58 +140,56 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                     className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] overflow-hidden shadow-sm h-full"
                 >
                     <View className="p-5">
-                        <View className="flex-row items-start justify-between mb-4">
+                        <View className="flex-row items-start justify-between mb-3">
                             <View className="flex-1 mr-2">
                                 <Text className="text-secondary-900 dark:text-secondary-50 font-black text-lg leading-tight" numberOfLines={2}>
-                                    {item.name}
+                                    {item.title}
                                 </Text>
-                                {item.sku && (
-                                    <Text className="text-secondary-400 dark:text-secondary-500 font-mono text-[10px] uppercase tracking-wider mt-1">
-                                        {item.sku}
-                                    </Text>
-                                )}
                             </View>
-                            <View className={`px-2.5 py-1 rounded-full ${getTypeBadgeStyle(item.type, isDark)}`}>
+                            <View className={`px-2.5 py-1 rounded-full ${getStatusBadgeStyle(item.status, isDark)}`}>
                                 <Text className="text-[10px] font-black uppercase tracking-wider">
-                                    {getTypeLabel(item.type)}
+                                    {getStatusLabel(item.status)}
                                 </Text>
                             </View>
                         </View>
 
-                        <View className="flex-row items-end justify-between">
-                            <View>
-                                <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-1">
-                                    {t('inventory.stock', 'Existencias')}
+                        {item.description ? (
+                            <Text className="text-secondary-500 dark:text-secondary-400 text-xs mb-4" numberOfLines={2}>
+                                {item.description}
+                            </Text>
+                        ) : null}
+
+                        <View className="flex-row flex-wrap gap-2 mt-auto">
+                            <View className={`px-2 py-1 rounded-lg flex-row items-center ${getPriorityBadgeStyle(item.priority, isDark)}`}>
+                                <Text className="text-[10px] font-black uppercase tracking-wider">
+                                    {getPriorityLabel(item.priority)}
                                 </Text>
-                                <View className="flex-row items-center">
-                                    <Text className={`text-2xl font-black ${isLowStock ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
-                                        {Number(item.current_stock).toLocaleString()}
-                                    </Text>
-                                    <Text className="text-xs font-bold text-secondary-400 dark:text-secondary-500 ml-1.5 mb-1">
-                                        {item.unit}
+                            </View>
+
+                            {item.due_date && (
+                                <View className={`px-2 py-1 rounded-lg flex-row items-center ${overdue ? 'bg-red-100 dark:bg-red-900/30' : 'bg-secondary-100 dark:bg-secondary-800'}`}>
+                                    <ClockIcon size={12} color={overdue ? '#ef4444' : isDark ? '#9ca3af' : '#6b7280'} />
+                                    <Text className={`text-[10px] font-black uppercase tracking-wider ml-1 ${overdue ? 'text-red-600 dark:text-red-500' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                                        {new Date(item.due_date).toLocaleDateString()}
                                     </Text>
                                 </View>
-                            </View>
-                            
-                            <View className="items-end">
-                                {item.sale_price > 0 && (
-                                    <>
-                                        <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-1">
-                                            {t('inventory.price', 'Precio')}
-                                        </Text>
-                                        <Text className="text-lg font-black text-secondary-900 dark:text-secondary-50">
-                                            ${Number(item.sale_price).toFixed(2)}
-                                        </Text>
-                                    </>
-                                )}
-                            </View>
+                            )}
+
+                            {item.assigned && (
+                                <View className="px-2 py-1 rounded-lg flex-row items-center bg-secondary-100 dark:bg-secondary-800">
+                                    <UserCircleIcon size={12} color={isDark ? '#9ca3af' : '#6b7280'} />
+                                    <Text className="text-[10px] font-black uppercase tracking-wider ml-1 text-secondary-600 dark:text-secondary-400">
+                                        {item.assigned.name}
+                                    </Text>
+                                </View>
+                            )}
                         </View>
 
-                        {isLowStock && (
+                        {overdue && (
                             <View className="flex-row items-center mt-4 bg-danger-50 dark:bg-danger-900/10 px-3 py-2 rounded-2xl self-start border border-danger-100 dark:border-danger-900/20">
                                 <ExclamationTriangleIcon size={14} color="#ef4444" />
                                 <Text className="text-xs font-black text-danger-500 ml-2 uppercase tracking-wider">
-                                    {t('inventory.low_stock', 'Bajo Stock')}
+                                    {t('tasks.overdue', 'Vencida')}
                                 </Text>
                             </View>
                         )}
@@ -198,7 +207,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                         </TouchableOpacity>
                         <View className="w-[1px] bg-secondary-100 dark:border-secondary-800/50" />
                         <TouchableOpacity 
-                            onPress={() => setDeleteModalItem(item)} 
+                            onPress={() => setDeleteModalTask(item)} 
                             className="flex-row items-center justify-center flex-1 py-4 active:bg-danger-50 dark:active:bg-danger-900/10"
                         >
                             <TrashIcon size={16} color="#ef4444" />
@@ -218,7 +227,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
             <View className="px-5 pt-4 pb-6 bg-white dark:bg-secondary-950 border-b border-secondary-100 dark:border-secondary-900">
                 <View className="flex-row items-center justify-between mb-6 px-1">
                     <Text className="text-3xl font-black tracking-tighter text-secondary-900 dark:text-secondary-50">
-                        {t('inventory.title', 'Inventario')}
+                        {t('tasks.title', 'Tareas')}
                     </Text>
                     <TouchableOpacity
                         onPress={() => setShowFilters(!showFilters)}
@@ -235,7 +244,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                     <SearchIcon size={20} color={isDark ? '#4b5563' : '#9ca3af'} />
                     <TextInput
                         className="flex-1 py-4 px-3 text-secondary-900 dark:text-secondary-50 font-bold"
-                        placeholder={t('inventory.search_placeholder', 'Buscar por nombre o SKU...')}
+                        placeholder={t('tasks.search_placeholder', 'Buscar tareas...')}
                         placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
@@ -253,30 +262,30 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                 {showFilters && (
                     <View className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
                         <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-3 ml-1">
-                            {t('inventory.filter_by_type', 'Filtrar por tipo')}
+                            {t('tasks.filter_by_status', 'Filtrar por estado')}
                         </Text>
                         <FlashList 
-                            data={['', 'raw_material', 'finished_good', 'service', 'asset']}
+                            data={['', 'pending', 'in_progress', 'completed']}
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             // @ts-ignore
                             estimatedItemSize={100}
                             keyExtractor={(item) => item}
-                            renderItem={({ item: type }) => (
+                            renderItem={({ item: status }) => (
                                 <TouchableOpacity
-                                    onPress={() => setSelectedType(type)}
+                                    onPress={() => setSelectedStatus(status)}
                                     className={`mr-3 px-5 py-2.5 rounded-2xl border ${
-                                        selectedType === type
+                                        selectedStatus === status
                                             ? 'bg-primary-600 border-primary-600'
                                             : 'bg-white dark:bg-secondary-900 border-secondary-200 dark:border-secondary-800'
                                     }`}
                                 >
                                     <Text className={`text-xs font-black uppercase tracking-wider ${
-                                        selectedType === type ? 'text-white' : 'text-secondary-600 dark:text-secondary-400'
+                                        selectedStatus === status ? 'text-white' : 'text-secondary-600 dark:text-secondary-400'
                                     }`}>
-                                        {type === '' 
-                                            ? t('inventory.all_types', 'Todos')
-                                            : getTypeLabel(type)
+                                        {status === '' 
+                                            ? t('common.all', 'Todas')
+                                            : getStatusLabel(status)
                                         }
                                     </Text>
                                 </TouchableOpacity>
@@ -291,40 +300,40 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                     <View className="p-5">
                         <SkeletonList count={5} />
                     </View>
-                ) : filteredItems.length === 0 ? (
+                ) : filteredTasks.length === 0 ? (
                     <View className="flex-1 items-center justify-center py-20 px-8">
                         <View className="w-24 h-24 rounded-[32px] bg-secondary-100 dark:bg-secondary-900 items-center justify-center mb-6">
-                            <PackageIcon size={48} color={isDark ? '#4b5563' : '#9ca3af'} />
+                            <TaskIcon size={48} color={isDark ? '#4b5563' : '#9ca3af'} />
                         </View>
                         <Text className="text-xl font-black text-secondary-900 dark:text-secondary-50 mb-2 text-center">
-                            {items.length === 0 
-                                ? t('inventory.empty', 'Inventario Vacío')
-                                : t('inventory.no_items_found', 'Sin resultados')
+                            {tasks.length === 0 
+                                ? t('tasks.empty', 'Sin Tareas')
+                                : t('tasks.no_results', 'Sin resultados')
                             }
                         </Text>
                         <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 text-center mb-8 leading-relaxed">
-                            {items.length === 0
-                                ? t('inventory.empty_description', 'Agrega tu primer item para comenzar a gestionar tu stock de forma profesional.')
-                                : t('inventory.try_adjusting_filters', 'Intenta ajustar los filtros o la búsqueda para encontrar lo que necesitas.')
+                            {tasks.length === 0
+                                ? t('tasks.empty_description', 'Agrega tu primera tarea para comenzar a organizar tu trabajo.')
+                                : t('tasks.try_adjusting_filters', 'Intenta ajustar los filtros para encontrar lo que buscas.')
                             }
                         </Text>
-                        {items.length === 0 && (
+                        {tasks.length === 0 && (
                             <PrimaryButton 
                                 onPress={handleAdd}
                                 className="px-8 h-14 rounded-2xl"
                             >
                                 <PlusIcon size={20} color="white" />
                                 <Text className="text-white font-black uppercase tracking-widest ml-3">
-                                    {t('inventory.new_item', 'Nuevo Item')}
+                                    {t('tasks.new_task', 'Nueva Tarea')}
                                 </Text>
                             </PrimaryButton>
                         )}
                     </View>
                 ) : (
                     <FlashList
-                        data={filteredItems}
+                        data={filteredTasks}
                         renderItem={renderItem}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item.id.toString()}
                         // @ts-ignore
                             estimatedItemSize={180}
                         numColumns={isTablet ? 2 : 1}
@@ -341,7 +350,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                 )}
             </View>
 
-            {filteredItems.length > 0 && (
+            {filteredTasks.length > 0 && (
                 <Pressable
                     onPress={handleAdd}
                     className="absolute bottom-10 right-8 w-16 h-16 rounded-[24px] shadow-2xl items-center justify-center z-50 active:scale-90 transition-all"
@@ -359,8 +368,8 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
             )}
 
             <Modal
-                visible={!!deleteModalItem}
-                onClose={() => setDeleteModalItem(null)}
+                visible={!!deleteModalTask}
+                onClose={() => setDeleteModalTask(null)}
                 size="sm"
             >
                 <View className="p-8 bg-white dark:bg-secondary-900 rounded-[40px]">
@@ -368,15 +377,15 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                         <TrashIcon size={32} color="#ef4444" />
                     </View>
                     <Text className="text-2xl font-black text-secondary-900 dark:text-secondary-50 mb-3 tracking-tight">
-                        {t('inventory.delete_item', '¿Eliminar item?')}
+                        {t('tasks.delete_task', '¿Eliminar tarea?')}
                     </Text>
                     <Text className="text-base font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed">
-                        {t('inventory.confirm_delete', 'Esta acción no se puede deshacer. El item "{name}" será eliminado permanentemente.').replace('{name}', deleteModalItem?.name || '')}
+                        {t('tasks.confirm_delete', 'Esta acción no se puede deshacer. La tarea "{title}" será eliminada permanentemente.').replace('{title}', deleteModalTask?.title || '')}
                     </Text>
                     <View className="flex-row gap-4">
                         <View className="flex-1">
                             <SecondaryButton 
-                                onPress={() => setDeleteModalItem(null)}
+                                onPress={() => setDeleteModalTask(null)}
                                 className="h-14 rounded-2xl"
                             >
                                 <Text className="font-black uppercase tracking-widest">{t('common.cancel', 'No, volver')}</Text>
@@ -384,8 +393,10 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                         </View>
                         <View className="flex-1">
                             <DangerButton 
-                                onPress={handleDelete}
-                                loading={deleting}
+                                onPress={() => {
+                                    // Implementation for delete would go here
+                                    setDeleteModalTask(null);
+                                }}
                                 className="h-14 rounded-2xl"
                             >
                                 <Text className="text-white font-black uppercase tracking-widest">{t('common.delete', 'Sí, borrar')}</Text>

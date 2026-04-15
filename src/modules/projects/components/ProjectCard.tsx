@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, Image, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslate } from '../../../shared/hooks';
@@ -8,6 +8,7 @@ import { useSettingsStore } from '../../../stores/settingsStore';
 import { BalanceWidget } from '../../finance/widgets/BalanceWidget';
 import { InventorySummaryWidget } from '../../inventory/widgets/InventorySummaryWidget';
 import { OperationsSummaryWidget } from '../../operations/widgets/OperationsSummaryWidget';
+import { TransactionModal } from '../../finance/widgets/TransactionModal';
 
 // Icons
 import {
@@ -45,6 +46,9 @@ export const ProjectCard = ({ project, dragHandleProps, onPress }: ProjectCardPr
     const router = useRouter();
     const { width } = useWindowDimensions();
     const theme = getTheme(project.theme || 'purple-modern');
+    
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalType, setModalType] = useState<'ingreso' | 'egreso'>('ingreso');
     
     const isTablet = width >= 768;
 
@@ -192,7 +196,7 @@ export const ProjectCard = ({ project, dragHandleProps, onPress }: ProjectCardPr
                     <View className="pt-4 border-t border-secondary-100 dark:border-secondary-700 flex-row gap-2">
                         <Pressable
                             className="flex-1 flex-row items-center justify-center bg-green-50 dark:bg-green-900/20 py-2.5 rounded-xl border border-green-100 dark:border-green-800 active:opacity-70"
-                            onPress={(e) => { e.stopPropagation(); /* TODO: Open Income Modal */ }}
+                            onPress={(e) => { e.stopPropagation(); setModalType('ingreso'); setModalVisible(true); }}
                         >
                             <PlusIcon size={12} color="#10b981" />
                             <Text className="text-green-700 dark:text-green-400 text-[10px] font-black uppercase tracking-widest ml-1.5">
@@ -201,7 +205,7 @@ export const ProjectCard = ({ project, dragHandleProps, onPress }: ProjectCardPr
                         </Pressable>
                         <Pressable
                             className="flex-1 flex-row items-center justify-center bg-red-50 dark:bg-red-900/20 py-2.5 rounded-xl border border-red-100 dark:border-red-800 active:opacity-70"
-                            onPress={(e) => { e.stopPropagation(); /* TODO: Open Expense Modal */ }}
+                            onPress={(e) => { e.stopPropagation(); setModalType('egreso'); setModalVisible(true); }}
                         >
                             <MinusIcon size={12} color="#ef4444" />
                             <Text className="text-red-700 dark:text-red-400 text-[10px] font-black uppercase tracking-widest ml-1.5">
@@ -211,6 +215,15 @@ export const ProjectCard = ({ project, dragHandleProps, onPress }: ProjectCardPr
                     </View>
                 )}
             </View>
+
+            {modules.includes('finance') && project.isAdmin && (
+                <TransactionModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    proyectoId={project.id}
+                    type={modalType}
+                />
+            )}
         </Pressable>
     );
 };

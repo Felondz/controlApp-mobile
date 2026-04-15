@@ -17,6 +17,8 @@ import { ProjectCard } from '../../src/modules/projects/components/ProjectCard';
 import { BalanceWidget } from '../../src/modules/finance/widgets/BalanceWidget';
 import { InventorySummaryWidget } from '../../src/modules/inventory/widgets/InventorySummaryWidget';
 import { OperationsSummaryWidget } from '../../src/modules/operations/widgets/OperationsSummaryWidget';
+import { TasksSummaryWidget } from '../../src/modules/tasks/widgets/TasksSummaryWidget';
+import { ChatWidget } from '../../src/modules/chat/widgets/ChatWidget';
 
 export default function DashboardScreen() {
     const { user } = useAuthStore();
@@ -122,6 +124,17 @@ export default function DashboardScreen() {
                         <View className="gap-6">
                             {(activeProject.modules?.includes('Finance') || true) && (
                                 <BalanceWidget proyectoId={activeProject.id} />
+                            )}
+
+                            {(activeProject.modules?.includes('Tasks') || true) && (
+                                <TasksSummaryWidget project={activeProject} />
+                            )}
+
+                            {(activeProject.modules?.includes('Chat') || true) && (
+                                <ChatWidget 
+                                    projectId={activeProject.id} 
+                                    onPress={() => router.push('/(app)/chat')}
+                                />
                             )}
 
                             {(activeProject.modules?.includes('Inventory') || true) && (

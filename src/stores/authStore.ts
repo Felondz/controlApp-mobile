@@ -14,6 +14,9 @@ export interface User {
     global_theme?: string;
     unread_messages_count?: number;
     enabled_tools?: string[];
+    settings?: {
+        completed_tours: string[];
+    };
 }
 
 interface AuthState {
@@ -29,6 +32,7 @@ interface AuthState {
     register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<boolean>;
     logout: () => Promise<void>;
     clearError: () => void;
+    updateSettings: (settings: { completed_tours: string[] }) => void;
 }
 
 // Helper to get device name
@@ -205,6 +209,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     // Clear error
     clearError: () => set({ error: null }),
+
+    // Update settings optimistically
+    updateSettings: (settings) => set((state) => ({
+        user: state.user ? { ...state.user, settings } : null
+    })),
 }));
+
+// Setup default settings when returning user
+const withDefaultSettings = (user: User): User => {
+    return {
+        ...user,
+        settings: user.settings || { completed_tours: [] }
+    };
+};
 
 export default useAuthStore;

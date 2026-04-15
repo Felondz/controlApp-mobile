@@ -564,3 +564,37 @@ export function ArrowRightOnRectangleIcon({ size = 24, color = DEFAULT_COLOR }: 
         </Svg>
     );
 }
+
+export function PaperClipIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+        </Svg>
+    );
+}
+
+export function FaceSmileIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+        </Svg>
+    );
+}
+
+export function CubeIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+        </Svg>
+    );
+}
+
+export function LayersIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M2.25 7.125L12 12.375l9.75-5.25M2.25 12.375L12 17.625l9.75-5.25M2.25 17.625L12 22.875l9.75-5.25" />
+        </Svg>
+    );
+}
+
+export const ClipboardDocumentListIcon = CheckListIcon;

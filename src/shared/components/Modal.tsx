@@ -6,6 +6,7 @@ import React from 'react';
 import {
     Modal as RNModal,
     View,
+    Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
     KeyboardAvoidingView,
@@ -23,6 +24,7 @@ export interface ModalProps {
     size?: ModalSize;
     closeable?: boolean;
     style?: ViewStyle;
+    title?: string;
 }
 
 const sizeWidths: Record<ModalSize, number> = {
@@ -40,6 +42,7 @@ export function Modal({
     size = 'md',
     closeable = true,
     style,
+    title,
 }: ModalProps) {
     const screenWidth = Dimensions.get('window').width;
     const isFull = size === 'full';
@@ -84,11 +87,26 @@ export function Modal({
                                         shadowOpacity: 0.25,
                                         shadowRadius: 12,
                                         elevation: 8,
+                                        overflow: 'hidden'
                                     },
                                     style,
                                 ]}
                             >
-                                {children}
+                                {title && (
+                                    <View className="flex-row items-center justify-between px-6 py-4 border-b border-secondary-100">
+                                        <Text className="text-lg font-black text-secondary-900 tracking-tight">
+                                            {title}
+                                        </Text>
+                                        {closeable && (
+                                            <TouchableOpacity onPress={onClose} className="p-1">
+                                                <Text className="text-secondary-400 text-xl font-bold">✕</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                )}
+                                <View className={title ? '' : 'p-2'}>
+                                    {children}
+                                </View>
                             </View>
                         </KeyboardAvoidingView>
                     </TouchableWithoutFeedback>

@@ -579,3 +579,14 @@ export const DELETE_CATEGORIA = gql`
         deleteCategoria(id: $id)
     }
 `;
+
+export const COMPLETE_TOUR = gql`
+    mutation CompleteTour($tour: String!) {
+        completeTour(tour: $tour) {
+            id
+            settings {
+                completed_tours
+            }
+        }
+    }
+`;

@@ -2,6 +2,10 @@
  * Core type definitions for ControlApp Mobile
  */
 
+export interface UserSettings {
+    completed_tours: string[];
+}
+
 // User type
 export interface User {
     id: number;
@@ -10,6 +14,7 @@ export interface User {
     email_verified_at?: string;
     created_at?: string;
     unread_messages_count?: number;
+    settings?: UserSettings;
 }
 
 // Project type
@@ -93,6 +98,26 @@ export interface Lote {
     proyecto_id: number;
     created_at?: string;
     updated_at?: string;
+}
+
+// Chat types
+export interface MessageReaction {
+    type: string;
+    count: number;
+    user_reacted?: boolean;
+}
+
+export interface Message {
+    id: string;
+    content: string;
+    user_id: number;
+    parent_id?: string;
+    user: User;
+    reactions?: MessageReaction[];
+    replies_count?: number;
+    created_at: string;
+    updated_at: string;
+    is_deleted?: boolean;
 }
 
 // API Response types

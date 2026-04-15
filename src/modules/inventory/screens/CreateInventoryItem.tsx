@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert, Pressable, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useTranslate } from '../../../shared/hooks/useTranslate';
+import { useTranslate, useAppTheme } from '../../../shared/hooks';
 import { useCreateInventoryItem } from '../useInventory';
 import { useProjectStore } from '../../../stores/projectStore';
-import { useSettingsStore } from '../../../stores/settingsStore';
 import { 
     ArrowLeftIcon,
     XIcon,
     PackageIcon,
+    CheckIcon
 } from '../../../shared/icons';
 import PrimaryButton from '../../../shared/components/PrimaryButton';
 import SecondaryButton from '../../../shared/components/SecondaryButton';
@@ -30,7 +30,8 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
     const { t } = useTranslate();
     const router = useRouter();
     const { activeProject } = useProjectStore();
-    const { isDark } = useSettingsStore();
+    const { theme, isDark } = useAppTheme();
+    const { width } = useWindowDimensions();
     
     const [createItem, { loading }] = useCreateInventoryItem();
     
@@ -47,19 +48,15 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
     
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const textColor = isDark ? 'text-white' : 'text-secondary-900';
-    const textSecondary = isDark ? 'text-secondary-400' : 'text-secondary-500';
-    const cardBg = isDark ? 'bg-secondary-800' : 'bg-white';
-    const borderColor = isDark ? 'border-secondary-700' : 'border-secondary-200';
-    const inputBg = isDark ? 'bg-secondary-700' : 'bg-secondary-50';
+    const isTablet = width >= 768;
 
     const validate = () => {
         const newErrors: Record<string, string> = {};
         if (!form.name.trim()) {
-            newErrors.name = 'El nombre es requerido';
+            newErrors.name = t('inventory.errors.name_required', 'El nombre es requerido');
         }
         if (!form.unit.trim()) {
-            newErrors.unit = 'La unidad es requerida';
+            newErrors.unit = t('inventory.errors.unit_required', 'La unidad es requerida');
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -67,7 +64,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
 
     const handleSubmit = async () => {
         if (!activeProject) {
-            Alert.alert('Error', 'No hay proyecto activo');
+            Alert.alert('Error', t('common.no_active_project', 'No hay proyecto activo'));
             return;
         }
         
@@ -87,12 +84,11 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                     sale_price: parseFloat(form.sale_price) || 0,
                 }
             });
-            Alert.alert('Éxito', 'Item creado correctamente');
             onSuccess?.();
             router.back();
         } catch (err) {
             console.error('Error creating item:', err);
-            Alert.alert('Error', 'No se pudo crear el item');
+            Alert.alert('Error', t('inventory.errors.create_failed', 'No se pudo crear el item'));
         }
     };
 
@@ -104,185 +100,216 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
     };
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-secondary-900' : 'bg-secondary-50'}`}>
-            <View className={`px-4 py-3 ${cardBg} ${borderColor} border-b flex-row items-center justify-between`}>
-                <View className="flex-row items-center">
-                    <TouchableOpacity onPress={onCancel || (() => router.back())} className="mr-3">
-                        <ArrowLeftIcon size={24} color={textColor} />
-                    </TouchableOpacity>
-                    <Text className={`text-lg font-bold ${textColor}`}>
-                        {t('inventory.new_item', 'Nuevo Item')}
-                    </Text>
+        <View className="flex-1 bg-secondary-50 dark:bg-secondary-950">
+            {/* Header */}
+            <View className="px-5 pt-4 pb-6 bg-white dark:bg-secondary-950 border-b border-secondary-100 dark:border-secondary-900">
+                <View className="flex-row items-center justify-between px-1">
+                    <View className="flex-row items-center">
+                        <Pressable 
+                            onPress={onCancel || (() => router.back())}
+                            className="w-11 h-11 rounded-2xl items-center justify-center border border-secondary-200 dark:border-secondary-800 bg-white dark:bg-secondary-900 mr-4 active:scale-95"
+                        >
+                            <ArrowLeftIcon size={24} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        </Pressable>
+                        <View>
+                            <Text className="text-2xl font-black tracking-tighter text-secondary-900 dark:text-secondary-50">
+                                {t('inventory.new_item', 'Nuevo Item')}
+                            </Text>
+                            <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase tracking-widest mt-0.5">
+                                {t('inventory.registration', 'Registro de Existencias')}
+                            </Text>
+                        </View>
+                    </View>
+                    <Pressable 
+                        onPress={handleSubmit}
+                        disabled={loading}
+                        className={`w-11 h-11 rounded-2xl items-center justify-center ${loading ? 'bg-secondary-100 dark:bg-secondary-800' : ''}`}
+                        style={!loading ? { backgroundColor: theme.primary600 } : {}}
+                    >
+                        <CheckIcon size={24} color={loading ? (isDark ? '#4b5563' : '#9ca3af') : 'white'} />
+                    </Pressable>
                 </View>
-                <TouchableOpacity onPress={onCancel || (() => router.back())}>
-                    <XIcon size={24} color={textSecondary} />
-                </TouchableOpacity>
             </View>
 
-            <ScrollView className="flex-1 p-4">
-                <View className={`${cardBg} ${borderColor} border rounded-xl p-4 mb-4`}>
-                    <View className="flex-row items-center mb-4">
-                        <View className={`w-12 h-12 rounded-xl ${isDark ? 'bg-secondary-700' : 'bg-secondary-100'} items-center justify-center mr-3`}>
-                            <PackageIcon size={24} color={isDark ? '#9ca3af' : '#6b7280'} />
+            <ScrollView 
+                className="flex-1"
+                contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+                showsVerticalScrollIndicator={false}
+            >
+                <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] p-6 shadow-sm mb-6">
+                    <View className="flex-row items-center mb-6">
+                        <View className="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 items-center justify-center mr-4">
+                            <PackageIcon size={24} color={theme.primary600} />
                         </View>
-                        <Text className={`text-sm ${textSecondary}`}>
-                            {t('inventory.item_info', 'Información del Item')}
-                        </Text>
+                        <View>
+                            <Text className="text-lg font-black text-secondary-900 dark:text-secondary-50 leading-tight">
+                                {t('inventory.general_info', 'Información General')}
+                            </Text>
+                            <Text className="text-xs font-bold text-secondary-400 dark:text-secondary-500 uppercase tracking-wider">
+                                {t('inventory.basic_data', 'Datos Básicos')}
+                            </Text>
+                        </View>
                     </View>
 
-                    <View className="mb-4">
-                        <Text className={`text-xs font-medium ${textSecondary} mb-1`}>
-                            {t('inventory.name', 'Nombre')} *
-                        </Text>
-                        <TextInput
-                            value={form.name}
-                            onChangeText={(text) => updateField('name', text)}
-                            placeholder="Ej: Tornillo M5"
-                            placeholderTextColor={textSecondary}
-                            className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2.5 ${textColor} ${errors.name ? 'border-danger-500' : ''}`}
-                        />
-                        {errors.name && (
-                            <Text className="text-xs text-danger-500 mt-1">{errors.name}</Text>
-                        )}
-                    </View>
+                    <View className="space-y-5">
+                        <View>
+                            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-2 ml-1">
+                                {t('inventory.name', 'Nombre del Item')} *
+                            </Text>
+                            <TextInput
+                                value={form.name}
+                                onChangeText={(text) => updateField('name', text)}
+                                placeholder={t('inventory.name_placeholder', 'Ej: Tornillo M5 de Acero')}
+                                placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
+                                className={`bg-secondary-50 dark:bg-secondary-950 border ${errors.name ? 'border-danger-500' : 'border-secondary-100 dark:border-secondary-800'} rounded-2xl px-5 py-4 text-secondary-900 dark:text-secondary-50 font-bold`}
+                            />
+                            {errors.name && (
+                                <Text className="text-xs font-black text-danger-500 mt-2 ml-1 uppercase tracking-wider">{errors.name}</Text>
+                            )}
+                        </View>
 
-                    <View className="mb-4">
-                        <Text className={`text-xs font-medium ${textSecondary} mb-1`}>
-                            {t('inventory.sku', 'SKU / Código')}
-                        </Text>
-                        <TextInput
-                            value={form.sku}
-                            onChangeText={(text) => updateField('sku', text)}
-                            placeholder="Ej: TORN-M5-001"
-                            placeholderTextColor={textSecondary}
-                            className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2.5 ${textColor}`}
-                        />
-                    </View>
+                        <View>
+                            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-2 ml-1">
+                                {t('inventory.sku', 'Código SKU / Identificador')}
+                            </Text>
+                            <TextInput
+                                value={form.sku}
+                                onChangeText={(text) => updateField('sku', text)}
+                                placeholder="Ej: TORN-M5-001"
+                                placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
+                                className="bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-2xl px-5 py-4 text-secondary-900 dark:text-secondary-50 font-mono text-sm"
+                            />
+                        </View>
 
-                    <View className="mb-4">
-                        <Text className={`text-xs font-medium ${textSecondary} mb-2`}>
-                            {t('inventory.type', 'Tipo')} *
-                        </Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                            <View className="flex-row gap-2">
-                                {ITEM_TYPES.map((type) => (
-                                    <TouchableOpacity
-                                        key={type.value}
-                                        onPress={() => updateField('type', type.value)}
-                                        className={`px-4 py-2 rounded-lg border ${
-                                            form.type === type.value
-                                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                                                : `${borderColor} ${isDark ? 'bg-secondary-700' : 'bg-secondary-50'}`
-                                        }`}
-                                    >
-                                        <Text className={`text-sm ${
-                                            form.type === type.value
-                                                ? 'text-primary-600 dark:text-primary-400 font-medium'
-                                                : textSecondary
-                                        }`}>
-                                            {type.label}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </ScrollView>
-                    </View>
+                        <View>
+                            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-3 ml-1">
+                                {t('inventory.type', 'Tipo de Recurso')} *
+                            </Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                <View className="flex-row gap-3">
+                                    {ITEM_TYPES.map((type) => (
+                                        <Pressable
+                                            key={type.value}
+                                            onPress={() => updateField('type', type.value)}
+                                            className={`px-5 py-3 rounded-2xl border ${
+                                                form.type === type.value
+                                                    ? 'bg-primary-600 border-primary-600'
+                                                    : 'bg-secondary-50 dark:bg-secondary-950 border-secondary-100 dark:border-secondary-800'
+                                            }`}
+                                        >
+                                            <Text className={`text-xs font-black uppercase tracking-wider ${
+                                                form.type === type.value ? 'text-white' : 'text-secondary-600 dark:text-secondary-400'
+                                            }`}>
+                                                {type.label}
+                                            </Text>
+                                        </Pressable>
+                                    ))}
+                                </View>
+                            </ScrollView>
+                        </View>
 
-                    <View className="mb-4">
-                        <Text className={`text-xs font-medium ${textSecondary} mb-1`}>
-                            {t('inventory.unit', 'Unidad')} *
-                        </Text>
-                        <TextInput
-                            value={form.unit}
-                            onChangeText={(text) => updateField('unit', text)}
-                            placeholder="Ej: unidades, kg, metros"
-                            placeholderTextColor={textSecondary}
-                            className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2.5 ${textColor} ${errors.unit ? 'border-danger-500' : ''}`}
-                        />
-                        {errors.unit && (
-                            <Text className="text-xs text-danger-500 mt-1">{errors.unit}</Text>
-                        )}
+                        <View>
+                            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-2 ml-1">
+                                {t('inventory.unit', 'Unidad de Medida')} *
+                            </Text>
+                            <TextInput
+                                value={form.unit}
+                                onChangeText={(text) => updateField('unit', text)}
+                                placeholder={t('inventory.unit_placeholder', 'Ej: unidades, kg, metros')}
+                                placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
+                                className={`bg-secondary-50 dark:bg-secondary-950 border ${errors.unit ? 'border-danger-500' : 'border-secondary-100 dark:border-secondary-800'} rounded-2xl px-5 py-4 text-secondary-900 dark:text-secondary-50 font-bold`}
+                            />
+                            {errors.unit && (
+                                <Text className="text-xs font-black text-danger-500 mt-2 ml-1 uppercase tracking-wider">{errors.unit}</Text>
+                            )}
+                        </View>
                     </View>
                 </View>
 
-                <View className={`${cardBg} ${borderColor} border rounded-xl p-4 mb-4`}>
-                    <Text className={`text-sm font-medium ${textSecondary} mb-3`}>
-                        {t('inventory.stock_pricing', 'Stock y Precios')}
+                <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] p-6 shadow-sm mb-8">
+                    <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-6 ml-1">
+                        {t('inventory.stock_pricing', 'Control de Stock y Costos')}
                     </Text>
 
-                    <View className="grid grid-cols-2 gap-4">
-                        <View className="mb-3">
-                            <Text className={`text-xs font-medium ${textSecondary} mb-1`}>
-                                {t('inventory.initial_stock', 'Stock Inicial')}
+                    <View className="flex-row flex-wrap" style={{ marginHorizontal: -8 }}>
+                        <View className="px-2 mb-5" style={{ width: isTablet ? '50%' : '50%' }}>
+                            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-2 ml-1">
+                                {t('inventory.initial_stock', 'Existencia Inicial')}
                             </Text>
                             <TextInput
                                 value={form.initial_quantity}
                                 onChangeText={(text) => updateField('initial_quantity', text)}
                                 keyboardType="numeric"
                                 placeholder="0"
-                                placeholderTextColor={textSecondary}
-                                className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2 ${textColor}`}
+                                placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
+                                className="bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-2xl px-5 py-4 text-secondary-900 dark:text-secondary-50 font-bold"
                             />
                         </View>
 
-                        <View className="mb-3">
-                            <Text className={`text-xs font-medium ${textSecondary} mb-1`}>
-                                {t('inventory.min_stock', 'Stock Mínimo')}
+                        <View className="px-2 mb-5" style={{ width: isTablet ? '50%' : '50%' }}>
+                            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-2 ml-1">
+                                {t('inventory.min_stock', 'Stock de Seguridad')}
                             </Text>
                             <TextInput
                                 value={form.min_stock_level}
                                 onChangeText={(text) => updateField('min_stock_level', text)}
                                 keyboardType="numeric"
                                 placeholder="0"
-                                placeholderTextColor={textSecondary}
-                                className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2 ${textColor}`}
+                                placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
+                                className="bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-2xl px-5 py-4 text-secondary-900 dark:text-secondary-50 font-bold"
                             />
                         </View>
 
-                        <View className="mb-3">
-                            <Text className={`text-xs font-medium ${textSecondary} mb-1`}>
-                                {t('inventory.cost_price', 'Precio Costo')}
+                        <View className="px-2 mb-5" style={{ width: isTablet ? '50%' : '50%' }}>
+                            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-2 ml-1">
+                                {t('inventory.cost_price', 'Costo Unitario')}
                             </Text>
-                            <TextInput
-                                value={form.initial_cost}
-                                onChangeText={(text) => updateField('initial_cost', text)}
-                                keyboardType="numeric"
-                                placeholder="0"
-                                placeholderTextColor={textSecondary}
-                                className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2 ${textColor}`}
-                            />
+                            <View className="relative justify-center">
+                                <Text className="absolute left-5 z-10 font-bold text-secondary-400">$</Text>
+                                <TextInput
+                                    value={form.initial_cost}
+                                    onChangeText={(text) => updateField('initial_cost', text)}
+                                    keyboardType="numeric"
+                                    placeholder="0.00"
+                                    placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
+                                    className="bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-2xl pl-9 pr-5 py-4 text-secondary-900 dark:text-secondary-50 font-bold"
+                                />
+                            </View>
                         </View>
 
-                        <View className="mb-3">
-                            <Text className={`text-xs font-medium ${textSecondary} mb-1`}>
-                                {t('inventory.sale_price', 'Precio Venta')}
+                        <View className="px-2 mb-5" style={{ width: isTablet ? '50%' : '50%' }}>
+                            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-2 ml-1">
+                                {t('inventory.sale_price', 'Precio de Venta')}
                             </Text>
-                            <TextInput
-                                value={form.sale_price}
-                                onChangeText={(text) => updateField('sale_price', text)}
-                                keyboardType="numeric"
-                                placeholder="0"
-                                placeholderTextColor={textSecondary}
-                                className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2 ${textColor}`}
-                            />
+                            <View className="relative justify-center">
+                                <Text className="absolute left-5 z-10 font-bold text-secondary-400">$</Text>
+                                <TextInput
+                                    value={form.sale_price}
+                                    onChangeText={(text) => updateField('sale_price', text)}
+                                    keyboardType="numeric"
+                                    placeholder="0.00"
+                                    placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
+                                    className="bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-2xl pl-9 pr-5 py-4 text-secondary-900 dark:text-secondary-50 font-bold"
+                                />
+                            </View>
                         </View>
                     </View>
                 </View>
 
-                <View className="gap-3 mb-8">
+                <View className="gap-4">
                     <PrimaryButton
                         onPress={handleSubmit}
                         loading={loading}
-                        fullWidth
+                        className="h-16 rounded-2xl shadow-xl shadow-primary-600/20"
                     >
-                        {t('common.save', 'Guardar')}
+                        <Text className="text-white font-black uppercase tracking-[2px]">{t('common.save', 'Guardar Item')}</Text>
                     </PrimaryButton>
                     
                     <SecondaryButton
                         onPress={onCancel || (() => router.back())}
-                        fullWidth
+                        className="h-16 rounded-2xl"
                     >
-                        {t('common.cancel', 'Cancelar')}
+                        <Text className="font-black uppercase tracking-[2px]">{t('common.cancel', 'Cancelar')}</Text>
                     </SecondaryButton>
                 </View>
             </ScrollView>
