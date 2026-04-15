@@ -138,7 +138,13 @@
         "balance": "Balance",
         "income": "Ingresos",
         "expenses": "Egresos",
-        "transactions": "Transacciones"
+        "transactions": "Transacciones",
+        "register_income": "Registrar Ingreso",
+        "register_expense": "Registrar Gasto",
+        "amount": "Monto",
+        "category": "Categoría",
+        "date": "Fecha",
+        "account": "Cuenta"
     },
     "inventory": {
         "title": "Inventario",
@@ -200,5 +206,28 @@
         "hint_functionality": "Explica qué acción no funcionó como esperabas...",
         "hint_ui_visual": "Explica qué elemento se ve mal o está desalineado...",
         "hint_performance": "Explica en qué momento la app se sintió lenta..."
+    },
+    "onboarding": {
+        "welcome": "Bienvenido a ControlApp",
+        "description": "Descubre cómo organizar tu trabajo.",
+        "skip": "Saltar tour",
+        "finish": "Entendido"
+    },
+    "tour": {
+        "dashboard_title": "Panel Principal",
+        "dashboard_desc": "Aquí verás el resumen de todo.",
+        "finance_title": "Finanzas",
+        "finance_desc": "Controla tus ingresos y gastos aquí."
+    },
+    "chat": {
+        "title": "Chat General",
+        "type_message": "Escribe un mensaje...",
+        "send": "Enviar",
+        "reply": "Responder",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "edited": "Editado",
+        "reactions": "Reacciones",
+        "no_messages": "No hay mensajes aún. ¡Sé el primero!"
     }
 }

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { useTranslate } from '../../../shared/hooks/useTranslate';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Pressable, useWindowDimensions } from 'react-native';
+import { useTranslate, useAppTheme } from '../../../shared/hooks';
 import { useInventoryItem, useUpdateInventoryItem, InventoryItem } from '../useInventory';
 import { useProjectStore } from '../../../stores/projectStore';
-import { useSettingsStore } from '../../../stores/settingsStore';
 import { useRouter } from 'expo-router';
 import { 
     ArrowLeftIcon,
@@ -11,6 +10,8 @@ import {
     XIcon,
     CheckIcon,
     PackageIcon,
+    TagIcon,
+    CubeIcon
 } from '../../../shared/icons';
 import PrimaryButton from '../../../shared/components/PrimaryButton';
 import SecondaryButton from '../../../shared/components/SecondaryButton';
@@ -22,13 +23,13 @@ interface InventoryItemDetailProps {
 }
 
 type EditableField = 'name' | 'sku' | 'unit' | 'min_stock_level' | 'sale_price' | 'cost_price';
-type ReadOnlyField = 'current_stock';
 
 export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDetailProps) {
     const { t } = useTranslate();
     const router = useRouter();
     const { activeProject } = useProjectStore();
-    const { isDark } = useSettingsStore();
+    const { theme, isDark } = useAppTheme();
+    const { width } = useWindowDimensions();
     
     const { data, loading, error, refetch } = useInventoryItem(itemId);
     const [updateItem, { loading: updating }] = useUpdateInventoryItem();
@@ -36,17 +37,13 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
     const [isEditing, setIsEditing] = useState(false);
     const [editedItem, setEditedItem] = useState<Partial<InventoryItem>>({});
 
+    const isTablet = width >= 768;
+
     useEffect(() => {
         if (data?.inventoryItem) {
             setEditedItem(data.inventoryItem);
         }
     }, [data]);
-
-    const textColor = isDark ? 'text-white' : 'text-secondary-900';
-    const textSecondary = isDark ? 'text-secondary-400' : 'text-secondary-500';
-    const cardBg = isDark ? 'bg-secondary-800' : 'bg-white';
-    const borderColor = isDark ? 'border-secondary-700' : 'border-secondary-200';
-    const inputBg = isDark ? 'bg-secondary-700' : 'bg-secondary-50';
 
     const handleSave = async () => {
         if (!activeProject || !editedItem.id) return;
@@ -66,10 +63,9 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
             });
             setIsEditing(false);
             refetch();
-            Alert.alert('Éxito', 'Item actualizado correctamente');
         } catch (err) {
             console.error('Error updating item:', err);
-            Alert.alert('Error', 'No se pudo actualizar el item');
+            Alert.alert('Error', t('inventory.errors.update_failed', 'No se pudo actualizar el item'));
         }
     };
 
@@ -82,19 +78,23 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
 
     if (loading) {
         return (
-            <View className={`flex-1 ${isDark ? 'bg-secondary-900' : 'bg-secondary-50'}`}>
-                <View className={`px-4 py-3 ${cardBg} ${borderColor} border-b`}>
-                    <SkeletonCard />
-                </View>
+            <View className="flex-1 bg-secondary-50 dark:bg-secondary-950 p-5">
+                <SkeletonCard />
+                <View className="h-4" />
+                <SkeletonCard />
             </View>
         );
     }
 
     if (error || !data?.inventoryItem) {
         return (
-            <View className={`flex-1 ${isDark ? 'bg-secondary-900' : 'bg-secondary-50'} justify-center items-center`}>
-                <Text className={textSecondary}>{t('common.error', 'Error al cargar')}</Text>
-                <SecondaryButton onPress={() => refetch()} className="mt-4">
+            <View className="flex-1 bg-secondary-50 dark:bg-secondary-950 justify-center items-center p-8">
+                <View className="w-20 h-20 rounded-3xl bg-secondary-100 dark:bg-secondary-900 items-center justify-center mb-6">
+                    <XIcon size={40} color="#ef4444" />
+                </View>
+                <Text className="text-xl font-black text-secondary-900 dark:text-secondary-50 mb-2">{t('common.error', 'Error al cargar')}</Text>
+                <Text className="text-secondary-500 text-center mb-8">{t('inventory.errors.load_failed', 'No pudimos obtener los detalles del item.')}</Text>
+                <SecondaryButton onPress={() => refetch()} className="px-8 h-14 rounded-2xl">
                     {t('common.retry', 'Reintentar')}
                 </SecondaryButton>
             </View>
@@ -103,10 +103,13 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
 
     const item = isEditing ? editedItem : data.inventoryItem;
 
-    const renderField = (field: EditableField, label: string, type: 'text' | 'number' = 'text') => (
-        <View className={`mb-4`} key={field}>
-            <Text className={`text-xs font-medium ${textSecondary} mb-1`}>{label}</Text>
-            {isEditing ? (
+    const renderInput = (field: EditableField, label: string, type: 'text' | 'number' = 'text', prefix?: string) => (
+        <View className="mb-5" key={field}>
+            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-2 ml-1">
+                {label}
+            </Text>
+            <View className="relative justify-center">
+                {prefix && <Text className="absolute left-5 z-10 font-bold text-secondary-400">{prefix}</Text>}
                 <TextInput
                     value={String(item[field as keyof InventoryItem] ?? '')}
                     onChangeText={(text) => setEditedItem(prev => ({
@@ -114,90 +117,202 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
                         [field]: type === 'number' ? parseFloat(text) || 0 : text
                     }))}
                     keyboardType={type === 'number' ? 'numeric' : 'default'}
-                    className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2 ${textColor}`}
-                    placeholderTextColor={textSecondary}
+                    className={`bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-2xl ${prefix ? 'pl-9' : 'px-5'} py-4 text-secondary-900 dark:text-secondary-50 font-bold`}
+                    placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
                 />
-            ) : (
-                <Text className={`${textColor}`}>
-                    {String(item[field as keyof InventoryItem] ?? '-')}
+            </View>
+        </View>
+    );
+
+    const renderDataPoint = (label: string, value: string | number, icon: React.ReactNode, isCritical?: boolean) => (
+        <View className="mb-6 flex-row items-center">
+            <View className="w-10 h-10 rounded-xl bg-secondary-100 dark:bg-secondary-800 items-center justify-center mr-4">
+                {icon}
+            </View>
+            <View>
+                <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-0.5">
+                    {label}
                 </Text>
-            )}
+                <Text className={`text-base font-black ${isCritical ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
+                    {value}
+                </Text>
+            </View>
         </View>
     );
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-secondary-900' : 'bg-secondary-50'}`}>
-            <View className={`px-4 py-3 ${cardBg} ${borderColor} border-b flex-row items-center justify-between`}>
-                <View className="flex-row items-center">
-                    <TouchableOpacity onPress={onBack || (() => router.back())} className="mr-3">
-                        <ArrowLeftIcon size={24} color={textColor} />
-                    </TouchableOpacity>
-                    <Text className={`text-lg font-bold ${textColor}`}>
-                        {t('inventory.item_detail', 'Detalle de Item')}
-                    </Text>
-                </View>
-                {!isEditing ? (
-                    <TouchableOpacity onPress={() => setIsEditing(true)} className="flex-row items-center">
-                        <PencilIcon size={18} color={isDark ? '#818cf8' : '#6366f1'} />
-                        <Text className={`ml-1 text-sm font-medium ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
-                            {t('common.edit', 'Editar')}
-                        </Text>
-                    </TouchableOpacity>
-                ) : (
-                    <View className="flex-row items-center gap-2">
-                        <TouchableOpacity onPress={handleCancel}>
-                            <XIcon size={24} color="#ef4444" />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={handleSave} disabled={updating}>
-                            <CheckIcon size={24} color={updating ? textSecondary : '#22c55e'} />
-                        </TouchableOpacity>
+        <View className="flex-1 bg-secondary-50 dark:bg-secondary-950">
+            {/* Header */}
+            <View className="px-5 pt-4 pb-6 bg-white dark:bg-secondary-950 border-b border-secondary-100 dark:border-secondary-900">
+                <View className="flex-row items-center justify-between px-1">
+                    <View className="flex-row items-center flex-1">
+                        <Pressable 
+                            onPress={onBack || (() => router.back())}
+                            className="w-11 h-11 rounded-2xl items-center justify-center border border-secondary-200 dark:border-secondary-800 bg-white dark:bg-secondary-900 mr-4 active:scale-95"
+                        >
+                            <ArrowLeftIcon size={24} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        </Pressable>
+                        <View className="flex-1">
+                            <Text className="text-2xl font-black tracking-tighter text-secondary-900 dark:text-secondary-50 leading-tight" numberOfLines={1}>
+                                {isEditing ? t('common.edit', 'Editar') : item.name}
+                            </Text>
+                            {!isEditing && (
+                                <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase tracking-widest mt-0.5">
+                                    {item.sku || t('inventory.no_sku', 'Sin SKU')}
+                                </Text>
+                            )}
+                        </View>
                     </View>
-                )}
+                    
+                    {!isEditing ? (
+                        <Pressable 
+                            onPress={() => setIsEditing(true)}
+                            className="w-11 h-11 rounded-2xl items-center justify-center bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 active:scale-95"
+                        >
+                            <PencilIcon size={20} color={theme.primary600} />
+                        </Pressable>
+                    ) : (
+                        <View className="flex-row items-center gap-2">
+                            <Pressable 
+                                onPress={handleCancel}
+                                className="w-11 h-11 rounded-2xl items-center justify-center bg-secondary-100 dark:bg-secondary-800 active:scale-95"
+                            >
+                                <XIcon size={22} color={isDark ? '#9ca3af' : '#6b7280'} />
+                            </Pressable>
+                            <Pressable 
+                                onPress={handleSave}
+                                disabled={updating}
+                                className="w-11 h-11 rounded-2xl items-center justify-center active:scale-95"
+                                style={{ backgroundColor: theme.primary600 }}
+                            >
+                                <CheckIcon size={22} color="white" />
+                            </Pressable>
+                        </View>
+                    )}
+                </View>
             </View>
 
-            <ScrollView className="flex-1 p-4">
-                <View className={`${cardBg} ${borderColor} border rounded-xl p-4 mb-4`}>
-                    <View className="flex-row items-start mb-4">
-                        <View className={`w-16 h-16 rounded-xl ${isDark ? 'bg-secondary-700' : 'bg-secondary-100'} items-center justify-center mr-4`}>
-                            <PackageIcon size={32} color={isDark ? '#9ca3af' : '#6b7280'} />
+            <ScrollView 
+                className="flex-1"
+                contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+                showsVerticalScrollIndicator={false}
+            >
+                {/* Main Identity Card */}
+                {!isEditing && (
+                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] p-6 shadow-sm mb-6">
+                        <View className="flex-row items-center mb-8">
+                            <View className="w-20 h-20 rounded-3xl bg-primary-50 dark:bg-primary-900/20 items-center justify-center mr-6">
+                                <PackageIcon size={40} color={theme.primary600} />
+                            </View>
+                            <View className="flex-1">
+                                <Text className="text-2xl font-black text-secondary-900 dark:text-secondary-50 leading-tight">
+                                    {item.name}
+                                </Text>
+                                <View className="flex-row mt-3">
+                                    <View className="bg-secondary-100 dark:bg-secondary-800 px-3 py-1 rounded-full border border-secondary-200 dark:border-secondary-700">
+                                        <Text className="text-[10px] font-black text-secondary-600 dark:text-secondary-400 uppercase tracking-widest">
+                                            {item.type}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
                         </View>
-                        <View className="flex-1">
-                            <Text className={`text-xl font-bold ${textColor}`}>{item.name}</Text>
-                            {item.sku && (
-                                <Text className={`text-sm font-mono ${textSecondary}`}>{item.sku}</Text>
-                            )}
-                            <View className={`mt-2 px-2 py-0.5 rounded-full text-xs inline-block ${
-                                isDark ? 'bg-secondary-700 text-secondary-300' : 'bg-secondary-100 text-secondary-600'
-                            }`}>
-                                {item.type}
+
+                        <View className="flex-row flex-wrap" style={{ marginHorizontal: -12 }}>
+                            <View className="px-3 w-1/2">
+                                {renderDataPoint(
+                                    t('inventory.stock', 'Existencias'), 
+                                    `${Number(item.current_stock).toLocaleString()} ${item.unit}`, 
+                                    <CubeIcon size={18} color={theme.primary600} />,
+                                    (item.current_stock ?? 0) <= (item.min_stock_level ?? 0)
+                                )}
+                            </View>
+                            <View className="px-3 w-1/2">
+                                {renderDataPoint(
+                                    t('inventory.min_stock', 'Seguridad'), 
+                                    Number(item.min_stock_level).toLocaleString(), 
+                                    <TagIcon size={18} color="#f59e0b" />
+                                )}
+                            </View>
+                            <View className="px-3 w-1/2">
+                                {renderDataPoint(
+                                    t('inventory.sale_price', 'Venta'), 
+                                    `$${Number(item.sale_price).toFixed(2)}`, 
+                                    <Text className="font-bold text-primary-600">$</Text>
+                                )}
+                            </View>
+                            <View className="px-3 w-1/2">
+                                {renderDataPoint(
+                                    t('inventory.cost_price', 'Costo'), 
+                                    `$${Number(item.cost_price).toFixed(2)}`, 
+                                    <Text className="font-bold text-secondary-500">$</Text>
+                                )}
                             </View>
                         </View>
                     </View>
+                )}
 
-                    <View className={`h-px ${borderColor} my-4`} />
-
-                        <View className="grid grid-cols-2 gap-4">
-                            {renderField('unit', t('inventory.unit', 'Unidad'))}
-                            <View className={`mb-4`}>
-                                <Text className={`text-xs font-medium ${textSecondary} mb-1`}>{t('inventory.current_stock', 'Stock Actual')}</Text>
-                                <Text className={`${(item.current_stock ?? 0) <= (item.min_stock_level ?? 0) ? 'text-danger-500' : textColor} font-bold`}>
-                                    {item.current_stock ?? 0}
+                {/* Edit Form */}
+                {isEditing && (
+                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] p-6 shadow-sm mb-6">
+                        <View className="flex-row items-center mb-6">
+                            <View className="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 items-center justify-center mr-4">
+                                <PencilIcon size={24} color={theme.primary600} />
+                            </View>
+                            <View>
+                                <Text className="text-lg font-black text-secondary-900 dark:text-secondary-50 leading-tight">
+                                    {t('inventory.edit_item', 'Editar Información')}
+                                </Text>
+                                <Text className="text-xs font-bold text-secondary-400 dark:text-secondary-500 uppercase tracking-wider">
+                                    {t('inventory.modify_fields', 'Modificar Atributos')}
                                 </Text>
                             </View>
-                            {renderField('min_stock_level', t('inventory.min_stock', 'Stock Mínimo'), 'number')}
-                            {renderField('sale_price', t('inventory.sale_price', 'Precio Venta'), 'number')}
-                            {renderField('cost_price', t('inventory.cost_price', 'Precio Costo'), 'number')}
                         </View>
-                </View>
 
-                {isEditing && (
-                    <PrimaryButton
-                        onPress={handleSave}
-                        loading={updating}
-                        className="mb-4"
-                    >
-                        {t('common.save', 'Guardar Cambios')}
-                    </PrimaryButton>
+                        <View className="space-y-1">
+                            {renderInput('name', t('inventory.name', 'Nombre del Item'))}
+                            {renderInput('sku', t('inventory.sku', 'Código SKU'))}
+                            
+                            <View className="flex-row" style={{ marginHorizontal: -8 }}>
+                                <View className="px-2 flex-1">
+                                    {renderInput('unit', t('inventory.unit', 'Unidad'))}
+                                </View>
+                                <View className="px-2 flex-1">
+                                    {renderInput('min_stock_level', t('inventory.min_stock', 'Mínimo'), 'number')}
+                                </View>
+                            </View>
+
+                            <View className="flex-row" style={{ marginHorizontal: -8 }}>
+                                <View className="px-2 flex-1">
+                                    {renderInput('sale_price', t('inventory.sale_price', 'P. Venta'), 'number', '$')}
+                                </View>
+                                <View className="px-2 flex-1">
+                                    {renderInput('cost_price', t('inventory.cost_price', 'P. Costo'), 'number', '$')}
+                                </View>
+                            </View>
+                        </View>
+
+                        <PrimaryButton
+                            onPress={handleSave}
+                            loading={updating}
+                            className="mt-4 h-16 rounded-2xl"
+                        >
+                            <Text className="text-white font-black uppercase tracking-widest">
+                                {t('common.save_changes', 'Guardar Cambios')}
+                            </Text>
+                        </PrimaryButton>
+                    </View>
+                )}
+
+                {!isEditing && (
+                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] p-8 shadow-sm items-center">
+                        <Text className="text-secondary-400 dark:text-secondary-500 text-xs font-black uppercase tracking-[3px] mb-2">
+                            {t('inventory.last_update', 'Última Actualización')}
+                        </Text>
+                        <Text className="text-secondary-900 dark:text-secondary-50 font-bold">
+                            {new Date(item.updated_at || new Date()).toLocaleString()}
+                        </Text>
+                    </View>
                 )}
             </ScrollView>
         </View>

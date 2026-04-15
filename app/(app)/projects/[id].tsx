@@ -1,10 +1,21 @@
 import { View, Text, ScrollView, Pressable } from "react-native";
-import { useLocalSearchParams, Stack } from "expo-router";
+import { useLocalSearchParams, Stack, useRouter } from "expo-router";
 import { getTheme } from "../../../src/shared/themes";
+import { useTranslate } from "../../../src/shared/hooks";
+
+// Widgets
+import { BalanceWidget } from '../../../src/modules/finance/widgets/BalanceWidget';
+import { TasksSummaryWidget } from '../../../src/modules/tasks/widgets/TasksSummaryWidget';
+import { ChatWidget } from '../../../src/modules/chat/widgets/ChatWidget';
+import { InventorySummaryWidget } from '../../../src/modules/inventory/widgets/InventorySummaryWidget';
+import { OperationsSummaryWidget } from '../../../src/modules/operations/widgets/OperationsSummaryWidget';
 
 export default function ProjectDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const theme = getTheme("purple-modern");
+    const { t } = useTranslate();
+    const router = useRouter();
+    const proyectoId = parseInt(id);
 
     return (
         <>
@@ -15,57 +26,66 @@ export default function ProjectDetailScreen() {
                     headerTintColor: "white",
                 }}
             />
-            <ScrollView className="flex-1 bg-gray-50" showsVerticalScrollIndicator={false}>
-                <View className="p-4">
+            <ScrollView className="flex-1 bg-secondary-50 dark:bg-secondary-950" showsVerticalScrollIndicator={false}>
+                <View className="p-4 gap-6">
                     {/* Project Header */}
                     <View
-                        className="rounded-xl p-6 mb-4"
+                        className="rounded-3xl p-6 shadow-sm border border-white/10"
                         style={{ backgroundColor: theme.primary500 }}
                     >
-                        <Text className="text-white text-2xl font-bold mb-2">
+                        <Text className="text-white text-2xl font-black mb-1">
                             Proyecto #{id}
                         </Text>
-                        <Text className="text-white/80">
-                            Detalle del proyecto
+                        <Text className="text-white/80 font-medium">
+                            {t('dashboard.overview', 'Resumen del proyecto')}
                         </Text>
                     </View>
 
-                    {/* Modules Grid */}
-                    <Text className="text-lg font-semibold text-gray-800 mb-4">
-                        Módulos
-                    </Text>
-                    <View className="flex-row flex-wrap gap-3">
-                        {[
-                            { name: "Finanzas", color: "#10b981" },
-                            { name: "Tareas", color: "#f59e0b" },
-                            { name: "Inventario", color: "#3b82f6" },
-                            { name: "Operaciones", color: "#8b5cf6" },
-                        ].map((module) => (
-                            <Pressable
-                                key={module.name}
-                                className="flex-1 min-w-[45%] p-4 rounded-xl bg-white border border-gray-100 shadow-sm active:bg-gray-50 active:scale-95 transition-all"
-                            >
-                                <View
-                                    className="w-10 h-10 rounded-lg mb-3 items-center justify-center"
-                                    style={{ backgroundColor: `${module.color}20` }}
+                    {/* Dashboard Widgets */}
+                    <BalanceWidget proyectoId={proyectoId} />
+                    
+                    <TasksSummaryWidget project={{ id: proyectoId }} />
+
+                    <ChatWidget 
+                        projectId={proyectoId} 
+                        onPress={() => router.push('/(app)/chat')}
+                    />
+
+                    <InventorySummaryWidget proyectoId={proyectoId} />
+
+                    <OperationsSummaryWidget proyectoId={proyectoId} />
+
+                    {/* Modules Quick Grid */}
+                    <View>
+                        <Text className="text-lg font-black text-secondary-900 dark:text-white mb-4 ml-1">
+                            {t('dashboard.modules', 'Módulos')}
+                        </Text>
+                        <View className="flex-row flex-wrap gap-3">
+                            {[
+                                { name: "Finanzas", color: "#10b981", href: "/(app)/finance" },
+                                { name: "Tareas", color: "#f59e0b", href: "/(app)/tasks" },
+                                { name: "Inventario", color: "#3b82f6", href: "/(app)/inventory" },
+                                { name: "Operaciones", color: "#8b5cf6", href: "/(app)/operations" },
+                            ].map((module) => (
+                                <Pressable
+                                    key={module.name}
+                                    onPress={() => router.push(module.href as any)}
+                                    className="flex-1 min-w-[45%] p-5 rounded-3xl bg-white dark:bg-secondary-900 border border-secondary-100 dark:border-secondary-800 shadow-sm active:bg-secondary-50 dark:active:bg-secondary-800 active:scale-95 transition-all"
                                 >
                                     <View
-                                        className="w-5 h-5 rounded"
-                                        style={{ backgroundColor: module.color }}
-                                    />
-                                </View>
-                                <Text className="text-gray-800 font-medium">{module.name}</Text>
-                                <Text className="text-gray-500 text-sm mt-1">Ver más →</Text>
-                            </Pressable>
-                        ))}
-                    </View>
-
-                    {/* Placeholder */}
-                    <View className="bg-white rounded-xl p-6 mt-4 items-center border border-gray-100">
-                        <Text className="text-gray-400 text-center">
-                            Los widgets del proyecto se mostrarán aquí.{"\n"}
-                            Implementación en progreso.
-                        </Text>
+                                        className="w-12 h-12 rounded-2xl mb-4 items-center justify-center"
+                                        style={{ backgroundColor: `${module.color}20` }}
+                                    >
+                                        <View
+                                            className="w-6 h-6 rounded-lg"
+                                            style={{ backgroundColor: module.color }}
+                                        />
+                                    </View>
+                                    <Text className="text-secondary-900 dark:text-white font-black uppercase tracking-widest text-[10px]">{module.name}</Text>
+                                    <Text className="text-secondary-500 dark:text-secondary-400 text-[10px] mt-1">Ver más →</Text>
+                                </Pressable>
+                            ))}
+                        </View>
                     </View>
                 </View>
             </ScrollView>

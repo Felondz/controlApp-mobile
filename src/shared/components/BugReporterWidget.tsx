@@ -89,7 +89,7 @@ export const BugReporterWidget = ({
                 category,
                 description,
                 severity,
-                platform: Platform.OS,
+                platform: 'mobile',
                 device: Platform.Version,
                 context: 'mobile'
             });

@@ -29,7 +29,7 @@ export const setAuthCallbacks = (
 // Create axios instance
 const api: AxiosInstance = axios.create({
     baseURL: API_URL,
-    timeout: 30000,
+    timeout: 15000,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

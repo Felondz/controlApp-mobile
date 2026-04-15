@@ -18,6 +18,8 @@ import {
     SearchIcon,
     ChevronLeftIcon,
     Bars3Icon,
+    ChatIcon,
+    CheckListIcon,
 } from "../../src/shared/icons";
 import { ApplicationLogo } from "../../src/shared/components/ApplicationLogo";
 import { ThemeToggle } from "../../src/shared/components/ThemeToggle";
@@ -99,7 +101,7 @@ const NavContent = memo(({ sections, isItemActive, router, theme, isDark, vertic
 const TabsContent = memo(({ theme, isDark, isDesktop, headerBg, borderColor, insets, t, activeProject }: any) => {
     // Determine which tabs to show based on context
     const visibleTabs = activeProject 
-        ? ['index', 'finance', 'inventory', 'operations', 'settings']
+        ? ['index', 'tasks', 'finance', 'chat', 'inventory', 'operations', 'settings']
         : ['index', 'marketplace', 'invitations', 'settings'];
 
     return (
@@ -128,6 +130,22 @@ const TabsContent = memo(({ theme, isDark, isDesktop, headerBg, borderColor, ins
                 name="projects" 
                 options={{ 
                     href: null, // Hidden from bottom tabs
+                }} 
+            />
+            <Tabs.Screen 
+                name="tasks" 
+                options={{ 
+                    title: t('tasks.title', 'Tareas'),
+                    tabBarIcon: ({ color, size }) => <CheckListIcon size={size} color={color} />,
+                    tabBarButton: visibleTabs.includes('tasks') ? undefined : () => null
+                }} 
+            />
+            <Tabs.Screen 
+                name="chat" 
+                options={{ 
+                    title: t('chat.title', 'Chat'),
+                    tabBarIcon: ({ color, size }) => <ChatIcon size={size} color={color} />,
+                    tabBarButton: visibleTabs.includes('chat') ? undefined : () => null
                 }} 
             />
             <Tabs.Screen 
@@ -214,7 +232,9 @@ export default function AppLayout() {
             return {
                 main: [
                     { name: 'overview', label: t('dashboard.overview', 'Resumen'), icon: DashboardIcon, href: '/(app)' },
+                    { name: 'tasks', label: t('tasks.title', 'Tareas'), icon: CheckListIcon, href: '/(app)/tasks' },
                     { name: 'finance', label: t('finance.title', 'Finanzas'), icon: CalculatorIcon, href: '/(app)/finance' },
+                    { name: 'chat', label: t('chat.title', 'Chat'), icon: ChatIcon, href: '/(app)/chat' },
                     { name: 'inventory', label: t('inventory.title', 'Inventario'), icon: PackageIcon, href: '/(app)/inventory' },
                     { name: 'operations', label: t('operations.title', 'Operaciones'), icon: FactoryIcon, href: '/(app)/operations' },
                 ],

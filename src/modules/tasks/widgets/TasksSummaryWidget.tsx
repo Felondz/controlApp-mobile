@@ -6,7 +6,7 @@ import { tasksApi } from '../../../services/api';
 
 export const TasksSummaryWidget = ({ project, ...props }: any) => {
     const { t } = useTranslate();
-    const [stats, setStats] = useState<{ pending: number; completed: number } | null>(null);
+    const [stats, setStats] = useState<{ pending: number; completed: number; in_progress: number; overdue: number } | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -22,9 +22,16 @@ export const TasksSummaryWidget = ({ project, ...props }: any) => {
                 const tasks = Array.isArray(response.data) ? response.data : response.data.data;
 
                 if (isMounted && tasks) {
-                    const pending = tasks.filter((t: any) => t.status !== 'completed').length;
+                    const pending = tasks.filter((t: any) => t.status === 'pending').length;
+                    const in_progress = tasks.filter((t: any) => t.status === 'in_progress').length;
                     const completed = tasks.filter((t: any) => t.status === 'completed').length;
-                    setStats({ pending, completed });
+                    
+                    const now = new Date();
+                    const overdue = tasks.filter((t: any) => 
+                        t.status !== 'completed' && t.due_date && new Date(t.due_date) < now
+                    ).length;
+
+                    setStats({ pending, completed, in_progress, overdue });
                     setLoading(false);
                 }
             } catch (error) {
@@ -56,7 +63,7 @@ export const TasksSummaryWidget = ({ project, ...props }: any) => {
                         </View>
                         {/* In Progress */}
                         <View className="flex-1 bg-sky-100 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-800 p-2 rounded-lg items-center">
-                            <Text className="text-xl font-bold text-sky-600 dark:text-sky-500">{0}</Text>
+                            <Text className="text-xl font-bold text-sky-600 dark:text-sky-500">{stats?.in_progress || 0}</Text>
                             <Text className="text-[10px] text-sky-700 dark:text-sky-400 uppercase font-medium">{t('tasks.in_progress', 'Progress')}</Text>
                         </View>
                         {/* Done */}
@@ -67,11 +74,11 @@ export const TasksSummaryWidget = ({ project, ...props }: any) => {
                     </View>
 
                     {/* Overdue Alert */}
-                    {(0) > 0 && ( // TODO: Add overdue count to state
+                    {(stats?.overdue || 0) > 0 && (
                         <View className="bg-red-50 dark:bg-red-900/20 p-2 rounded-md flex-row items-center gap-2">
                             <View className="w-2 h-2 bg-red-500 rounded-full" />
                             <Text className="text-xs text-red-700 dark:text-red-400 font-medium">
-                                {t('tasks.overdue_count', 'Overdue tasks')}
+                                {stats?.overdue} {t('tasks.overdue_count', 'Overdue tasks')}
                             </Text>
                         </View>
                     )}

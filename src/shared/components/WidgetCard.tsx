@@ -3,18 +3,22 @@ import { useAppTheme } from '../hooks';
 
 interface WidgetCardProps {
     title?: string;
+    icon?: React.ReactNode;
     children: React.ReactNode;
     onHide?: () => void;
     onSettings?: () => void;
+    onPress?: () => void;
     dragHandleProps?: any; // From react-native-draggable-flatlist
     className?: string;
 }
 
 export const WidgetCard = ({
     title,
+    icon,
     children,
     onHide,
     onSettings,
+    onPress,
     dragHandleProps, 
     className = ''
 }: WidgetCardProps) => {
@@ -22,7 +26,7 @@ export const WidgetCard = ({
     const { width } = useWindowDimensions();
     const isTablet = width >= 768;
 
-    return (
+    const content = (
         <View className={`bg-white dark:bg-secondary-800 rounded-2xl shadow-sm border border-secondary-200 dark:border-secondary-700 mb-6 overflow-hidden ${className}`}>
             {/* Header - Only render if title is present */}
             {title && (
@@ -41,6 +45,8 @@ export const WidgetCard = ({
                                 <Text className="text-secondary-400 dark:text-secondary-500 font-bold">⋮⋮</Text>
                             </Pressable>
                         )}
+
+                        {icon && <View>{icon}</View>}
 
                         <Text 
                             className="font-black text-base uppercase tracking-tight"
@@ -72,4 +78,14 @@ export const WidgetCard = ({
             </View>
         </View>
     );
+
+    if (onPress) {
+        return (
+            <Pressable onPress={onPress}>
+                {content}
+            </Pressable>
+        );
+    }
+
+    return content;
 };
