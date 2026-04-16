@@ -13,6 +13,12 @@
 - [x] **Paridad de Preferencias**: Extendida la interfaz `User` y `authStore` para soportar `settings.completed_tours` sincronizado con el backend vía GraphQL.
 - [x] **Bug Reporter Pro**: Actualizado el payload para enviar rígidamente `platform: 'mobile'`, permitiendo al backend categorizar correctamente los fallos.
 - [x] **Traducciones**: Importados nodos `"onboarding"`, `"tour"` y `"chat"` desde el backend web para paridad de mensajes.
+- [x] **WebSocket Fix**: Corregido error de instanciación de Laravel Echo (`constructor is not callable`) mediante una resolución robusta de los constructores de `Echo` y `Pusher` compatible con Metro/React Native.
+
+### Refactorización UI & Sistema de Diseño
+- [x] **Estandarización de Widgets**: Refactorizados todos los widgets de dashboard (Balance, Inventario, Operaciones, Tareas, Chat) eliminando radios de borde excesivos (`rounded-[32px]`) y normalizando tipografía.
+- [x] **Rediseño de Listados**: Ajustadas las pantallas de Transacciones, Inventario, Lotes y Tareas para una densidad de información óptima y paridad con el diseño de `ProjectCard`.
+- [x] **Optimización de Formularios y Detalles**: Corregidas las vistas de creación y detalle en todos los módulos, estandarizando el uso de botones del sistema (`PrimaryButton`, etc.) y eliminando mayúsculas sostenidas en etiquetas.
 
 ### Funcionalidades de Módulos
 - [x] **Dashboard de Proyecto Real**: Ensamblado el panel central en `app/(app)/projects/[id].tsx` con widgets funcionales de Tareas, Finanzas e Inventario.

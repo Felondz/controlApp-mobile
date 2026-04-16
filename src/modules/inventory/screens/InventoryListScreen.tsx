@@ -126,22 +126,22 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                 <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={() => handleEdit(item)}
-                    className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] overflow-hidden shadow-sm h-full"
+                    className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl overflow-hidden shadow-sm h-full"
                 >
-                    <View className="p-5">
-                        <View className="flex-row items-start justify-between mb-4">
+                    <View className="p-4">
+                        <View className="flex-row items-start justify-between mb-3">
                             <View className="flex-1 mr-2">
-                                <Text className="text-secondary-900 dark:text-secondary-50 font-black text-lg leading-tight" numberOfLines={2}>
+                                <Text className="text-secondary-900 dark:text-secondary-50 font-bold text-base leading-tight" numberOfLines={2}>
                                     {item.name}
                                 </Text>
                                 {item.sku && (
-                                    <Text className="text-secondary-400 dark:text-secondary-500 font-mono text-[10px] uppercase tracking-wider mt-1">
+                                    <Text className="text-secondary-400 dark:text-secondary-500 font-mono text-[9px] mt-1">
                                         {item.sku}
                                     </Text>
                                 )}
                             </View>
-                            <View className={`px-2.5 py-1 rounded-full ${getTypeBadgeStyle(item.type, isDark)}`}>
-                                <Text className="text-[10px] font-black uppercase tracking-wider">
+                            <View className={`px-2 py-0.5 rounded-full ${getTypeBadgeStyle(item.type, isDark)}`}>
+                                <Text className="text-[9px] font-bold">
                                     {getTypeLabel(item.type)}
                                 </Text>
                             </View>
@@ -149,14 +149,14 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
 
                         <View className="flex-row items-end justify-between">
                             <View>
-                                <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-1">
+                                <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-1">
                                     {t('inventory.stock', 'Existencias')}
                                 </Text>
                                 <View className="flex-row items-center">
-                                    <Text className={`text-2xl font-black ${isLowStock ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
+                                    <Text className={`text-xl font-black ${isLowStock ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
                                         {Number(item.current_stock).toLocaleString()}
                                     </Text>
-                                    <Text className="text-xs font-bold text-secondary-400 dark:text-secondary-500 ml-1.5 mb-1">
+                                    <Text className="text-[10px] font-bold text-secondary-400 dark:text-secondary-500 ml-1.5 mb-1">
                                         {item.unit}
                                     </Text>
                                 </View>
@@ -165,10 +165,10 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                             <View className="items-end">
                                 {item.sale_price > 0 && (
                                     <>
-                                        <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-1">
+                                        <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-1">
                                             {t('inventory.price', 'Precio')}
                                         </Text>
-                                        <Text className="text-lg font-black text-secondary-900 dark:text-secondary-50">
+                                        <Text className="text-base font-black text-secondary-900 dark:text-secondary-50">
                                             ${Number(item.sale_price).toFixed(2)}
                                         </Text>
                                     </>
@@ -177,9 +177,9 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                         </View>
 
                         {isLowStock && (
-                            <View className="flex-row items-center mt-4 bg-danger-50 dark:bg-danger-900/10 px-3 py-2 rounded-2xl self-start border border-danger-100 dark:border-danger-900/20">
-                                <ExclamationTriangleIcon size={14} color="#ef4444" />
-                                <Text className="text-xs font-black text-danger-500 ml-2 uppercase tracking-wider">
+                            <View className="flex-row items-center mt-3 bg-danger-50 dark:bg-danger-900/10 px-2.5 py-1.5 rounded-xl self-start border border-danger-100 dark:border-danger-900/20">
+                                <ExclamationTriangleIcon size={12} color="#ef4444" />
+                                <Text className="text-[10px] font-bold text-danger-500 ml-1.5">
                                     {t('inventory.low_stock', 'Bajo Stock')}
                                 </Text>
                             </View>
@@ -189,20 +189,20 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                     <View className="flex-row border-t border-secondary-100 dark:border-secondary-800/50 bg-secondary-50/30 dark:bg-secondary-800/30">
                         <TouchableOpacity 
                             onPress={() => handleEdit(item)} 
-                            className="flex-row items-center justify-center flex-1 py-4 active:bg-secondary-100 dark:active:bg-secondary-800"
+                            className="flex-row items-center justify-center flex-1 py-3 active:bg-secondary-100 dark:active:bg-secondary-800"
                         >
-                            <PencilIcon size={16} color={theme.primary600} />
-                            <Text className="text-xs font-black uppercase tracking-widest ml-2" style={{ color: theme.primary600 }}>
+                            <PencilIcon size={14} color={theme.primary600} />
+                            <Text className="text-xs font-bold ml-2" style={{ color: theme.primary600 }}>
                                 {t('common.edit', 'Editar')}
                             </Text>
                         </TouchableOpacity>
                         <View className="w-[1px] bg-secondary-100 dark:border-secondary-800/50" />
                         <TouchableOpacity 
                             onPress={() => setDeleteModalItem(item)} 
-                            className="flex-row items-center justify-center flex-1 py-4 active:bg-danger-50 dark:active:bg-danger-900/10"
+                            className="flex-row items-center justify-center flex-1 py-3 active:bg-danger-50 dark:active:bg-danger-900/10"
                         >
-                            <TrashIcon size={16} color="#ef4444" />
-                            <Text className="text-xs font-black uppercase tracking-widest ml-2 text-danger-500">
+                            <TrashIcon size={14} color="#ef4444" />
+                            <Text className="text-xs font-bold ml-2 text-danger-500">
                                 {t('common.delete', 'Eliminar')}
                             </Text>
                         </TouchableOpacity>
@@ -231,7 +231,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                     </TouchableOpacity>
                 </View>
 
-                <View className="flex-row items-center bg-secondary-100/50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[24px] px-4 shadow-sm">
+                <View className="flex-row items-center bg-secondary-100/50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl px-4 shadow-sm">
                     <SearchIcon size={20} color={isDark ? '#4b5563' : '#9ca3af'} />
                     <TextInput
                         className="flex-1 py-4 px-3 text-secondary-900 dark:text-secondary-50 font-bold"
@@ -344,7 +344,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
             {filteredItems.length > 0 && (
                 <Pressable
                     onPress={handleAdd}
-                    className="absolute bottom-10 right-8 w-16 h-16 rounded-[24px] shadow-2xl items-center justify-center z-50 active:scale-90 transition-all"
+                    className="absolute bottom-10 right-8 w-16 h-16 rounded-full shadow-2xl items-center justify-center z-50 active:scale-90 transition-all"
                     style={{ 
                         backgroundColor: theme.primary600,
                         shadowColor: theme.primary600,
@@ -363,32 +363,32 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                 onClose={() => setDeleteModalItem(null)}
                 size="sm"
             >
-                <View className="p-8 bg-white dark:bg-secondary-900 rounded-[40px]">
-                    <View className="w-16 h-16 rounded-3xl bg-danger-50 dark:bg-danger-900/10 items-center justify-center mb-6">
-                        <TrashIcon size={32} color="#ef4444" />
+                <View className="p-6 bg-white dark:bg-secondary-900 rounded-2xl">
+                    <View className="w-14 h-14 rounded-2xl bg-danger-50 dark:bg-danger-900/10 items-center justify-center mb-5 self-center">
+                        <TrashIcon size={28} color="#ef4444" />
                     </View>
-                    <Text className="text-2xl font-black text-secondary-900 dark:text-secondary-50 mb-3 tracking-tight">
+                    <Text className="text-xl font-bold text-secondary-900 dark:text-secondary-50 mb-2 tracking-tight text-center">
                         {t('inventory.delete_item', '¿Eliminar item?')}
                     </Text>
-                    <Text className="text-base font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed">
+                    <Text className="text-sm font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed text-center">
                         {t('inventory.confirm_delete', 'Esta acción no se puede deshacer. El item "{name}" será eliminado permanentemente.').replace('{name}', deleteModalItem?.name || '')}
                     </Text>
-                    <View className="flex-row gap-4">
+                    <View className="flex-row gap-3">
                         <View className="flex-1">
                             <SecondaryButton 
                                 onPress={() => setDeleteModalItem(null)}
-                                className="h-14 rounded-2xl"
+                                className="rounded-xl"
                             >
-                                <Text className="font-black uppercase tracking-widest">{t('common.cancel', 'No, volver')}</Text>
+                                <Text className="font-bold">{t('common.cancel', 'No, volver')}</Text>
                             </SecondaryButton>
                         </View>
                         <View className="flex-1">
                             <DangerButton 
                                 onPress={handleDelete}
                                 loading={deleting}
-                                className="h-14 rounded-2xl"
+                                className="rounded-xl"
                             >
-                                <Text className="text-white font-black uppercase tracking-widest">{t('common.delete', 'Sí, borrar')}</Text>
+                                <Text className="text-white font-bold">{t('common.delete', 'Sí, borrar')}</Text>
                             </DangerButton>
                         </View>
                     </View>

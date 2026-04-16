@@ -78,7 +78,7 @@ export default function CreateLote({ proyectoId, onSuccess, onCancel }: CreateLo
                         <Text className="text-2xl font-black tracking-tighter text-secondary-900 dark:text-secondary-50">
                             {t('operations.new_lote', 'Nuevo Lote')}
                         </Text>
-                        <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase tracking-[2px] mt-0.5">
+                        <Text className="text-secondary-500 dark:text-secondary-400 text-[10px] font-bold mt-0.5">
                             {t('operations.create_production_unit', 'Crear unidad de producción')}
                         </Text>
                     </View>
@@ -86,10 +86,10 @@ export default function CreateLote({ proyectoId, onSuccess, onCancel }: CreateLo
             </View>
 
             <ScrollView className="flex-1 p-5" showsVerticalScrollIndicator={false}>
-                <View className="bg-white dark:bg-secondary-900 rounded-[32px] p-6 border border-secondary-100 dark:border-secondary-800 shadow-sm mb-8">
+                <View className="bg-white dark:bg-secondary-900 rounded-2xl p-5 border border-secondary-100 dark:border-secondary-800 shadow-sm mb-6">
                     {/* Process Selector */}
-                    <View className="mb-6">
-                        <Text className="text-secondary-700 dark:text-secondary-300 font-bold mb-3 text-sm ml-1">
+                    <View className="mb-5">
+                        <Text className="text-secondary-500 dark:text-secondary-400 font-bold mb-2.5 text-[10px] ml-1">
                             {t('operations.production_process', 'Proceso de Producción')}
                         </Text>
                         <TouchableOpacity
@@ -129,23 +129,19 @@ export default function CreateLote({ proyectoId, onSuccess, onCancel }: CreateLo
                     />
                 </View>
 
-                <View className="flex-row gap-4 mb-10">
+                <View className="flex-row gap-3 mb-10">
                     <SecondaryButton 
                         onPress={handleCancel}
-                        className="flex-1 h-14 rounded-2xl"
+                        className="flex-1"
                     >
-                        <Text className="font-black uppercase tracking-widest text-secondary-600 dark:text-secondary-400">
-                            {t('common.cancel', 'Cancelar')}
-                        </Text>
+                        <Text className="font-bold">{t('common.cancel', 'Cancelar')}</Text>
                     </SecondaryButton>
                     <PrimaryButton 
                         onPress={handleCreate}
                         loading={creating}
-                        className="flex-2 h-14 rounded-2xl"
+                        className="flex-1"
                     >
-                        <Text className="text-white font-black uppercase tracking-widest">
-                            {t('common.create', 'Crear')}
-                        </Text>
+                        <Text className="text-white font-bold">{t('common.create', 'Crear Lote')}</Text>
                     </PrimaryButton>
                 </View>
             </ScrollView>
@@ -176,30 +172,30 @@ export default function CreateLote({ proyectoId, onSuccess, onCancel }: CreateLo
                                     setProcessName(proc.name);
                                     setShowProcessModal(false);
                                 }}
-                                className={`flex-row items-center justify-between p-4 mb-2 rounded-2xl border ${
+                                className={`flex-row items-center justify-between p-3.5 mb-2 rounded-xl border ${
                                     processId === proc.id 
                                         ? 'bg-primary-50 border-primary-200 dark:bg-primary-900/20 dark:border-primary-800' 
                                         : 'bg-secondary-50 border-secondary-100 dark:bg-secondary-800/50 dark:border-secondary-800'
                                 }`}
                             >
                                 <View className="flex-row items-center">
-                                    <View className={`w-10 h-10 rounded-xl items-center justify-center mr-3 ${
+                                    <View className={`w-9 h-9 rounded-xl items-center justify-center mr-3 ${
                                         processId === proc.id ? 'bg-primary-500' : 'bg-secondary-200 dark:bg-secondary-700'
                                     }`}>
-                                        <FactoryIcon size={20} color={processId === proc.id ? 'white' : (isDark ? '#9ca3af' : '#6b7280')} />
+                                        <FactoryIcon size={18} color={processId === proc.id ? 'white' : (isDark ? '#9ca3af' : '#6b7280')} />
                                     </View>
                                     <View>
-                                        <Text className={`font-black ${processId === proc.id ? 'text-primary-700 dark:text-primary-400' : 'text-secondary-900 dark:text-secondary-100'}`}>
+                                        <Text className={`text-sm font-bold ${processId === proc.id ? 'text-primary-700 dark:text-primary-400' : 'text-secondary-900 dark:text-secondary-100'}`}>
                                             {proc.name}
                                         </Text>
-                                        <Text className="text-[10px] text-secondary-500 font-bold uppercase tracking-wider">
+                                        <Text className="text-[10px] text-secondary-500 font-bold">
                                             {proc.etapas?.length || 0} {t('operations.stages', 'Etapas')}
                                         </Text>
                                     </View>
                                 </View>
                                 {processId === proc.id && (
                                     <View className="bg-primary-500 rounded-full p-1">
-                                        <CheckIcon size={14} color="white" />
+                                        <CheckIcon size={12} color="white" />
                                     </View>
                                 )}
                             </TouchableOpacity>

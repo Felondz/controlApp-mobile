@@ -47,7 +47,7 @@ export const TasksSummaryWidget = ({ project, ...props }: any) => {
 
     // Web parity: Grid of 3 + Overdue Alert
     return (
-        <WidgetCard className="mt-0" {...props}>
+        <WidgetCard className="mt-0" title={t('tasks.summary', 'Resumen de Tareas')} {...props}>
             {loading ? (
                 <View className="h-24 justify-center items-center">
                     <ActivityIndicator size="small" color="#9CA3AF" />
@@ -55,30 +55,30 @@ export const TasksSummaryWidget = ({ project, ...props }: any) => {
             ) : (
                 <View>
                     {/* Stats Grid */}
-                    <View className="flex-row gap-2 mb-3">
+                    <View className="flex-row gap-2.5 mb-4">
                         {/* Pending */}
-                        <View className="flex-1 bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-2 rounded-lg items-center">
-                            <Text className="text-xl font-bold text-amber-600 dark:text-amber-500">{stats?.pending || 0}</Text>
-                            <Text className="text-[10px] text-amber-700 dark:text-amber-400 uppercase font-medium">{t('tasks.pending', 'Pending')}</Text>
+                        <View className="flex-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50 p-2.5 rounded-xl items-center">
+                            <Text className="text-lg font-black text-amber-600 dark:text-amber-500">{stats?.pending || 0}</Text>
+                            <Text className="text-[9px] text-amber-700 dark:text-amber-400 font-bold">{t('tasks.pending', 'Pendientes')}</Text>
                         </View>
                         {/* In Progress */}
-                        <View className="flex-1 bg-sky-100 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-800 p-2 rounded-lg items-center">
-                            <Text className="text-xl font-bold text-sky-600 dark:text-sky-500">{stats?.in_progress || 0}</Text>
-                            <Text className="text-[10px] text-sky-700 dark:text-sky-400 uppercase font-medium">{t('tasks.in_progress', 'Progress')}</Text>
+                        <View className="flex-1 bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800/50 p-2.5 rounded-xl items-center">
+                            <Text className="text-lg font-black text-sky-600 dark:text-sky-500">{stats?.in_progress || 0}</Text>
+                            <Text className="text-[9px] text-sky-700 dark:text-sky-400 font-bold">{t('tasks.in_progress', 'En Proceso')}</Text>
                         </View>
                         {/* Done */}
-                        <View className="flex-1 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 p-2 rounded-lg items-center">
-                            <Text className="text-xl font-bold text-green-600 dark:text-green-500">{stats?.completed || 0}</Text>
-                            <Text className="text-[10px] text-green-700 dark:text-green-400 uppercase font-medium">{t('tasks.done', 'Done')}</Text>
+                        <View className="flex-1 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/50 p-2.5 rounded-xl items-center">
+                            <Text className="text-lg font-black text-green-600 dark:text-green-500">{stats?.completed || 0}</Text>
+                            <Text className="text-[9px] text-green-700 dark:text-green-400 font-bold">{t('tasks.done', 'Listas')}</Text>
                         </View>
                     </View>
 
                     {/* Overdue Alert */}
                     {(stats?.overdue || 0) > 0 && (
-                        <View className="bg-red-50 dark:bg-red-900/20 p-2 rounded-md flex-row items-center gap-2">
+                        <View className="bg-red-50 dark:bg-red-900/20 px-3 py-2.5 rounded-xl flex-row items-center gap-2.5 border border-red-100 dark:border-red-900/30">
                             <View className="w-2 h-2 bg-red-500 rounded-full" />
-                            <Text className="text-xs text-red-700 dark:text-red-400 font-medium">
-                                {stats?.overdue} {t('tasks.overdue_count', 'Overdue tasks')}
+                            <Text className="text-xs text-red-700 dark:text-red-400 font-bold">
+                                {stats?.overdue} {t('tasks.overdue_count', 'tareas vencidas')}
                             </Text>
                         </View>
                     )}

@@ -148,18 +148,18 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                 )}
             </View>
 
-            <ScrollView className="flex-1 p-4">
-                <View className={`${cardBg} ${borderColor} border rounded-xl p-4 mb-4`}>
-                    <View className="flex-row items-center mb-4">
-                        <View className={`w-14 h-14 rounded-full items-center justify-center mr-4 ${
+            <ScrollView className="flex-1 p-5" showsVerticalScrollIndicator={false}>
+                <View className={`${cardBg} ${borderColor} border rounded-2xl p-5 mb-6 shadow-sm`}>
+                    <View className="flex-row items-center mb-5">
+                        <View className={`w-12 h-12 rounded-xl items-center justify-center mr-4 ${
                             isIncome 
-                                ? isDark ? 'bg-green-900/30' : 'bg-green-100'
-                                : isDark ? 'bg-red-900/30' : 'bg-red-100'
+                                ? isDark ? 'bg-green-900/30' : 'bg-green-50'
+                                : isDark ? 'bg-red-900/30' : 'bg-red-50'
                         }`}>
                             {isIncome ? (
-                                <ArrowTrendingUpIcon size={28} color={isIncome ? (isDark ? '#4ade80' : '#16a34a') : (isDark ? '#f87171' : '#dc2626')} />
+                                <ArrowTrendingUpIcon size={24} color={isDark ? '#4ade80' : '#16a34a'} />
                             ) : (
-                                <ArrowTrendingDownIcon size={28} color={isDark ? '#f87171' : '#dc2626'} />
+                                <ArrowTrendingDownIcon size={24} color={isDark ? '#f87171' : '#dc2626'} />
                             )}
                         </View>
                         <View className="flex-1">
@@ -167,15 +167,15 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                                 <TextInput
                                     value={trans.titulo || ''}
                                     onChangeText={(text) => setEditedTrans(prev => ({ ...prev, titulo: text }))}
-                                    className={`text-xl font-bold ${inputBg} ${borderColor} border rounded-lg px-3 py-1 ${textColor}`}
+                                    className={`text-lg font-bold ${inputBg} ${borderColor} border rounded-xl px-3 py-1.5 ${textColor}`}
                                     placeholderTextColor={textSecondary}
                                 />
                             ) : (
-                                <Text className={`text-xl font-bold ${textColor}`}>
+                                <Text className={`text-lg font-bold ${textColor}`} numberOfLines={1}>
                                     {trans.titulo || t('finance.no_description', 'Sin descripción')}
                                 </Text>
                             )}
-                            <Text className={`text-sm ${textSecondary}`}>
+                            <Text className={`text-[10px] font-bold ${textSecondary} mt-0.5`}>
                                 {trans.fecha ? new Date(trans.fecha).toLocaleDateString('es-CO', {
                                     weekday: 'long',
                                     year: 'numeric',
@@ -184,63 +184,64 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                                 }) : '-'}
                             </Text>
                         </View>
-                        <View className={`text-2xl font-bold ${
+                    </View>
+
+                    <View className="items-center py-4 mb-5 bg-secondary-50/50 dark:bg-secondary-900/30 rounded-2xl border border-secondary-100 dark:border-secondary-700/50">
+                        <Text className={`text-xs font-bold ${textSecondary} mb-1`}>
+                            {isIncome ? t('finance.income', 'Ingreso') : t('finance.expense', 'Gasto')}
+                        </Text>
+                        <Text className={`text-3xl font-black ${
                             isIncome 
                                 ? isDark ? 'text-green-400' : 'text-green-600'
                                 : isDark ? 'text-red-400' : 'text-red-600'
                         }`}>
                             {isIncome ? '+' : '-'}{formatMonto(trans.monto ?? 0)}
-                        </View>
+                        </Text>
                     </View>
 
-                    <View className={`h-px ${borderColor} my-4`} />
-
-                    <View className="space-y-4">
+                    <View className="gap-4">
                         <View className="flex-row items-center">
-                            <FolderIcon size={18} color={textSecondary} />
-                            <Text className={`text-sm ${textSecondary} ml-3 w-24`}>
+                            <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
+                                <FolderIcon size={16} color={textSecondary} />
+                            </View>
+                            <Text className={`text-xs font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.account', 'Cuenta')}:
                             </Text>
-                            <Text className={`flex-1 ${textColor}`}>
+                            <Text className={`flex-1 text-sm font-bold ${textColor}`}>
                                 {cuenta?.nombre || '-'}
                             </Text>
                         </View>
 
                         <View className="flex-row items-center">
-                            <TagIcon size={18} color={textSecondary} />
-                            <Text className={`text-sm ${textSecondary} ml-3 w-24`}>
+                            <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
+                                <TagIcon size={16} color={textSecondary} />
+                            </View>
+                            <Text className={`text-xs font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.category', 'Categoría')}:
                             </Text>
-                            <Text className={`flex-1 ${textColor}`}>
+                            <Text className={`flex-1 text-sm font-bold ${textColor}`}>
                                 {categoria?.nombre || '-'}
                             </Text>
                         </View>
 
                         <View className="flex-row items-center">
-                            <CalendarIcon size={18} color={textSecondary} />
-                            <Text className={`text-sm ${textSecondary} ml-3 w-24`}>
+                            <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
+                                <CalendarIcon size={16} color={textSecondary} />
+                            </View>
+                            <Text className={`text-xs font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.date', 'Fecha')}:
                             </Text>
-                            <Text className={`flex-1 ${textColor}`}>
+                            <Text className={`flex-1 text-sm font-bold ${textColor}`}>
                                 {trans.fecha ? new Date(trans.fecha).toLocaleDateString() : '-'}
-                            </Text>
-                        </View>
-
-                        <View className="flex-row items-center">
-                            <Text className={`text-sm ${textSecondary} w-24`}>
-                                ID:
-                            </Text>
-                            <Text className={`flex-1 ${textSecondary} font-mono text-xs`}>
-                                #{trans.id}
                             </Text>
                         </View>
                     </View>
                 </View>
 
                 {isEditing && (
-                    <View className={`${cardBg} ${borderColor} border rounded-xl p-4 mb-4`}>
-                        <Text className={`text-sm font-medium ${textSecondary} mb-2`}>
-                            {t('finance.amount', 'Monto')} (en centavos):
+                    <View className={`${cardBg} ${borderColor} border rounded-2xl p-5 mb-6 shadow-sm`}>
+                        <Text className={`text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1`}>
+                            {t('finance.amount', 'Monto')} (centavos):
                         </Text>
                         <TextInput
                             value={String(trans.monto ?? 0)}
@@ -249,10 +250,10 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                                 monto: parseInt(text) || 0 
                             }))}
                             keyboardType="numeric"
-                            className={`${inputBg} ${borderColor} border rounded-lg px-3 py-2 ${textColor}`}
+                            className={`${inputBg} ${borderColor} border rounded-xl px-4 py-3 text-sm font-bold ${textColor}`}
                             placeholderTextColor={textSecondary}
                         />
-                        <Text className={`text-xs ${textSecondary} mt-1`}>
+                        <Text className={`text-[10px] font-medium ${textSecondary} mt-2 ml-1`}>
                             {t('finance.amount_hint', 'Ingresa el monto en centavos. Positivo para ingresos, negativo para gastos.')}
                         </Text>
                     </View>
@@ -262,7 +263,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                     <PrimaryButton
                         onPress={handleSave}
                         loading={updating}
-                        className="mb-4"
+                        className="mb-10"
                     >
                         {t('common.save', 'Guardar Cambios')}
                     </PrimaryButton>

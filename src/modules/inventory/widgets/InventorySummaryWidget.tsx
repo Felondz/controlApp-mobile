@@ -81,19 +81,19 @@ export const InventorySummaryWidget = ({ proyectoId, compact = false, stats: pro
 
     return (
         <WidgetCard title={t('inventory.summary', 'Resumen de Inventario')}>
-            <View className="flex-row flex-wrap gap-3">
+            <View className="flex-row flex-wrap gap-2.5">
                 {stats.map((stat, index) => (
                     <View
                         key={index}
-                        className={`flex-1 min-w-[45%] rounded-2xl p-4 border border-secondary-100 dark:border-secondary-700/50 ${stat.bgColor}`}
+                        className={`flex-1 min-w-[45%] rounded-xl p-3.5 border border-secondary-100 dark:border-secondary-700/50 ${stat.bgColor}`}
                     >
-                        <View className="flex-row items-center mb-2">
-                            <stat.icon size={16} color={stat.color} />
-                            <Text className="text-[10px] font-black text-secondary-500 dark:text-secondary-400 uppercase tracking-widest ml-2">
+                        <View className="flex-row items-center mb-1.5">
+                            <stat.icon size={14} color={stat.color} />
+                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 ml-1.5">
                                 {stat.label}
                             </Text>
                         </View>
-                        <Text className="text-base font-bold text-secondary-900 dark:text-secondary-100" numberOfLines={1}>
+                        <Text className="text-sm font-bold text-secondary-900 dark:text-secondary-100" numberOfLines={1}>
                             {stat.value}
                         </Text>
                     </View>

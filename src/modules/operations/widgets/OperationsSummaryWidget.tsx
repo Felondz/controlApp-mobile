@@ -32,40 +32,40 @@ export const OperationsSummaryWidget = ({ proyectoId, compact = false }: Operati
 
     return (
         <WidgetCard title={t('operations.active_batches', 'Lotes Activos')}>
-            <View className="gap-4">
+            <View className="gap-3">
                 {lotes.map((lote) => (
-                    <View key={lote.id} className="bg-secondary-50 dark:bg-secondary-800/50 rounded-2xl p-4 border border-secondary-100 dark:border-secondary-700/50">
+                    <View key={lote.id} className="bg-secondary-50 dark:bg-secondary-800/50 rounded-xl p-3.5 border border-secondary-100 dark:border-secondary-700/50">
                         <View className="flex-row justify-between items-center mb-3">
                             <View className="flex-row items-center">
-                                <FactoryIcon size={18} color={theme.primary600} />
-                                <Text className="ml-2 font-bold text-secondary-900 dark:text-secondary-100">{lote.nombre}</Text>
+                                <FactoryIcon size={16} color={theme.primary600} />
+                                <Text className="ml-2 text-sm font-bold text-secondary-900 dark:text-secondary-100">{lote.nombre}</Text>
                             </View>
                             <View 
-                                className="px-2 py-1 rounded-lg bg-primary-100 dark:bg-primary-900 border border-primary-200 dark:border-primary-800 relative overflow-hidden"
+                                className="px-2.5 py-0.5 rounded-full border border-primary-200 dark:border-primary-800 relative overflow-hidden"
                                 style={{ backgroundColor: theme.primary100 }}
                             >
                                 {/* Safe opacity overlay */}
                                 <View className="absolute inset-0 bg-white opacity-40" pointerEvents="none" />
-                                <Text className="text-[10px] font-bold uppercase z-10" style={{ color: theme.primary700 }}>{lote.estado}</Text>
+                                <Text className="text-[9px] font-bold z-10" style={{ color: theme.primary700 }}>{lote.estado}</Text>
                             </View>
                         </View>
                         
                         {/* Progress Bar */}
-                        <View className="h-2 bg-secondary-200 dark:bg-secondary-700 rounded-full overflow-hidden">
+                        <View className="h-1.5 bg-secondary-200 dark:bg-secondary-700 rounded-full overflow-hidden">
                             <View 
-                                className="h-full" 
+                                className="h-full rounded-full" 
                                 style={{ width: `${lote.progreso * 100}%`, backgroundColor: theme.primary500 }} 
                             />
                         </View>
                         <View className="flex-row justify-between mt-2">
-                            <Text className="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">Progreso</Text>
+                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400">Progreso</Text>
                             <Text className="text-[10px] font-bold text-secondary-600 dark:text-secondary-300">{Math.round(lote.progreso * 100)}%</Text>
                         </View>
                     </View>
                 ))}
                 
-                <Pressable className="py-2 items-center active:opacity-70">
-                    <Text className="text-sm font-bold" style={{ color: theme.primary600 }}>
+                <Pressable className="py-2 items-center active:opacity-70 mt-1">
+                    <Text className="text-xs font-bold" style={{ color: theme.primary600 }}>
                         {t('common.view_all', 'Ver todos →')}
                     </Text>
                 </Pressable>

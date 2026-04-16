@@ -92,9 +92,9 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 justify-end bg-black/40">
-                <View className="bg-white dark:bg-secondary-900 rounded-t-[32px] p-6 max-h-[90%]">
+                <View className="bg-white dark:bg-secondary-900 rounded-t-3xl p-6 max-h-[90%]">
                     <View className="flex-row justify-between items-center mb-6">
-                        <Text className={`text-xl font-black ${colorClass}`}>
+                        <Text className={`text-lg font-bold ${colorClass}`}>
                             {isIncome ? t('finance.register_income') : t('finance.register_expense')}
                         </Text>
                     </View>
@@ -118,7 +118,7 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
 
                             {/* Minimalist "Selects" for accounts and categories since we don't have a Dropdown component right here */}
                             <View>
-                                <Text className="text-xs font-bold text-secondary-500 mb-2">{t('finance.account')}</Text>
+                                <Text className="text-[10px] font-bold text-secondary-500 mb-2 uppercase tracking-wider">{t('finance.account')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {accounts.map((acc: any) => (
                                         <SecondaryButton
@@ -126,15 +126,16 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                                             variant={accountId === acc.id ? 'default' : 'outline'}
                                             onPress={() => setAccountId(acc.id)}
                                             size="sm"
+                                            className="rounded-xl"
                                         >
-                                            {acc.nombre}
+                                            <Text className={`text-xs font-bold ${accountId === acc.id ? 'text-white' : 'text-secondary-600'}`}>{acc.nombre}</Text>
                                         </SecondaryButton>
                                     ))}
                                 </View>
                             </View>
 
                             <View>
-                                <Text className="text-xs font-bold text-secondary-500 mb-2">{t('finance.category')}</Text>
+                                <Text className="text-[10px] font-bold text-secondary-500 mb-2 uppercase tracking-wider">{t('finance.category')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {validCategories.map((cat: any) => (
                                         <SecondaryButton
@@ -142,8 +143,9 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                                             variant={categoryId === cat.id ? 'default' : 'outline'}
                                             onPress={() => setCategoryId(cat.id)}
                                             size="sm"
+                                            className="rounded-xl"
                                         >
-                                            {cat.nombre}
+                                            <Text className={`text-xs font-bold ${categoryId === cat.id ? 'text-white' : 'text-secondary-600'}`}>{cat.nombre}</Text>
                                         </SecondaryButton>
                                     ))}
                                 </View>
@@ -151,18 +153,17 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                         </View>
                     </ScrollView>
 
-                    <View className="flex-row gap-3 mt-4">
-                        <SecondaryButton variant="outline" onPress={onClose} fullWidth className="flex-1">
+                    <View className="flex-row gap-3 mt-2 mb-4">
+                        <SecondaryButton variant="outline" onPress={onClose} className="flex-1">
                             {t('common.cancel')}
                         </SecondaryButton>
                         <PrimaryButton 
                             onPress={handleSave} 
                             loading={saving} 
                             disabled={!amount || !accountId || !categoryId} 
-                            fullWidth 
-                            className={`flex-1 ${isIncome ? 'bg-green-600' : 'bg-red-600'}`}
+                            className={`flex-1 ${isIncome ? 'bg-green-600 border-green-600' : 'bg-red-600 border-red-600'}`}
                         >
-                            {t('common.save')}
+                            <Text className="text-white font-bold">{t('common.save')}</Text>
                         </PrimaryButton>
                     </View>
                 </View>

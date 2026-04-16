@@ -125,92 +125,94 @@ export default function LoteDetail({ loteId, onBack }: LoteDetailProps) {
                 </Text>
             </View>
 
-            <ScrollView className="flex-1 p-4">
-                <View className={`${cardBg} ${borderColor} border rounded-xl p-4 mb-4`}>
-                    <View className="flex-row items-start justify-between mb-4">
+            <ScrollView className="flex-1 p-5" showsVerticalScrollIndicator={false}>
+                <View className={`${cardBg} ${borderColor} border rounded-2xl p-5 mb-6 shadow-sm`}>
+                    <View className="flex-row items-start justify-between mb-5">
                         <View className="flex-1">
                             <View className="flex-row items-center mb-1">
-                                <FactoryIcon size={16} color={textSecondary} />
-                                <Text className={`text-xs ${textSecondary} ml-1`}>
+                                <FactoryIcon size={14} color={textSecondary} />
+                                <Text className={`text-[10px] font-bold ${textSecondary} ml-1.5`}>
                                     {lote.productionProcess?.name || t('operations.process', 'Proceso')}
                                 </Text>
                             </View>
                             <Text className={`text-xl font-bold ${textColor}`}>{lote.code}</Text>
                         </View>
-                        <View className={`px-3 py-1 rounded-full text-xs font-medium uppercase ${getStatusBadge(lote.status)}`}>
-                            {lote.status}
+                        <View className={`px-2.5 py-0.5 rounded-full ${getStatusBadge(lote.status)}`}>
+                            <Text className="text-[10px] font-bold">{lote.status}</Text>
                         </View>
                     </View>
 
-                    <View className={`h-px ${borderColor} my-4`} />
+                    <View className={`h-px ${borderColor} my-5`} />
 
                     <View className="space-y-4">
                         <View className="flex-row justify-between items-center">
-                            <Text className={`text-sm ${textSecondary}`}>
+                            <Text className={`text-xs font-bold ${textSecondary}`}>
                                 {t('operations.current_stage', 'Etapa Actual')}:
                             </Text>
-                            <View className={`px-3 py-1 rounded-lg border ${borderColor} ${isDark ? 'bg-secondary-700' : 'bg-secondary-50'}`}>
-                                <Text className={`text-sm font-medium ${textColor}`}>
+                            <View className={`px-3 py-1 rounded-xl border ${borderColor} ${isDark ? 'bg-secondary-700' : 'bg-secondary-50'}`}>
+                                <Text className={`text-xs font-bold ${textColor}`}>
                                     {lote.stage?.name || 'Inicio'}
                                 </Text>
                             </View>
                         </View>
 
                         <View className="flex-row justify-between items-center">
-                            <Text className={`text-sm ${textSecondary}`}>
+                            <Text className={`text-xs font-bold ${textSecondary}`}>
                                 {t('operations.quantity', 'Cantidad')}:
                             </Text>
-                            <Text className={`text-lg font-bold ${textColor}`}>
+                            <Text className={`text-base font-black ${textColor}`}>
                                 {lote.current_quantity}
                             </Text>
                         </View>
 
                         <View className="flex-row justify-between items-center">
-                            <Text className={`text-sm flex-row items-center ${textSecondary}`}>
+                            <View className="flex-row items-center">
                                 <ClockIcon size={14} color={textSecondary} /> 
-                                <Text className="ml-1">{t('operations.start_date', 'Fecha Inicio')}:</Text>
-                            </Text>
-                            <Text className={`text-sm ${textColor}`}>
+                                <Text className={`text-xs font-bold ${textSecondary} ml-1`}>{t('operations.start_date', 'Fecha Inicio')}:</Text>
+                            </View>
+                            <Text className={`text-xs font-bold ${textColor}`}>
                                 {new Date(lote.start_date).toLocaleDateString()}
                             </Text>
                         </View>
 
                         {lote.productionProcess?.etapas && lote.productionProcess.etapas.length > 0 && (
-                            <View className="mt-4">
-                                <Text className={`text-xs font-medium ${textSecondary} mb-2`}>
-                                    {t('operations.progress', 'Progreso')}:
+                            <View className="mt-5">
+                                <Text className={`text-[10px] font-black ${textSecondary} mb-3 uppercase tracking-widest`}>
+                                    {t('operations.workflow', 'Flujo de Trabajo')}:
                                 </Text>
-                                <View className="space-y-2">
+                                <View className="gap-3">
                                     {lote.productionProcess.etapas.map((etapa, index) => {
                                         const isCurrentStage = etapa.id === lote.stage_id;
                                         const isCompleted = lote.stage ? etapa.order < lote.stage.order : false;
                                         
                                         return (
                                             <View key={etapa.id} className="flex-row items-center">
-                                                <View className={`w-6 h-6 rounded-full items-center justify-center mr-3 ${
+                                                <View className={`w-7 h-7 rounded-xl items-center justify-center mr-3 ${
                                                     isCompleted 
                                                         ? 'bg-green-500' 
                                                         : isCurrentStage 
                                                             ? 'bg-primary-500' 
-                                                            : isDark ? 'bg-secondary-700' : 'bg-secondary-200'
+                                                            : isDark ? 'bg-secondary-700' : 'bg-secondary-100'
                                                 }`}>
                                                     {isCompleted ? (
-                                                        <CheckIcon size={14} color="white" />
+                                                        <CheckIcon size={16} color="white" />
                                                     ) : (
-                                                        <Text className={`text-xs ${isCurrentStage ? 'text-white' : textSecondary}`}>
+                                                        <Text className={`text-xs font-bold ${isCurrentStage ? 'text-white' : textSecondary}`}>
                                                             {index + 1}
                                                         </Text>
                                                     )}
                                                 </View>
                                                 <Text className={`flex-1 text-sm ${
-                                                    isCurrentStage ? `font-medium ${textColor}` : textSecondary
+                                                    isCurrentStage ? `font-bold ${textColor}` : `font-medium ${textSecondary}`
                                                 }`}>
                                                     {etapa.name}
                                                 </Text>
                                                 {isCurrentStage && (
-                                                    <Text className={`text-xs ${textSecondary}`}>
-                                                        {t('common.current', 'Actual')}
-                                                    </Text>
+                                                    <View className="bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-full border border-primary-100 dark:border-primary-800">
+                                                        <Text className="text-[9px] font-bold text-primary-600 dark:text-primary-400">
+                                                            {t('common.current', 'Actual')}
+                                                        </Text>
+                                                    </View>
                                                 )}
                                             </View>
                                         );

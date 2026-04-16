@@ -31,16 +31,16 @@ export const WidgetCard = ({
             {/* Header - Only render if title is present */}
             {title && (
                 <View
-                    className="flex-row items-center justify-between px-5 py-4 border-b border-secondary-100 dark:border-secondary-700"
-                    style={{ borderLeftWidth: 4, borderLeftColor: theme.primary500 }}
+                    className="flex-row items-center justify-between px-5 py-3 border-b border-secondary-100 dark:border-secondary-700"
+                    style={{ borderLeftWidth: 3, borderLeftColor: theme.primary500 }}
                 >
-                    <View className="flex-row items-center gap-3">
+                    <View className="flex-row items-center gap-2">
                         {/* Drag Handle */}
                         {dragHandleProps && (
                             <Pressable
                                 onLongPress={dragHandleProps.onLongPress}
                                 delayLongPress={200}
-                                className="p-2 -ml-2 rounded-lg bg-secondary-50 dark:bg-secondary-700/50 active:bg-secondary-100"
+                                className="p-1.5 -ml-1.5 rounded-lg bg-secondary-50 dark:bg-secondary-700/50 active:bg-secondary-100"
                             >
                                 <Text className="text-secondary-400 dark:text-secondary-500 font-bold">⋮⋮</Text>
                             </Pressable>
@@ -49,7 +49,7 @@ export const WidgetCard = ({
                         {icon && <View>{icon}</View>}
 
                         <Text 
-                            className="font-black text-base uppercase tracking-tight"
+                            className="font-bold text-sm tracking-tight"
                             style={{ color: isDark ? theme.primary400 : theme.primary700 }}
                         >
                             {title}

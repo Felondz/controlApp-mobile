@@ -137,17 +137,17 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                 <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={() => handleEdit(item)}
-                    className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] overflow-hidden shadow-sm h-full"
+                    className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl overflow-hidden shadow-sm h-full"
                 >
-                    <View className="p-5">
+                    <View className="p-4">
                         <View className="flex-row items-start justify-between mb-3">
                             <View className="flex-1 mr-2">
-                                <Text className="text-secondary-900 dark:text-secondary-50 font-black text-lg leading-tight" numberOfLines={2}>
+                                <Text className="text-secondary-900 dark:text-secondary-50 font-bold text-base leading-tight" numberOfLines={2}>
                                     {item.title}
                                 </Text>
                             </View>
-                            <View className={`px-2.5 py-1 rounded-full ${getStatusBadgeStyle(item.status, isDark)}`}>
-                                <Text className="text-[10px] font-black uppercase tracking-wider">
+                            <View className={`px-2 py-0.5 rounded-full ${getStatusBadgeStyle(item.status, isDark)}`}>
+                                <Text className="text-[10px] font-bold">
                                     {getStatusLabel(item.status)}
                                 </Text>
                             </View>
@@ -160,25 +160,25 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                         ) : null}
 
                         <View className="flex-row flex-wrap gap-2 mt-auto">
-                            <View className={`px-2 py-1 rounded-lg flex-row items-center ${getPriorityBadgeStyle(item.priority, isDark)}`}>
-                                <Text className="text-[10px] font-black uppercase tracking-wider">
+                            <View className={`px-2 py-0.5 rounded-full flex-row items-center ${getPriorityBadgeStyle(item.priority, isDark)}`}>
+                                <Text className="text-[9px] font-bold">
                                     {getPriorityLabel(item.priority)}
                                 </Text>
                             </View>
 
                             {item.due_date && (
-                                <View className={`px-2 py-1 rounded-lg flex-row items-center ${overdue ? 'bg-red-100 dark:bg-red-900/30' : 'bg-secondary-100 dark:bg-secondary-800'}`}>
+                                <View className={`px-2 py-0.5 rounded-full flex-row items-center ${overdue ? 'bg-red-50 dark:bg-red-900/20' : 'bg-secondary-100 dark:bg-secondary-800'}`}>
                                     <ClockIcon size={12} color={overdue ? '#ef4444' : isDark ? '#9ca3af' : '#6b7280'} />
-                                    <Text className={`text-[10px] font-black uppercase tracking-wider ml-1 ${overdue ? 'text-red-600 dark:text-red-500' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                                    <Text className={`text-[9px] font-bold ml-1 ${overdue ? 'text-red-600 dark:text-red-500' : 'text-secondary-600 dark:text-secondary-400'}`}>
                                         {new Date(item.due_date).toLocaleDateString()}
                                     </Text>
                                 </View>
                             )}
 
                             {item.assigned && (
-                                <View className="px-2 py-1 rounded-lg flex-row items-center bg-secondary-100 dark:bg-secondary-800">
+                                <View className="px-2 py-0.5 rounded-full flex-row items-center bg-secondary-100 dark:bg-secondary-800">
                                     <UserCircleIcon size={12} color={isDark ? '#9ca3af' : '#6b7280'} />
-                                    <Text className="text-[10px] font-black uppercase tracking-wider ml-1 text-secondary-600 dark:text-secondary-400">
+                                    <Text className="text-[9px] font-bold ml-1 text-secondary-600 dark:text-secondary-400">
                                         {item.assigned.name}
                                     </Text>
                                 </View>
@@ -186,9 +186,9 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                         </View>
 
                         {overdue && (
-                            <View className="flex-row items-center mt-4 bg-danger-50 dark:bg-danger-900/10 px-3 py-2 rounded-2xl self-start border border-danger-100 dark:border-danger-900/20">
-                                <ExclamationTriangleIcon size={14} color="#ef4444" />
-                                <Text className="text-xs font-black text-danger-500 ml-2 uppercase tracking-wider">
+                            <View className="flex-row items-center mt-3 bg-danger-50 dark:bg-danger-900/10 px-2.5 py-1.5 rounded-xl self-start border border-danger-100 dark:border-danger-900/20">
+                                <ExclamationTriangleIcon size={12} color="#ef4444" />
+                                <Text className="text-[10px] font-bold text-danger-500 ml-1.5">
                                     {t('tasks.overdue', 'Vencida')}
                                 </Text>
                             </View>
@@ -198,20 +198,20 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                     <View className="flex-row border-t border-secondary-100 dark:border-secondary-800/50 bg-secondary-50/30 dark:bg-secondary-800/30">
                         <TouchableOpacity 
                             onPress={() => handleEdit(item)} 
-                            className="flex-row items-center justify-center flex-1 py-4 active:bg-secondary-100 dark:active:bg-secondary-800"
+                            className="flex-row items-center justify-center flex-1 py-3 active:bg-secondary-100 dark:active:bg-secondary-800"
                         >
-                            <PencilIcon size={16} color={theme.primary600} />
-                            <Text className="text-xs font-black uppercase tracking-widest ml-2" style={{ color: theme.primary600 }}>
+                            <PencilIcon size={14} color={theme.primary600} />
+                            <Text className="text-xs font-bold ml-2" style={{ color: theme.primary600 }}>
                                 {t('common.edit', 'Editar')}
                             </Text>
                         </TouchableOpacity>
                         <View className="w-[1px] bg-secondary-100 dark:border-secondary-800/50" />
                         <TouchableOpacity 
                             onPress={() => setDeleteModalTask(item)} 
-                            className="flex-row items-center justify-center flex-1 py-4 active:bg-danger-50 dark:active:bg-danger-900/10"
+                            className="flex-row items-center justify-center flex-1 py-3 active:bg-danger-50 dark:active:bg-danger-900/10"
                         >
-                            <TrashIcon size={16} color="#ef4444" />
-                            <Text className="text-xs font-black uppercase tracking-widest ml-2 text-danger-500">
+                            <TrashIcon size={14} color="#ef4444" />
+                            <Text className="text-xs font-bold ml-2 text-danger-500">
                                 {t('common.delete', 'Eliminar')}
                             </Text>
                         </TouchableOpacity>
@@ -240,7 +240,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                     </TouchableOpacity>
                 </View>
 
-                <View className="flex-row items-center bg-secondary-100/50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[24px] px-4 shadow-sm">
+                <View className="flex-row items-center bg-secondary-100/50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl px-4 shadow-sm">
                     <SearchIcon size={20} color={isDark ? '#4b5563' : '#9ca3af'} />
                     <TextInput
                         className="flex-1 py-4 px-3 text-secondary-900 dark:text-secondary-50 font-bold"
@@ -302,8 +302,8 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                     </View>
                 ) : filteredTasks.length === 0 ? (
                     <View className="flex-1 items-center justify-center py-20 px-8">
-                        <View className="w-24 h-24 rounded-[32px] bg-secondary-100 dark:bg-secondary-900 items-center justify-center mb-6">
-                            <TaskIcon size={48} color={isDark ? '#4b5563' : '#9ca3af'} />
+                        <View className="w-20 h-20 rounded-2xl bg-secondary-100 dark:bg-secondary-900 items-center justify-center mb-6">
+                            <TaskIcon size={40} color={isDark ? '#4b5563' : '#9ca3af'} />
                         </View>
                         <Text className="text-xl font-black text-secondary-900 dark:text-secondary-50 mb-2 text-center">
                             {tasks.length === 0 
@@ -320,10 +320,10 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                         {tasks.length === 0 && (
                             <PrimaryButton 
                                 onPress={handleAdd}
-                                className="px-8 h-14 rounded-2xl"
+                                className="px-8"
                             >
                                 <PlusIcon size={20} color="white" />
-                                <Text className="text-white font-black uppercase tracking-widest ml-3">
+                                <Text className="text-white font-bold ml-2">
                                     {t('tasks.new_task', 'Nueva Tarea')}
                                 </Text>
                             </PrimaryButton>
@@ -353,7 +353,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
             {filteredTasks.length > 0 && (
                 <Pressable
                     onPress={handleAdd}
-                    className="absolute bottom-10 right-8 w-16 h-16 rounded-[24px] shadow-2xl items-center justify-center z-50 active:scale-90 transition-all"
+                    className="absolute bottom-10 right-8 w-16 h-16 rounded-full shadow-2xl items-center justify-center z-50 active:scale-90 transition-all"
                     style={{ 
                         backgroundColor: theme.primary600,
                         shadowColor: theme.primary600,
@@ -372,23 +372,23 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                 onClose={() => setDeleteModalTask(null)}
                 size="sm"
             >
-                <View className="p-8 bg-white dark:bg-secondary-900 rounded-[40px]">
-                    <View className="w-16 h-16 rounded-3xl bg-danger-50 dark:bg-danger-900/10 items-center justify-center mb-6">
-                        <TrashIcon size={32} color="#ef4444" />
+                <View className="p-6 bg-white dark:bg-secondary-900 rounded-2xl">
+                    <View className="w-14 h-14 rounded-2xl bg-danger-50 dark:bg-danger-900/10 items-center justify-center mb-5 self-center">
+                        <TrashIcon size={28} color="#ef4444" />
                     </View>
-                    <Text className="text-2xl font-black text-secondary-900 dark:text-secondary-50 mb-3 tracking-tight">
+                    <Text className="text-xl font-bold text-secondary-900 dark:text-secondary-50 mb-2 tracking-tight text-center">
                         {t('tasks.delete_task', '¿Eliminar tarea?')}
                     </Text>
-                    <Text className="text-base font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed">
+                    <Text className="text-sm font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed text-center">
                         {t('tasks.confirm_delete', 'Esta acción no se puede deshacer. La tarea "{title}" será eliminada permanentemente.').replace('{title}', deleteModalTask?.title || '')}
                     </Text>
-                    <View className="flex-row gap-4">
+                    <View className="flex-row gap-3">
                         <View className="flex-1">
                             <SecondaryButton 
                                 onPress={() => setDeleteModalTask(null)}
-                                className="h-14 rounded-2xl"
+                                className="rounded-xl"
                             >
-                                <Text className="font-black uppercase tracking-widest">{t('common.cancel', 'No, volver')}</Text>
+                                <Text className="font-bold">{t('common.cancel', 'No, volver')}</Text>
                             </SecondaryButton>
                         </View>
                         <View className="flex-1">
@@ -397,9 +397,9 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                                     // Implementation for delete would go here
                                     setDeleteModalTask(null);
                                 }}
-                                className="h-14 rounded-2xl"
+                                className="rounded-xl"
                             >
-                                <Text className="text-white font-black uppercase tracking-widest">{t('common.delete', 'Sí, borrar')}</Text>
+                                <Text className="text-white font-bold">{t('common.delete', 'Sí, borrar')}</Text>
                             </DangerButton>
                         </View>
                     </View>

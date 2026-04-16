@@ -104,12 +104,12 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
     const item = isEditing ? editedItem : data.inventoryItem;
 
     const renderInput = (field: EditableField, label: string, type: 'text' | 'number' = 'text', prefix?: string) => (
-        <View className="mb-5" key={field}>
-            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-[2px] mb-2 ml-1">
+        <View className="mb-4" key={field}>
+            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                 {label}
             </Text>
             <View className="relative justify-center">
-                {prefix && <Text className="absolute left-5 z-10 font-bold text-secondary-400">{prefix}</Text>}
+                {prefix && <Text className="absolute left-4 z-10 font-bold text-secondary-400">{prefix}</Text>}
                 <TextInput
                     value={String(item[field as keyof InventoryItem] ?? '')}
                     onChangeText={(text) => setEditedItem(prev => ({
@@ -117,7 +117,7 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
                         [field]: type === 'number' ? parseFloat(text) || 0 : text
                     }))}
                     keyboardType={type === 'number' ? 'numeric' : 'default'}
-                    className={`bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-2xl ${prefix ? 'pl-9' : 'px-5'} py-4 text-secondary-900 dark:text-secondary-50 font-bold`}
+                    className={`bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-xl ${prefix ? 'pl-8' : 'px-4'} py-3.5 text-secondary-900 dark:text-secondary-50 font-bold`}
                     placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
                 />
             </View>
@@ -125,15 +125,15 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
     );
 
     const renderDataPoint = (label: string, value: string | number, icon: React.ReactNode, isCritical?: boolean) => (
-        <View className="mb-6 flex-row items-center">
-            <View className="w-10 h-10 rounded-xl bg-secondary-100 dark:bg-secondary-800 items-center justify-center mr-4">
+        <View className="mb-5 flex-row items-center">
+            <View className="w-9 h-9 rounded-xl bg-secondary-100 dark:bg-secondary-800 items-center justify-center mr-3">
                 {icon}
             </View>
             <View>
-                <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-0.5">
+                <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-0.5">
                     {label}
                 </Text>
-                <Text className={`text-base font-black ${isCritical ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
+                <Text className={`text-sm font-bold ${isCritical ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
                     {value}
                 </Text>
             </View>
@@ -157,7 +157,7 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
                                 {isEditing ? t('common.edit', 'Editar') : item.name}
                             </Text>
                             {!isEditing && (
-                                <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase tracking-widest mt-0.5">
+                                <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-bold mt-0.5">
                                     {item.sku || t('inventory.no_sku', 'Sin SKU')}
                                 </Text>
                             )}
@@ -199,18 +199,18 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
             >
                 {/* Main Identity Card */}
                 {!isEditing && (
-                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] p-6 shadow-sm mb-6">
-                        <View className="flex-row items-center mb-8">
-                            <View className="w-20 h-20 rounded-3xl bg-primary-50 dark:bg-primary-900/20 items-center justify-center mr-6">
-                                <PackageIcon size={40} color={theme.primary600} />
+                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl p-5 shadow-sm mb-6">
+                        <View className="flex-row items-center mb-6">
+                            <View className="w-16 h-16 rounded-2xl bg-primary-50 dark:bg-primary-900/20 items-center justify-center mr-5">
+                                <PackageIcon size={32} color={theme.primary600} />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-2xl font-black text-secondary-900 dark:text-secondary-50 leading-tight">
+                                <Text className="text-xl font-bold text-secondary-900 dark:text-secondary-50 leading-tight">
                                     {item.name}
                                 </Text>
-                                <View className="flex-row mt-3">
-                                    <View className="bg-secondary-100 dark:bg-secondary-800 px-3 py-1 rounded-full border border-secondary-200 dark:border-secondary-700">
-                                        <Text className="text-[10px] font-black text-secondary-600 dark:text-secondary-400 uppercase tracking-widest">
+                                <View className="flex-row mt-2">
+                                    <View className="bg-secondary-100 dark:bg-secondary-800 px-2.5 py-0.5 rounded-full border border-secondary-200 dark:border-secondary-700">
+                                        <Text className="text-[10px] font-bold text-secondary-600 dark:text-secondary-400">
                                             {item.type}
                                         </Text>
                                     </View>
@@ -254,16 +254,16 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
 
                 {/* Edit Form */}
                 {isEditing && (
-                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] p-6 shadow-sm mb-6">
-                        <View className="flex-row items-center mb-6">
-                            <View className="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 items-center justify-center mr-4">
-                                <PencilIcon size={24} color={theme.primary600} />
+                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl p-5 shadow-sm mb-6">
+                        <View className="flex-row items-center mb-5">
+                            <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900/20 items-center justify-center mr-4">
+                                <PencilIcon size={18} color={theme.primary600} />
                             </View>
                             <View>
-                                <Text className="text-lg font-black text-secondary-900 dark:text-secondary-50 leading-tight">
+                                <Text className="text-base font-bold text-secondary-900 dark:text-secondary-50 leading-tight">
                                     {t('inventory.edit_item', 'Editar Información')}
                                 </Text>
-                                <Text className="text-xs font-bold text-secondary-400 dark:text-secondary-500 uppercase tracking-wider">
+                                <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400">
                                     {t('inventory.modify_fields', 'Modificar Atributos')}
                                 </Text>
                             </View>
@@ -295,21 +295,19 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
                         <PrimaryButton
                             onPress={handleSave}
                             loading={updating}
-                            className="mt-4 h-16 rounded-2xl"
+                            className="mt-4"
                         >
-                            <Text className="text-white font-black uppercase tracking-widest">
-                                {t('common.save_changes', 'Guardar Cambios')}
-                            </Text>
+                            <Text className="text-white font-bold">{t('common.save_changes', 'Guardar Cambios')}</Text>
                         </PrimaryButton>
                     </View>
                 )}
 
                 {!isEditing && (
-                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-[32px] p-8 shadow-sm items-center">
-                        <Text className="text-secondary-400 dark:text-secondary-500 text-xs font-black uppercase tracking-[3px] mb-2">
+                    <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl p-6 shadow-sm items-center">
+                        <Text className="text-secondary-500 dark:text-secondary-400 text-[10px] font-bold mb-1">
                             {t('inventory.last_update', 'Última Actualización')}
                         </Text>
-                        <Text className="text-secondary-900 dark:text-secondary-50 font-bold">
+                        <Text className="text-secondary-900 dark:text-secondary-50 font-bold text-xs">
                             {new Date(item.updated_at || new Date()).toLocaleString()}
                         </Text>
                     </View>

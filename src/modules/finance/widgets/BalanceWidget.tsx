@@ -65,31 +65,31 @@ export const BalanceWidget = ({ proyectoId, compact = false }: BalanceWidgetProp
     }
 
     return (
-        <View className="bg-white dark:bg-secondary-800 rounded-3xl p-6 border border-secondary-200 dark:border-secondary-700 shadow-sm">
-            <View className="flex-row items-center justify-between mb-6">
+        <View className="bg-white dark:bg-secondary-800 rounded-2xl p-5 border border-secondary-200 dark:border-secondary-700 shadow-sm">
+            <View className="flex-row items-center justify-between mb-5">
                 <View className="flex-row items-center">
                     <View 
-                        className="w-10 h-10 rounded-xl items-center justify-center mr-3 relative overflow-hidden border"
+                        className="w-9 h-9 rounded-xl items-center justify-center mr-3 relative overflow-hidden border"
                         style={{ backgroundColor: isDark ? theme.primary900 : theme.primary50, borderColor: isDark ? theme.primary800 : theme.primary100 }}
                     >
                         {/* Safe opacity overlay */}
                         <View className="absolute inset-0 bg-white dark:bg-black opacity-20" pointerEvents="none" />
                         <View className="z-10">
-                            <WalletIcon size={20} color={theme.primary600} />
+                            <WalletIcon size={18} color={theme.primary600} />
                         </View>
                     </View>
-                    <Text className="text-xs font-black text-secondary-500 dark:text-secondary-400 uppercase tracking-widest">
+                    <Text className="text-xs font-bold text-secondary-500 dark:text-secondary-400">
                         {t('dashboard.global_balance', 'Saldo Global')}
                     </Text>
                 </View>
             </View>
 
-            <View className="items-center justify-center mb-8">
+            <View className="items-center justify-center mb-6">
                 {loading ? (
                     <ActivityIndicator size="large" color={theme.primary500} />
                 ) : (
                     <Text 
-                        className="text-4xl font-black tracking-tighter"
+                        className="text-3xl font-black tracking-tighter"
                         style={{ color: (balance || 0) >= 0 ? (isDark ? theme.primary400 : theme.primary700) : '#ef4444' }}
                     >
                         {formatCurrency(balance || 0, 'COP')}
@@ -98,24 +98,27 @@ export const BalanceWidget = ({ proyectoId, compact = false }: BalanceWidgetProp
             </View>
 
             {/* Quick Actions */}
-            <View className="flex-row gap-4">
+            <View className="flex-row gap-3">
                 <PrimaryButton 
                     variant="filled" 
-                    className="flex-1 h-14 shadow-lg shadow-primary-600/20"
-                    style={{ backgroundColor: theme.primary600 }}
+                    className="flex-1"
                     onPress={() => {/* Open Income Modal */}}
                 >
-                    <PlusIcon size={20} color="white" />
-                    <Text className="text-white font-black ml-2 text-xs uppercase tracking-widest">Ingreso</Text>
+                    <View className="flex-row items-center">
+                        <PlusIcon size={16} color="white" />
+                        <Text className="text-white font-bold ml-2 text-xs">{t('finance.income', 'Ingreso')}</Text>
+                    </View>
                 </PrimaryButton>
                 
                 <DangerButton 
                     variant="filled" 
-                    className="flex-1 h-14 shadow-lg shadow-danger-600/20"
+                    className="flex-1"
                     onPress={() => {/* Open Expense Modal */}}
                 >
-                    <MinusIcon size={20} color="white" />
-                    <Text className="text-white font-black ml-2 text-xs uppercase tracking-widest">Gasto</Text>
+                    <View className="flex-row items-center">
+                        <MinusIcon size={16} color="white" />
+                        <Text className="text-white font-bold ml-2 text-xs">{t('finance.expense', 'Gasto')}</Text>
+                    </View>
                 </DangerButton>
             </View>
         </View>

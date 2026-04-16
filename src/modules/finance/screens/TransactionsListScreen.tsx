@@ -158,8 +158,8 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                 {/* Filters Panel */}
                 {showFilters && (
                     <View className={`mt-4 pt-4 border-t border-secondary-100 dark:border-secondary-700/50`}>
-                        <Text className={`text-xs font-bold mb-3 uppercase tracking-widest text-secondary-500 dark:text-secondary-400`}>
-                            {t('finance.filter_by_account', 'Cuentas')}
+                        <Text className={`text-[10px] font-bold mb-3 text-secondary-500 dark:text-secondary-400`}>
+                            {t('finance.filter_by_account', 'Filtrar por Cuenta')}
                         </Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                             <View className="flex-row gap-2 pb-1">
@@ -229,15 +229,15 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                 ) : (
                     <View className="p-4">
                         {groupedTransactions.map((group) => (
-                            <View key={group.label} className="mb-8">
-                                <View className="flex-row items-center mb-4 pl-1">
+                            <View key={group.label} className="mb-6">
+                                <View className="flex-row items-center mb-3 pl-1">
                                     <View className="w-1.5 h-1.5 rounded-full bg-primary-500 mr-2" />
-                                    <Text className={`text-sm font-bold uppercase tracking-widest text-secondary-500 dark:text-secondary-400`}>
+                                    <Text className={`text-xs font-bold text-secondary-500 dark:text-secondary-400`}>
                                         {getGroupLabel(group.label)}
                                     </Text>
                                 </View>
                                 
-                                <View className="gap-4">
+                                <View className="gap-3">
                                     {group.transactions.map((trans) => {
                                         const isIncome = trans.monto > 0;
                                         return (
@@ -340,34 +340,34 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                 </View>
             )}
 
-            {/* Delete Confirmation Modal */}
             <Modal
                 visible={!!deleteModalTransaction}
                 onClose={() => setDeleteModalTransaction(null)}
                 size="sm"
             >
-                <View className={`p-8 bg-white dark:bg-secondary-800 rounded-3xl`}>
-                    <View className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full items-center justify-center mb-6 self-center">
-                        <TrashIcon size={32} color="#ef4444" />
+                <View className={`p-6 bg-white dark:bg-secondary-800 rounded-2xl`}>
+                    <View className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-full items-center justify-center mb-5 self-center">
+                        <TrashIcon size={28} color="#ef4444" />
                     </View>
-                    <Text className={`text-2xl font-bold text-secondary-900 dark:text-secondary-100 mb-2 text-center`}>
-                        {t('common.confirm_delete', '¿Eliminar?')}
+                    <Text className={`text-xl font-bold text-secondary-900 dark:text-secondary-100 mb-2 text-center`}>
+                        {t('common.confirm_delete', '¿Eliminar Transacción?')}
                     </Text>
-                    <Text className={`text-base text-secondary-500 dark:text-secondary-400 mb-8 text-center`}>
+                    <Text className={`text-sm text-secondary-500 dark:text-secondary-400 mb-6 text-center`}>
                         {t('transactions.confirm_delete_msg', 'Esta acción no se puede deshacer y afectará el saldo de tu cuenta.')}
                     </Text>
-                    <View className="flex-row justify-center gap-4">
+                    <View className="flex-row justify-center gap-3">
                         <SecondaryButton 
                             onPress={() => setDeleteModalTransaction(null)}
                             className="flex-1"
                         >
-                            {t('common.cancel', 'Cancelar')}
+                            {t('common.cancel', 'Volver')}
                         </SecondaryButton>
                         <PrimaryButton 
                             onPress={handleDelete}
                             loading={deleting}
-                            className="flex-1 bg-red-600 border-red-600"
+                            className="flex-1"
                             variant="filled"
+                            style={{ backgroundColor: '#ef4444' }}
                         >
                             <Text className="text-white font-bold">{t('common.delete', 'Eliminar')}</Text>
                         </PrimaryButton>

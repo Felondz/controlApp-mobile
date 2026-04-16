@@ -20,10 +20,10 @@ export function ChatWidget({ projectId, onPress }: { projectId: number, onPress?
     return (
         <WidgetCard
             title={t('chat.title', 'Chat del Proyecto')}
-            icon={<ChatIcon size={20} color={isDark ? '#818cf8' : '#6366f1'} />}
+            icon={<ChatIcon size={18} color={isDark ? '#818cf8' : '#6366f1'} />}
             onPress={onPress}
         >
-            <View className="mt-2">
+            <View>
                 {loading ? (
                     <View className="py-4 items-center">
                         <Text className={textSecondary}>{t('common.loading', 'Cargando...')}</Text>
@@ -31,9 +31,9 @@ export function ChatWidget({ projectId, onPress }: { projectId: number, onPress?
                 ) : lastMessage ? (
                     <TouchableOpacity 
                         onPress={onPress}
-                        className="flex-row items-center p-2 rounded-lg bg-gray-50 dark:bg-gray-900/50"
+                        className="flex-row items-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-800/50"
                     >
-                        <View className="w-10 h-10 rounded-full overflow-hidden mr-3">
+                        <View className="w-10 h-10 rounded-xl overflow-hidden mr-3 bg-gray-200 dark:bg-gray-800">
                             <AppImage 
                                 source={{ uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(lastMessage.user.name)}&background=random` }} 
                                 className="w-full h-full"
@@ -52,7 +52,9 @@ export function ChatWidget({ projectId, onPress }: { projectId: number, onPress?
                                 {lastMessage.content}
                             </Text>
                         </View>
-                        <ChevronRightIcon size={16} color={isDark ? '#4b5563' : '#9ca3af'} />
+                        <View className="ml-2">
+                            <ChevronRightIcon size={14} color={isDark ? '#4b5563' : '#9ca3af'} />
+                        </View>
                     </TouchableOpacity>
                 ) : (
                     <View className="py-4 items-center">
@@ -62,10 +64,10 @@ export function ChatWidget({ projectId, onPress }: { projectId: number, onPress?
                 
                 <TouchableOpacity 
                     onPress={onPress}
-                    className="mt-3 flex-row items-center justify-center py-2 border-t border-gray-100 dark:border-gray-800"
+                    className="mt-3 flex-row items-center justify-center py-2"
                 >
-                    <Text className="text-xs font-medium text-primary-600 dark:text-primary-400">
-                        {t('chat.open_chat', 'Abrir chat completo')}
+                    <Text className="text-xs font-bold text-primary-600 dark:text-primary-400">
+                        {t('chat.open_chat', 'Ver todos los mensajes →')}
                     </Text>
                 </TouchableOpacity>
             </View>
