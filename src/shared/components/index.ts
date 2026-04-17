@@ -28,3 +28,5 @@ export { ThemeToggle } from './ThemeToggle';
 export { BugReporterWidget } from './BugReporterWidget';
 export { Checkbox } from './Checkbox';
 export { ApplicationLogo } from './ApplicationLogo';
+export { FinanceQuickActions } from './finance/FinanceQuickActions';
+

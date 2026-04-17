@@ -70,7 +70,7 @@ export default function DashboardScreen() {
                         <FolderIcon size={28} color={theme.primary600} />
                     </View>
                     <View className="flex-1">
-                        <Text className="text-[10px] font-black uppercase tracking-[2px] mb-0.5" style={{ color: theme.primary600 }}>
+                        <Text className="text-sm font-black tracking-[2px] mb-0.5" style={{ color: theme.primary600 }}>
                             {t('dashboard.current_project')}
                         </Text>
                         <Text className="text-xl font-black text-secondary-900 dark:text-secondary-50" numberOfLines={1}>
@@ -146,7 +146,7 @@ export default function DashboardScreen() {
                             )}
 
                             <View className="mt-4">
-                                <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-4 ml-1">
+                                <Text className="text-sm font-black text-secondary-400 dark:text-secondary-500 tracking-widest mb-4 ml-1">
                                     {t('dashboard.quick_access', 'Accesos Rápidos')}
                                 </Text>
                                 <View className="flex-row flex-wrap gap-4">
@@ -157,7 +157,7 @@ export default function DashboardScreen() {
                                         <View className="mb-3">
                                             <CalculatorIcon size={32} color={theme.primary600} />
                                         </View>
-                                        <Text className="font-black text-secondary-900 dark:text-secondary-100 text-xs uppercase tracking-widest">{t('finance.title')}</Text>
+                                        <Text className="font-black text-secondary-900 dark:text-secondary-100 text-sm tracking-widest">{t('finance.title')}</Text>
                                     </Pressable>
                                     <Pressable 
                                         onPress={() => router.push('/(app)/inventory')}
@@ -166,7 +166,7 @@ export default function DashboardScreen() {
                                         <View className="mb-3">
                                             <PackageIcon size={32} color={theme.primary600} />
                                         </View>
-                                        <Text className="font-black text-secondary-900 dark:text-secondary-100 text-xs uppercase tracking-widest">{t('inventory.title')}</Text>
+                                        <Text className="font-black text-secondary-900 dark:text-secondary-100 text-sm tracking-widest">{t('inventory.title')}</Text>
                                     </Pressable>
                                 </View>
                             </View>
@@ -189,7 +189,7 @@ export default function DashboardScreen() {
                                 }}
                             >
                                 <Text 
-                                    className="text-[10px] font-black"
+                                    className="text-sm font-black"
                                     style={{ color: theme.primary600 }}
                                 >
                                     {projects.length}

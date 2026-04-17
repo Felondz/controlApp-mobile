@@ -135,13 +135,13 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                                     {item.name}
                                 </Text>
                                 {item.sku && (
-                                    <Text className="text-secondary-400 dark:text-secondary-500 font-mono text-[9px] mt-1">
+                                    <Text className="text-secondary-400 dark:text-secondary-500 font-mono text-sm mt-1">
                                         {item.sku}
                                     </Text>
                                 )}
                             </View>
                             <View className={`px-2 py-0.5 rounded-full ${getTypeBadgeStyle(item.type, isDark)}`}>
-                                <Text className="text-[9px] font-bold">
+                                <Text className="text-sm font-bold">
                                     {getTypeLabel(item.type)}
                                 </Text>
                             </View>
@@ -149,14 +149,14 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
 
                         <View className="flex-row items-end justify-between">
                             <View>
-                                <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-1">
+                                <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-1">
                                     {t('inventory.stock', 'Existencias')}
                                 </Text>
                                 <View className="flex-row items-center">
                                     <Text className={`text-xl font-black ${isLowStock ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
                                         {Number(item.current_stock).toLocaleString()}
                                     </Text>
-                                    <Text className="text-[10px] font-bold text-secondary-400 dark:text-secondary-500 ml-1.5 mb-1">
+                                    <Text className="text-sm font-bold text-secondary-400 dark:text-secondary-500 ml-1.5 mb-1">
                                         {item.unit}
                                     </Text>
                                 </View>
@@ -165,7 +165,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                             <View className="items-end">
                                 {item.sale_price > 0 && (
                                     <>
-                                        <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-1">
+                                        <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-1">
                                             {t('inventory.price', 'Precio')}
                                         </Text>
                                         <Text className="text-base font-black text-secondary-900 dark:text-secondary-50">
@@ -179,7 +179,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                         {isLowStock && (
                             <View className="flex-row items-center mt-3 bg-danger-50 dark:bg-danger-900/10 px-2.5 py-1.5 rounded-xl self-start border border-danger-100 dark:border-danger-900/20">
                                 <ExclamationTriangleIcon size={12} color="#ef4444" />
-                                <Text className="text-[10px] font-bold text-danger-500 ml-1.5">
+                                <Text className="text-sm font-bold text-danger-500 ml-1.5">
                                     {t('inventory.low_stock', 'Bajo Stock')}
                                 </Text>
                             </View>
@@ -192,7 +192,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                             className="flex-row items-center justify-center flex-1 py-3 active:bg-secondary-100 dark:active:bg-secondary-800"
                         >
                             <PencilIcon size={14} color={theme.primary600} />
-                            <Text className="text-xs font-bold ml-2" style={{ color: theme.primary600 }}>
+                            <Text className="text-sm font-bold ml-2" style={{ color: theme.primary600 }}>
                                 {t('common.edit', 'Editar')}
                             </Text>
                         </TouchableOpacity>
@@ -202,7 +202,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                             className="flex-row items-center justify-center flex-1 py-3 active:bg-danger-50 dark:active:bg-danger-900/10"
                         >
                             <TrashIcon size={14} color="#ef4444" />
-                            <Text className="text-xs font-bold ml-2 text-danger-500">
+                            <Text className="text-sm font-bold ml-2 text-danger-500">
                                 {t('common.delete', 'Eliminar')}
                             </Text>
                         </TouchableOpacity>
@@ -252,7 +252,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
 
                 {showFilters && (
                     <View className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-3 ml-1">
+                        <Text className="text-sm font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-3 ml-1">
                             {t('inventory.filter_by_type', 'Filtrar por tipo')}
                         </Text>
                         <FlashList 
@@ -271,7 +271,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                                             : 'bg-white dark:bg-secondary-900 border-secondary-200 dark:border-secondary-800'
                                     }`}
                                 >
-                                    <Text className={`text-xs font-black uppercase tracking-wider ${
+                                    <Text className={`text-sm font-black uppercase tracking-wider ${
                                         selectedType === type ? 'text-white' : 'text-secondary-600 dark:text-secondary-400'
                                     }`}>
                                         {type === '' 
@@ -302,7 +302,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                                 : t('inventory.no_items_found', 'Sin resultados')
                             }
                         </Text>
-                        <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 text-center mb-8 leading-relaxed">
+                        <Text className="text-base font-bold text-secondary-500 dark:text-secondary-400 text-center mb-8 leading-relaxed">
                             {items.length === 0
                                 ? t('inventory.empty_description', 'Agrega tu primer item para comenzar a gestionar tu stock de forma profesional.')
                                 : t('inventory.try_adjusting_filters', 'Intenta ajustar los filtros o la búsqueda para encontrar lo que necesitas.')
@@ -370,7 +370,7 @@ export default function InventoryListScreen({ proyectoId, onAdd, onEdit }: Inven
                     <Text className="text-xl font-bold text-secondary-900 dark:text-secondary-50 mb-2 tracking-tight text-center">
                         {t('inventory.delete_item', '¿Eliminar item?')}
                     </Text>
-                    <Text className="text-sm font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed text-center">
+                    <Text className="text-base font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed text-center">
                         {t('inventory.confirm_delete', 'Esta acción no se puede deshacer. El item "{name}" será eliminado permanentemente.').replace('{name}', deleteModalItem?.name || '')}
                     </Text>
                     <View className="flex-row gap-3">

@@ -103,11 +103,11 @@ export default function LoginScreen() {
                             {error && (
                                 <View className="bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-2xl p-4 mb-8">
                                     <View className="flex-row justify-between items-center">
-                                        <Text className="text-danger-600 dark:text-danger-400 flex-1 font-bold text-sm">
+                                        <Text className="text-danger-600 dark:text-danger-400 flex-1 font-bold text-base">
                                             {error}
                                         </Text>
                                         <TouchableOpacity onPress={clearError} className="ml-2 bg-danger-100 dark:bg-danger-800 p-1.5 rounded-lg">
-                                            <Text className="text-danger-600 dark:text-danger-400 font-black text-xs">✕</Text>
+                                            <Text className="text-danger-600 dark:text-danger-400 font-black text-sm">✕</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -142,7 +142,7 @@ export default function LoginScreen() {
 
                                 <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
                                     <Text
-                                        className="font-bold text-sm"
+                                        className="font-bold text-base"
                                         style={{ color: theme.primary600 }}
                                     >
                                         {t('auth.forgot_password')}
@@ -162,7 +162,7 @@ export default function LoginScreen() {
 
                             <View className="flex-row justify-center items-center">
                                 <View className="h-[1px] flex-1 bg-secondary-200 dark:bg-secondary-800" />
-                                <Text className="mx-4 text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest">
+                                <Text className="mx-4 text-sm font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest">
                                     {t('auth.dont_have_account')}
                                 </Text>
                                 <View className="h-[1px] flex-1 bg-secondary-200 dark:bg-secondary-800" />

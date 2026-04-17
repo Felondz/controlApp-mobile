@@ -171,7 +171,7 @@ export const BugReporterWidget = ({
                                 </View>
                             ) : step === 1 ? (
                                 <View>
-                                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-6 uppercase tracking-widest">
+                                    <Text className="text-base font-bold text-secondary-500 dark:text-secondary-400 mb-6 uppercase tracking-widest">
                                         {t('bug_reporter.select_category', '¿Qué tipo de problema es?')}
                                     </Text>
                                     <View className="flex-row flex-wrap gap-4">
@@ -188,7 +188,7 @@ export const BugReporterWidget = ({
                                                 >
                                                     <cat.icon size={24} color={cat.color} />
                                                 </View>
-                                                <Text className="font-bold text-secondary-900 dark:text-secondary-100 text-xs uppercase tracking-tight">
+                                                <Text className="font-bold text-secondary-900 dark:text-secondary-100 text-sm uppercase tracking-tight">
                                                     {t(`bug_reporter.category_${cat.key}`, cat.key)}
                                                 </Text>
                                             </TouchableOpacity>
@@ -199,7 +199,7 @@ export const BugReporterWidget = ({
                                 <View className="gap-6">
                                     {/* Description */}
                                     <View>
-                                        <Text className="text-xs font-black text-secondary-400 uppercase tracking-widest mb-2 ml-1">
+                                        <Text className="text-sm font-black text-secondary-400 uppercase tracking-widest mb-2 ml-1">
                                             {t('bug_reporter.description', 'Descripción')}
                                         </Text>
                                         <TextInput
@@ -216,7 +216,7 @@ export const BugReporterWidget = ({
 
                                     {/* Severity */}
                                     <View>
-                                        <Text className="text-xs font-black text-secondary-400 uppercase tracking-widest mb-3 ml-1">
+                                        <Text className="text-sm font-black text-secondary-400 uppercase tracking-widest mb-3 ml-1">
                                             {t('bug_reporter.severity', 'Prioridad')}
                                         </Text>
                                         <View className="flex-row gap-3">
@@ -230,7 +230,7 @@ export const BugReporterWidget = ({
                                                             : 'bg-white dark:bg-secondary-800 border-secondary-100 dark:border-secondary-700'
                                                     }`}
                                                 >
-                                                    <Text className={`text-[10px] font-black uppercase tracking-widest ${
+                                                    <Text className={`text-sm font-black uppercase tracking-widest ${
                                                         severity === sev ? 'text-secondary-900' : 'text-secondary-400'
                                                     }`}>
                                                         {t(`bug_reporter.severity_${sev}`, sev)}

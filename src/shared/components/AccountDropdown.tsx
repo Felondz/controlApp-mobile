@@ -65,7 +65,7 @@ export const AccountDropdown = ({ visible, onClose, anchorLayout }: AccountDropd
                                     <Text className="font-black text-secondary-900 dark:text-secondary-50 text-base" numberOfLines={1}>
                                         {user?.name}
                                     </Text>
-                                    <Text className="text-xs font-medium text-secondary-500 dark:text-secondary-400" numberOfLines={1}>
+                                    <Text className="text-sm font-medium text-secondary-500 dark:text-secondary-400" numberOfLines={1}>
                                         {user?.email}
                                     </Text>
                                 </View>
@@ -91,7 +91,7 @@ export const AccountDropdown = ({ visible, onClose, anchorLayout }: AccountDropd
                             <View className="h-[1px] bg-secondary-100 dark:bg-secondary-700 my-2 mx-4" />
                             
                             {/* Language Switcher Section */}
-                            <Text className="text-[10px] font-black text-secondary-400 uppercase tracking-widest px-4 py-2">
+                            <Text className="text-sm font-black text-secondary-400 uppercase tracking-widest px-4 py-2">
                                 {t('common.language', 'Idioma')}
                             </Text>
                             <View className="flex-row px-2 gap-2 mb-2">
@@ -144,7 +144,7 @@ const MenuOption = ({ icon, label, onPress, badge, themeColors }: any) => (
                 <View className="flex-row items-center">
                     {badge > 0 && (
                         <View className="bg-danger-500 rounded-full px-1.5 py-0.5 mr-2">
-                            <Text className="text-[10px] font-black text-white">{badge}</Text>
+                            <Text className="text-sm font-black text-white">{badge}</Text>
                         </View>
                     )}
                     <ChevronRightIcon size={16} color="#9ca3af" />
@@ -165,7 +165,7 @@ const LanguageButton = ({ active, onPress, icon, label, themeColors }: any) => (
         style={active ? { borderColor: themeColors.primary600 } : {}}
     >
         {icon}
-        <Text className={`ml-2 font-black text-xs ${active ? 'text-primary-700 dark:text-primary-300' : 'text-secondary-500'}`}>
+        <Text className={`ml-2 font-black text-sm ${active ? 'text-primary-700 dark:text-primary-300' : 'text-secondary-500'}`}>
             {label}
         </Text>
     </Pressable>

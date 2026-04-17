@@ -41,14 +41,14 @@ export function ChatWidget({ projectId, onPress }: { projectId: number, onPress?
                         </View>
                         <View className="flex-1">
                             <View className="flex-row justify-between items-center">
-                                <Text className={`text-xs font-bold ${textColor}`} numberOfLines={1}>
+                                <Text className={`text-sm font-bold ${textColor}`} numberOfLines={1}>
                                     {lastMessage.user.name}
                                 </Text>
-                                <Text className={`text-[10px] ${textSecondary}`}>
+                                <Text className={`text-sm ${textSecondary}`}>
                                     {new Date(lastMessage.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </Text>
                             </View>
-                            <Text className={`text-xs ${textSecondary} mt-0.5`} numberOfLines={1}>
+                            <Text className={`text-sm ${textSecondary} mt-0.5`} numberOfLines={1}>
                                 {lastMessage.content}
                             </Text>
                         </View>
@@ -66,7 +66,7 @@ export function ChatWidget({ projectId, onPress }: { projectId: number, onPress?
                     onPress={onPress}
                     className="mt-3 flex-row items-center justify-center py-2"
                 >
-                    <Text className="text-xs font-bold text-primary-600 dark:text-primary-400">
+                    <Text className="text-sm font-bold text-primary-600 dark:text-primary-400">
                         {t('chat.open_chat', 'Ver todos los mensajes →')}
                     </Text>
                 </TouchableOpacity>

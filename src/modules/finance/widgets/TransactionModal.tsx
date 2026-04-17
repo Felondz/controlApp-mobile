@@ -3,7 +3,9 @@ import { View, Text, Modal, KeyboardAvoidingView, Platform, ScrollView } from 'r
 import { useTranslate } from '../../../shared/hooks';
 import { useSettingsStore } from '../../../stores/settingsStore';
 import { getTheme } from '../../../shared/themes';
-import { PrimaryButton, SecondaryButton, Input } from '../../../shared/components';
+import PrimaryButton from '../../../shared/components/PrimaryButton';
+import SecondaryButton from '../../../shared/components/SecondaryButton';
+import Input from '../../../shared/components/Input';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { CREATE_TRANSACCION } from '../../../services/graphql/mutations';
 import { gql } from '@apollo/client';
@@ -118,7 +120,7 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
 
                             {/* Minimalist "Selects" for accounts and categories since we don't have a Dropdown component right here */}
                             <View>
-                                <Text className="text-[10px] font-bold text-secondary-500 mb-2 uppercase tracking-wider">{t('finance.account')}</Text>
+                                <Text className="text-sm font-bold text-secondary-500 mb-2 uppercase tracking-wider">{t('finance.account')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {accounts.map((acc: any) => (
                                         <SecondaryButton
@@ -128,14 +130,14 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                                             size="sm"
                                             className="rounded-xl"
                                         >
-                                            <Text className={`text-xs font-bold ${accountId === acc.id ? 'text-white' : 'text-secondary-600'}`}>{acc.nombre}</Text>
+                                            <Text className={`text-sm font-bold ${accountId === acc.id ? 'text-white' : 'text-secondary-600'}`}>{acc.nombre}</Text>
                                         </SecondaryButton>
                                     ))}
                                 </View>
                             </View>
 
                             <View>
-                                <Text className="text-[10px] font-bold text-secondary-500 mb-2 uppercase tracking-wider">{t('finance.category')}</Text>
+                                <Text className="text-sm font-bold text-secondary-500 mb-2 uppercase tracking-wider">{t('finance.category')}</Text>
                                 <View className="flex-row flex-wrap gap-2">
                                     {validCategories.map((cat: any) => (
                                         <SecondaryButton
@@ -145,7 +147,7 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                                             size="sm"
                                             className="rounded-xl"
                                         >
-                                            <Text className={`text-xs font-bold ${categoryId === cat.id ? 'text-white' : 'text-secondary-600'}`}>{cat.nombre}</Text>
+                                            <Text className={`text-sm font-bold ${categoryId === cat.id ? 'text-white' : 'text-secondary-600'}`}>{cat.nombre}</Text>
                                         </SecondaryButton>
                                     ))}
                                 </View>

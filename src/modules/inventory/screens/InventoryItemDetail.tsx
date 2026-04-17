@@ -105,7 +105,7 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
 
     const renderInput = (field: EditableField, label: string, type: 'text' | 'number' = 'text', prefix?: string) => (
         <View className="mb-4" key={field}>
-            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
+            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                 {label}
             </Text>
             <View className="relative justify-center">
@@ -130,10 +130,10 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
                 {icon}
             </View>
             <View>
-                <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-0.5">
+                <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-0.5">
                     {label}
                 </Text>
-                <Text className={`text-sm font-bold ${isCritical ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
+                <Text className={`text-base font-bold ${isCritical ? 'text-danger-500' : 'text-secondary-900 dark:text-secondary-50'}`}>
                     {value}
                 </Text>
             </View>
@@ -157,7 +157,7 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
                                 {isEditing ? t('common.edit', 'Editar') : item.name}
                             </Text>
                             {!isEditing && (
-                                <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-bold mt-0.5">
+                                <Text className="text-secondary-400 dark:text-secondary-500 text-sm font-bold mt-0.5">
                                     {item.sku || t('inventory.no_sku', 'Sin SKU')}
                                 </Text>
                             )}
@@ -210,7 +210,7 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
                                 </Text>
                                 <View className="flex-row mt-2">
                                     <View className="bg-secondary-100 dark:bg-secondary-800 px-2.5 py-0.5 rounded-full border border-secondary-200 dark:border-secondary-700">
-                                        <Text className="text-[10px] font-bold text-secondary-600 dark:text-secondary-400">
+                                        <Text className="text-sm font-bold text-secondary-600 dark:text-secondary-400">
                                             {item.type}
                                         </Text>
                                     </View>
@@ -263,7 +263,7 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
                                 <Text className="text-base font-bold text-secondary-900 dark:text-secondary-50 leading-tight">
                                     {t('inventory.edit_item', 'Editar Información')}
                                 </Text>
-                                <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400">
+                                <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400">
                                     {t('inventory.modify_fields', 'Modificar Atributos')}
                                 </Text>
                             </View>
@@ -304,10 +304,10 @@ export default function InventoryItemDetail({ itemId, onBack }: InventoryItemDet
 
                 {!isEditing && (
                     <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl p-6 shadow-sm items-center">
-                        <Text className="text-secondary-500 dark:text-secondary-400 text-[10px] font-bold mb-1">
+                        <Text className="text-secondary-500 dark:text-secondary-400 text-sm font-bold mb-1">
                             {t('inventory.last_update', 'Última Actualización')}
                         </Text>
-                        <Text className="text-secondary-900 dark:text-secondary-50 font-bold text-xs">
+                        <Text className="text-secondary-900 dark:text-secondary-50 font-bold text-sm">
                             {new Date(item.updated_at || new Date()).toLocaleString()}
                         </Text>
                     </View>

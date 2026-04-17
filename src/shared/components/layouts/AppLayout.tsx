@@ -86,7 +86,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                         />
                         <Text
                             className={`
-                                ${vertical ? 'ml-3 text-sm font-medium' : 'mt-1 text-xs'}
+                                ${vertical ? 'ml-3 text-base font-medium' : 'mt-1 text-sm'}
                                 ${active ? 'text-primary-700 dark:text-primary-300' : 'text-secondary-600 dark:text-secondary-400'}
                             `}
                         >
@@ -181,7 +181,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                                             />
                                             <Text
                                                 className={`
-                                                    mt-0.5 text-[10px] font-medium
+                                                    mt-0.5 text-sm font-medium
                                                     ${active
                                                         ? 'text-primary-600 dark:text-primary-400'
                                                         : 'text-secondary-500 dark:text-secondary-400'

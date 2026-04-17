@@ -35,7 +35,7 @@ export default function PasswordRequirements({ password = '' }: PasswordRequirem
 
     return (
         <View className="mt-2 mb-4 p-4 bg-white dark:bg-secondary-800/50 rounded-2xl border border-secondary-100 dark:border-secondary-800 shadow-sm">
-            <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-3">
+            <Text className="text-sm font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-3">
                 {t('auth.password_requirements_title', 'Requerimientos de Seguridad')}
             </Text>
             <View className="gap-2">
@@ -48,7 +48,7 @@ export default function PasswordRequirements({ password = '' }: PasswordRequirem
                                 <View className="w-4 h-4 rounded-full border-2 border-secondary-200 dark:border-secondary-700 opacity-60" />
                             )}
                         </View>
-                        <Text className={`text-xs ${req.isValid ? 'text-green-600 dark:text-green-400 font-bold' : 'text-secondary-500 dark:text-secondary-400 font-medium'}`}>
+                        <Text className={`text-sm ${req.isValid ? 'text-green-600 dark:text-green-400 font-bold' : 'text-secondary-500 dark:text-secondary-400 font-medium'}`}>
                             {req.label}
                         </Text>
                     </View>

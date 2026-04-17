@@ -22,7 +22,10 @@
         "profile": "Perfil",
         "active": "Activo",
         "spanish": "Español",
-        "english": "Inglés"
+        "english": "Inglés",
+        "photo": "Foto",
+        "view_all": "Ver todos",
+        "title": "Título"
     },
     "auth": {
         "login": "Iniciar Sesión",
@@ -49,6 +52,8 @@
         "already_have_account": "¿Ya tienes una cuenta?",
         "welcome_back": "¡Bienvenido de nuevo!",
         "create_account": "Crear Cuenta",
+        "name": "Nombre",
+        "name_placeholder": "Tu nombre",
         "registration_success_message": "Registro exitoso. Por favor verifica tu email.",
         "password_requirements_error": "La contraseña no cumple con los requisitos de seguridad.",
         "passwords_dont_match": "Las contraseñas no coinciden",
@@ -62,7 +67,8 @@
         "verification_success": "Tu correo ha sido verificado con éxito.",
         "verification_error": "Error en la verificación.",
         "verification_invalid_link": "El enlace de verificación no es válido o ha expirado.",
-        "verification_link_sent": "Enlace de verificación enviado."
+        "verification_link_sent": "Enlace de verificación enviado.",
+        "confirm_logout_msg": "¿Estás seguro de que deseas cerrar sesión?"
     },
     "landing": {
         "hero_subtitle": "La solución completa para gestionar tus proyectos y finanzas desde cualquier lugar."
@@ -77,7 +83,8 @@
         "projects_summary": "Resumen de Proyectos",
         "no_projects": "No hay proyectos",
         "create_project": "Crear Proyecto",
-        "create_first_project_desc": "Empieza creando tu primer proyecto para gestionar tus recursos."
+        "create_first_project_desc": "Empieza creando tu primer proyecto para gestionar tus recursos.",
+        "global_balance": "Saldo Global"
     },
     "projects": {
         "title": "Proyectos",
@@ -136,8 +143,9 @@
     "finance": {
         "title": "Finanzas",
         "balance": "Balance",
-        "income": "Ingresos",
+        "income": "Ingreso",
         "expenses": "Egresos",
+        "expense": "Gasto",
         "transactions": "Transacciones",
         "register_income": "Registrar Ingreso",
         "register_expense": "Registrar Gasto",
@@ -149,12 +157,28 @@
     "inventory": {
         "title": "Inventario",
         "items": "Artículos",
-        "stock": "Existencias"
+        "stock": "Existencias",
+        "summary": "Resumen de Inventario",
+        "total_items": "Items",
+        "total_value": "Valor",
+        "low_stock_count": "Bajo Stock",
+        "active_items": "Activos"
     },
     "operations": {
         "title": "Operaciones",
         "lotes": "Lotes",
-        "processes": "Procesos"
+        "processes": "Procesos",
+        "active_batches": "Lotes Activos",
+        "units": "unidades"
+    },
+    "tasks": {
+        "title": "Tareas",
+        "summary": "Resumen de Tareas",
+        "pending_tasks": "Tareas pendientes",
+        "pending": "Pendientes",
+        "in_progress": "En Proceso",
+        "done": "Listas",
+        "overdue_count": "tareas vencidas"
     },
     "settings": {
         "title": "Ajustes",
@@ -166,21 +190,23 @@
         }
     },
     "tools": {
-        "financial_calculator": "Calculadora Financiera"
+        "financial_calculator": "Calculadora Financiera",
+        "financial_calculator_desc": "Simula préstamos, intereses y rentabilidad de tus inversiones."
     },
     "profile": {
         "edit": "Editar Perfil",
-        "information": "Información Personal"
+        "information": "Información Personal",
+        "email_no_change_notice": "El correo electrónico no se puede cambiar por seguridad.",
+        "update_success": "Perfil actualizado correctamente.",
+        "update_error": "Error al actualizar el perfil.",
+        "permission_denied": "Se requiere permiso para acceder a la galería."
     },
     "inbox": {
         "title": "Buzón de entrada"
     },
-    "modules": {
-        "invitations": { "title": "Invitaciones" },
-        "marketplace": { "title": "Mercado" }
-    },
     "validation": {
         "required": "Este campo es obligatorio",
+        "required_fields": "Por favor completa todos los campos obligatorios",
         "password_mismatch": "Las contraseñas no coinciden",
         "checkbox_required": "Debes marcar esta casilla para continuar"
     },
@@ -229,5 +255,20 @@
         "edited": "Editado",
         "reactions": "Reacciones",
         "no_messages": "No hay mensajes aún. ¡Sé el primero!"
+    },
+    "modules": {
+        "invitations": { 
+            "title": "Invitaciones",
+            "no_pending": "No tienes invitaciones pendientes en este momento."
+        },
+        "marketplace": { "title": "Mercado" }
+    },
+    "marketplace": { 
+        "title": "Mercado de Herramientas",
+        "subtitle": "Activa herramientas globales para potenciar tu experiencia.",
+        "available_tools": "Herramientas Disponibles",
+        "no_tools": "No hay más herramientas disponibles en este momento.",
+        "looking_for_more": "¿Buscas más funciones?",
+        "looking_for_more_desc": "Estamos trabajando en nuevas herramientas integradas para mejorar tu flujo de trabajo."
     }
 }

@@ -28,7 +28,7 @@ export const Checkbox = ({ checked, onChange, label }: CheckboxProps) => {
                 {checked && <CheckIcon size={14} color="white" />}
             </View>
             {label && (
-                <Text className="text-gray-600 dark:text-gray-300 text-sm font-medium">
+                <Text className="text-gray-600 dark:text-gray-300 text-base font-medium">
                     {label}
                 </Text>
             )}

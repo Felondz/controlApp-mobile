@@ -147,21 +147,21 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                                 </Text>
                             </View>
                             <View className={`px-2 py-0.5 rounded-full ${getStatusBadgeStyle(item.status, isDark)}`}>
-                                <Text className="text-[10px] font-bold">
+                                <Text className="text-sm font-bold">
                                     {getStatusLabel(item.status)}
                                 </Text>
                             </View>
                         </View>
 
                         {item.description ? (
-                            <Text className="text-secondary-500 dark:text-secondary-400 text-xs mb-4" numberOfLines={2}>
+                            <Text className="text-secondary-500 dark:text-secondary-400 text-sm mb-4" numberOfLines={2}>
                                 {item.description}
                             </Text>
                         ) : null}
 
                         <View className="flex-row flex-wrap gap-2 mt-auto">
                             <View className={`px-2 py-0.5 rounded-full flex-row items-center ${getPriorityBadgeStyle(item.priority, isDark)}`}>
-                                <Text className="text-[9px] font-bold">
+                                <Text className="text-sm font-bold">
                                     {getPriorityLabel(item.priority)}
                                 </Text>
                             </View>
@@ -169,7 +169,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                             {item.due_date && (
                                 <View className={`px-2 py-0.5 rounded-full flex-row items-center ${overdue ? 'bg-red-50 dark:bg-red-900/20' : 'bg-secondary-100 dark:bg-secondary-800'}`}>
                                     <ClockIcon size={12} color={overdue ? '#ef4444' : isDark ? '#9ca3af' : '#6b7280'} />
-                                    <Text className={`text-[9px] font-bold ml-1 ${overdue ? 'text-red-600 dark:text-red-500' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                                    <Text className={`text-sm font-bold ml-1 ${overdue ? 'text-red-600 dark:text-red-500' : 'text-secondary-600 dark:text-secondary-400'}`}>
                                         {new Date(item.due_date).toLocaleDateString()}
                                     </Text>
                                 </View>
@@ -178,7 +178,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                             {item.assigned && (
                                 <View className="px-2 py-0.5 rounded-full flex-row items-center bg-secondary-100 dark:bg-secondary-800">
                                     <UserCircleIcon size={12} color={isDark ? '#9ca3af' : '#6b7280'} />
-                                    <Text className="text-[9px] font-bold ml-1 text-secondary-600 dark:text-secondary-400">
+                                    <Text className="text-sm font-bold ml-1 text-secondary-600 dark:text-secondary-400">
                                         {item.assigned.name}
                                     </Text>
                                 </View>
@@ -188,7 +188,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                         {overdue && (
                             <View className="flex-row items-center mt-3 bg-danger-50 dark:bg-danger-900/10 px-2.5 py-1.5 rounded-xl self-start border border-danger-100 dark:border-danger-900/20">
                                 <ExclamationTriangleIcon size={12} color="#ef4444" />
-                                <Text className="text-[10px] font-bold text-danger-500 ml-1.5">
+                                <Text className="text-sm font-bold text-danger-500 ml-1.5">
                                     {t('tasks.overdue', 'Vencida')}
                                 </Text>
                             </View>
@@ -201,7 +201,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                             className="flex-row items-center justify-center flex-1 py-3 active:bg-secondary-100 dark:active:bg-secondary-800"
                         >
                             <PencilIcon size={14} color={theme.primary600} />
-                            <Text className="text-xs font-bold ml-2" style={{ color: theme.primary600 }}>
+                            <Text className="text-sm font-bold ml-2" style={{ color: theme.primary600 }}>
                                 {t('common.edit', 'Editar')}
                             </Text>
                         </TouchableOpacity>
@@ -211,7 +211,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                             className="flex-row items-center justify-center flex-1 py-3 active:bg-danger-50 dark:active:bg-danger-900/10"
                         >
                             <TrashIcon size={14} color="#ef4444" />
-                            <Text className="text-xs font-bold ml-2 text-danger-500">
+                            <Text className="text-sm font-bold ml-2 text-danger-500">
                                 {t('common.delete', 'Eliminar')}
                             </Text>
                         </TouchableOpacity>
@@ -261,7 +261,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
 
                 {showFilters && (
                     <View className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <Text className="text-[10px] font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-3 ml-1">
+                        <Text className="text-sm font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-3 ml-1">
                             {t('tasks.filter_by_status', 'Filtrar por estado')}
                         </Text>
                         <FlashList 
@@ -280,7 +280,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                                             : 'bg-white dark:bg-secondary-900 border-secondary-200 dark:border-secondary-800'
                                     }`}
                                 >
-                                    <Text className={`text-xs font-black uppercase tracking-wider ${
+                                    <Text className={`text-sm font-black uppercase tracking-wider ${
                                         selectedStatus === status ? 'text-white' : 'text-secondary-600 dark:text-secondary-400'
                                     }`}>
                                         {status === '' 
@@ -311,7 +311,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                                 : t('tasks.no_results', 'Sin resultados')
                             }
                         </Text>
-                        <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 text-center mb-8 leading-relaxed">
+                        <Text className="text-base font-bold text-secondary-500 dark:text-secondary-400 text-center mb-8 leading-relaxed">
                             {tasks.length === 0
                                 ? t('tasks.empty_description', 'Agrega tu primera tarea para comenzar a organizar tu trabajo.')
                                 : t('tasks.try_adjusting_filters', 'Intenta ajustar los filtros para encontrar lo que buscas.')
@@ -379,7 +379,7 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                     <Text className="text-xl font-bold text-secondary-900 dark:text-secondary-50 mb-2 tracking-tight text-center">
                         {t('tasks.delete_task', '¿Eliminar tarea?')}
                     </Text>
-                    <Text className="text-sm font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed text-center">
+                    <Text className="text-base font-medium text-secondary-500 dark:text-secondary-400 mb-8 leading-relaxed text-center">
                         {t('tasks.confirm_delete', 'Esta acción no se puede deshacer. La tarea "{title}" será eliminada permanentemente.').replace('{title}', deleteModalTask?.title || '')}
                     </Text>
                     <View className="flex-row gap-3">

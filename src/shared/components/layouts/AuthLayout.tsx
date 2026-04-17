@@ -75,7 +75,7 @@ function FeatureItem({ title, description }: { title: string; description: strin
             </View>
             <View className="flex-1">
                 <View className="text-white font-semibold text-lg">{title}</View>
-                <View className="text-primary-100 text-sm mt-1">{description}</View>
+                <View className="text-primary-100 text-base mt-1">{description}</View>
             </View>
         </View>
     );

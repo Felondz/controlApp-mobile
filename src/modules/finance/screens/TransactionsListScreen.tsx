@@ -141,7 +141,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                                     : ''
                             }`}
                         >
-                            <Text className={`text-sm font-bold ${
+                            <Text className={`text-base font-bold ${
                                 activeTab === tab
                                     ? 'text-secondary-900 dark:text-secondary-100'
                                     : 'text-secondary-500 dark:text-secondary-400'
@@ -158,7 +158,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                 {/* Filters Panel */}
                 {showFilters && (
                     <View className={`mt-4 pt-4 border-t border-secondary-100 dark:border-secondary-700/50`}>
-                        <Text className={`text-[10px] font-bold mb-3 text-secondary-500 dark:text-secondary-400`}>
+                        <Text className={`text-sm font-bold mb-3 text-secondary-500 dark:text-secondary-400`}>
                             {t('finance.filter_by_account', 'Filtrar por Cuenta')}
                         </Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -171,7 +171,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                                             : 'bg-white dark:bg-secondary-700 border-secondary-200 dark:border-secondary-700'
                                     }`}
                                 >
-                                    <Text className={`text-xs font-bold ${selectedAccount === 'all' ? 'text-white' : 'text-secondary-600 dark:text-secondary-300'}`}>
+                                    <Text className={`text-sm font-bold ${selectedAccount === 'all' ? 'text-white' : 'text-secondary-600 dark:text-secondary-300'}`}>
                                         {t('finance.all_accounts', 'Todas')}
                                     </Text>
                                 </TouchableOpacity>
@@ -185,7 +185,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                                                 : 'bg-white dark:bg-secondary-700 border-secondary-200 dark:border-secondary-700'
                                         }`}
                                     >
-                                        <Text className={`text-xs font-bold ${selectedAccount === String(account.id) ? 'text-white' : 'text-secondary-600 dark:text-secondary-300'}`}>
+                                        <Text className={`text-sm font-bold ${selectedAccount === String(account.id) ? 'text-white' : 'text-secondary-600 dark:text-secondary-300'}`}>
                                             {account.nombre}
                                         </Text>
                                     </TouchableOpacity>
@@ -232,7 +232,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                             <View key={group.label} className="mb-6">
                                 <View className="flex-row items-center mb-3 pl-1">
                                     <View className="w-1.5 h-1.5 rounded-full bg-primary-500 mr-2" />
-                                    <Text className={`text-xs font-bold text-secondary-500 dark:text-secondary-400`}>
+                                    <Text className={`text-sm font-bold text-secondary-500 dark:text-secondary-400`}>
                                         {getGroupLabel(group.label)}
                                     </Text>
                                 </View>
@@ -273,11 +273,11 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                                                             {trans.titulo || t('finance.no_description', 'Sin descripción')}
                                                         </Text>
                                                         <View className="flex-row items-center">
-                                                            <Text className={`text-xs font-medium px-2 py-0.5 rounded-md bg-secondary-100 dark:bg-secondary-700 text-secondary-600 dark:text-secondary-400`}>
+                                                            <Text className={`text-sm font-medium px-2 py-0.5 rounded-md bg-secondary-100 dark:bg-secondary-700 text-secondary-600 dark:text-secondary-400`}>
                                                                 {trans.categoria?.nombre || t('finance.no_category', 'Otros')}
                                                             </Text>
                                                             {trans.cuenta?.nombre && (
-                                                                <Text className={`text-xs font-medium text-secondary-400 dark:text-secondary-500 ml-2`} numberOfLines={1}>
+                                                                <Text className={`text-sm font-medium text-secondary-400 dark:text-secondary-500 ml-2`} numberOfLines={1}>
                                                                     • {trans.cuenta.nombre}
                                                                 </Text>
                                                             )}
@@ -303,7 +303,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                                                         className={`flex-row items-center`}
                                                     >
                                                         <PencilIcon size={16} color={isDark ? '#818cf8' : '#6366f1'} />
-                                                        <Text className={`text-xs font-bold ml-1.5 ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
+                                                        <Text className={`text-sm font-bold ml-1.5 ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
                                                             {t('common.edit', 'Editar')}
                                                         </Text>
                                                     </TouchableOpacity>
@@ -312,7 +312,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                                                         className="flex-row items-center"
                                                     >
                                                         <TrashIcon size={16} color="#ef4444" />
-                                                        <Text className="text-xs font-bold ml-1.5 text-red-500">
+                                                        <Text className="text-sm font-bold ml-1.5 text-red-500">
                                                             {t('common.delete', 'Eliminar')}
                                                         </Text>
                                                     </TouchableOpacity>
@@ -352,7 +352,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                     <Text className={`text-xl font-bold text-secondary-900 dark:text-secondary-100 mb-2 text-center`}>
                         {t('common.confirm_delete', '¿Eliminar Transacción?')}
                     </Text>
-                    <Text className={`text-sm text-secondary-500 dark:text-secondary-400 mb-6 text-center`}>
+                    <Text className={`text-base text-secondary-500 dark:text-secondary-400 mb-6 text-center`}>
                         {t('transactions.confirm_delete_msg', 'Esta acción no se puede deshacer y afectará el saldo de tu cuenta.')}
                     </Text>
                     <View className="flex-row justify-center gap-3">

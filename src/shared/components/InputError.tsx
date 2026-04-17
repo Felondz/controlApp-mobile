@@ -15,7 +15,7 @@ export default function InputError({
     return (
         <Text
             className={`
-                text-xs font-medium
+                text-sm font-medium
                 text-danger-600 dark:text-danger-400
                 mt-1.5
                 ${className}

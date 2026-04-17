@@ -29,30 +29,34 @@ import { SearchOverlay } from "../../src/shared/components/SearchOverlay";
 
 // --- SUB-COMPONENTS MEMOIZED FOR STABILITY ---
 
-const SidebarItem = memo(({ item, isActive, onPress, theme, isDark }: any) => (
+const SidebarItem = memo(({ item, isActive, onPress, theme, isDark, isCollapsed }: any) => (
     <Pressable
         onPress={onPress}
-        className={`flex-row items-center px-4 py-3 rounded-2xl mb-1 transition-all ${
+        className={`flex-row items-center rounded-2xl mb-1 transition-all ${
+            isCollapsed ? 'justify-center py-3' : 'justify-start px-4 py-3'
+        } ${
             isActive 
                 ? 'bg-primary-500/10' 
                 : 'active:bg-secondary-100 dark:active:bg-secondary-800'
         }`}
     >
-        <View className="mr-4">
+        <View className={isCollapsed ? "" : "mr-4"}>
             <item.icon 
                 size={22} 
                 color={isActive ? theme.primary600 : (isDark ? '#9ca3af' : '#6b7280')} 
             />
         </View>
-        <Text className={`font-bold text-sm ${
-            isActive ? 'text-secondary-900 dark:text-white' : 'text-secondary-500 dark:text-secondary-400'
-        }`}>
-            {item.label}
-        </Text>
+        {!isCollapsed && (
+            <Text className={`font-bold text-base ${
+                isActive ? 'text-secondary-900 dark:text-white' : 'text-secondary-500 dark:text-secondary-400'
+            }`}>
+                {item.label}
+            </Text>
+        )}
     </Pressable>
 ));
 
-const NavContent = memo(({ sections, isItemActive, router, theme, isDark, vertical = false }: any) => (
+const NavContent = memo(({ sections, isItemActive, router, theme, isDark, vertical = false, isCollapsed = false }: any) => (
     <View className={vertical ? "flex-1" : "flex-row gap-1"}>
         {sections.main.map((item: any) => (
             <SidebarItem 
@@ -62,14 +66,17 @@ const NavContent = memo(({ sections, isItemActive, router, theme, isDark, vertic
                 onPress={() => router.push(item.href)}
                 theme={theme}
                 isDark={isDark}
+                isCollapsed={isCollapsed}
             />
         ))}
         
         {sections.tools && sections.tools.length > 0 && (
             <View className={vertical ? "mt-6 pt-6 border-t border-secondary-100 dark:border-secondary-800" : "hidden"}>
-                <Text className="px-4 mb-4 text-[10px] font-black uppercase tracking-widest text-secondary-400">
-                    Herramientas
-                </Text>
+                {!isCollapsed && (
+                    <Text className="px-4 mb-4 text-sm font-black tracking-widest text-secondary-400">
+                        Herramientas
+                    </Text>
+                )}
                 {sections.tools.map((item: any) => (
                     <SidebarItem 
                         key={item.name}
@@ -78,6 +85,7 @@ const NavContent = memo(({ sections, isItemActive, router, theme, isDark, vertic
                         onPress={() => router.push(item.href)}
                         theme={theme}
                         isDark={isDark}
+                        isCollapsed={isCollapsed}
                     />
                 ))}
             </View>
@@ -92,17 +100,22 @@ const NavContent = memo(({ sections, isItemActive, router, theme, isDark, vertic
                     onPress={() => router.push(item.href)}
                     theme={theme}
                     isDark={isDark}
+                    isCollapsed={isCollapsed}
                 />
             ))}
         </View>
     </View>
 ));
 
-const TabsContent = memo(({ theme, isDark, isDesktop, headerBg, borderColor, insets, t, activeProject }: any) => {
+const TabsContent = memo(({ theme, isDark, isDesktop, isTablet, isPortrait, headerBg, borderColor, insets, t, activeProject }: any) => {
     // Determine which tabs to show based on context
     const visibleTabs = activeProject 
         ? ['index', 'tasks', 'finance', 'chat', 'inventory', 'operations', 'settings']
         : ['index', 'marketplace', 'invitations', 'settings'];
+
+    // Hide bottom tabs on desktop or on tablets when we show the sidebar (portrait tablets)
+    const showSidebarOnTablet = isTablet && isPortrait;
+    const hideBottomTabs = isDesktop || showSidebarOnTablet;
 
     return (
         <Tabs screenOptions={{
@@ -112,7 +125,7 @@ const TabsContent = memo(({ theme, isDark, isDesktop, headerBg, borderColor, ins
             tabBarStyle: {
                 backgroundColor: headerBg,
                 borderTopColor: borderColor,
-                display: isDesktop ? 'none' : 'flex',
+                display: hideBottomTabs ? 'none' : 'flex',
                 height: 65 + insets.bottom / 2,
                 elevation: 0,
                 borderTopWidth: 1,
@@ -122,14 +135,13 @@ const TabsContent = memo(({ theme, isDark, isDesktop, headerBg, borderColor, ins
                 name="index" 
                 options={{ 
                     title: activeProject ? t('dashboard.overview', 'Resumen') : t('dashboard.title', 'Inicio'),
-                    href: '/(app)',
                     tabBarButton: visibleTabs.includes('index') ? undefined : () => null
                 }} 
             />
             <Tabs.Screen 
                 name="projects" 
                 options={{ 
-                    href: null, // Hidden from bottom tabs
+                    href: null,
                 }} 
             />
             <Tabs.Screen 
@@ -156,7 +168,7 @@ const TabsContent = memo(({ theme, isDark, isDesktop, headerBg, borderColor, ins
                 }} 
             />
             <Tabs.Screen 
-                name="marketplace" 
+                name="marketplace/index" 
                 options={{ 
                     title: t('modules.marketplace.title'),
                     tabBarButton: visibleTabs.includes('marketplace') ? undefined : () => null
@@ -190,6 +202,12 @@ const TabsContent = memo(({ theme, isDark, isDesktop, headerBg, borderColor, ins
                     tabBarButton: visibleTabs.includes('settings') ? undefined : () => null
                 }} 
             />
+            <Tabs.Screen 
+                name="profile" 
+                options={{ 
+                    href: null,
+                }} 
+            />
         </Tabs>
     );
 });
@@ -197,11 +215,12 @@ const TabsContent = memo(({ theme, isDark, isDesktop, headerBg, borderColor, ins
 // --- MAIN LAYOUT ---
 
 export default function AppLayout() {
-    const { width } = useWindowDimensions();
+    const { width, height } = useWindowDimensions();
     const insets = useSafeAreaInsets();
     const isDesktop = width >= 1024;
     const isTablet = width >= 768 && width < 1024;
-    
+    const isPortrait = height > width;
+
     const { theme, isDark } = useAppTheme();
     const { activeProject, clearActiveProject } = useProjectStore();
     const { user } = useAuthStore();
@@ -210,10 +229,18 @@ export default function AppLayout() {
     const segments = useSegments();
     const pathname = usePathname();
 
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [showAccountMenu, setShowAccountMenu] = useState(false);
     const [showBugReporter, setShowBugReporter] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const [accountBtnLayout, setAccountBtnLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+
+    // Auto-collapse sidebar on tablets in portrait mode
+    useEffect(() => {
+        if (isTablet && isPortrait) {
+            setIsSidebarCollapsed(true);
+        }
+    }, [isTablet, isPortrait]);
 
     const headerBg = isDark ? '#111827' : '#ffffff';
     const borderColor = isDark ? '#1f2937' : '#f3f4f6';
@@ -259,38 +286,71 @@ export default function AppLayout() {
     }, [activeProject, user?.enabled_tools, t]);
 
     const isItemActive = useCallback((href: string) => {
-        const cleanHref = href.replace(/\/\(app\)/, '').replace(/^\//, '') || 'index';
-        const currentRoute = segments[segments.length - 1] || 'index';
-        return currentRoute === cleanHref || (currentRoute === 'index' && cleanHref === 'index');
-    }, [segments]);
+        const normalizedHref = href.replace(/\/\(app\)/, '').replace(/^\//, '') || 'index';
+        const normalizedPath = pathname === '/' ? 'index' : pathname.replace(/^\//, '');
+
+        if (normalizedHref === 'index') {
+            return normalizedPath === 'index' || normalizedPath.startsWith('projects');
+        }
+
+        return normalizedPath === normalizedHref;
+    }, [pathname]);
 
     const getRouteTitle = () => {
+        if (pathname.includes('settings')) return t('settings.title', 'Ajustes');
+        if (pathname.includes('profile')) return t('profile.edit', 'Editar Perfil');
         if (activeProject) return activeProject.nombre;
         if (pathname.includes('projects/new')) return t('projects.new_project', 'Nuevo Proyecto');
+        if (pathname.includes('marketplace')) return t('modules.marketplace.title', 'Mercado');
+        if (pathname.includes('invitations')) return t('modules.invitations.title', 'Invitaciones');
         return t('dashboard.title', 'Inicio');
     };
 
-    const showBackButton = activeProject || (segments.length > 1 && segments[segments.length - 1] !== 'index');
+    const handleLogoPress = () => {
+        if (activeProject) {
+            clearActiveProject();
+        }
+        router.push('/(app)');
+    };
+
+    const isDashboard = segments.length === 0 || (segments.length === 1 && segments[0] === 'index');
+
+    const showBackButton = activeProject ? true : !isDashboard;
 
     const handleBack = () => {
-        if (activeProject) {
+        if (activeProject && isDashboard) {
             clearActiveProject();
             router.replace('/(app)');
         } else {
-            router.back();
+            if (router.canGoBack()) {
+                router.back();
+            } else {
+                router.replace('/(app)');
+            }
         }
     };
 
+    const showSidebar = isDesktop || (isTablet && isPortrait);
+    const sidebarWidth = isSidebarCollapsed ? 80 : 280;
+
     return (
         <View className="flex-1 flex-row bg-secondary-50 dark:bg-secondary-950">
-            {/* DESKTOP SIDEBAR */}
-            {isDesktop && (
+            {/* COLLAPSIBLE SIDEBAR */}
+            {showSidebar && (
                 <View
-                    style={{ width: 280, backgroundColor: headerBg, borderRightColor: borderColor, borderRightWidth: 1, paddingTop: insets.top + 16 }}
+                    style={{ 
+                        width: sidebarWidth, 
+                        backgroundColor: headerBg, 
+                        borderRightColor: borderColor, 
+                        borderRightWidth: 1, 
+                        paddingTop: insets.top + 16
+                    }}
                 >
-                    <Pressable onPress={() => router.push('/(app)')} className="px-8 mb-10 active:opacity-70">
-                        <ApplicationLogo size={36} />
-                    </Pressable>
+                    <View className={`px-4 mb-10 items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-start px-6'}`}>
+                        <Pressable onPress={handleLogoPress} className="active:opacity-70">
+                            <ApplicationLogo size={isSidebarCollapsed ? 28 : 36} showText={!isSidebarCollapsed} />
+                        </Pressable>
+                    </View>
 
                     <ScrollView className="flex-1 px-3" showsVerticalScrollIndicator={false}>
                         <NavContent 
@@ -300,6 +360,7 @@ export default function AppLayout() {
                             theme={theme}
                             isDark={isDark}
                             vertical
+                            isCollapsed={isSidebarCollapsed}
                         />
                     </ScrollView>
                 </View>
@@ -323,6 +384,18 @@ export default function AppLayout() {
                     }}
                 >
                     <View className="flex-row items-center flex-1 mr-4">
+                        {showSidebar && (
+                            <Pressable 
+                                onPress={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                                className="w-10 h-10 rounded-xl bg-secondary-100 dark:bg-secondary-800 items-center justify-center mr-3 active:scale-95 transition-all"
+                            >
+                                <Bars3Icon 
+                                    size={20} 
+                                    color={theme.primary600} 
+                                />
+                            </Pressable>
+                        )}
+
                         {showBackButton ? (
                             <Pressable 
                                 onPress={handleBack}
@@ -330,12 +403,16 @@ export default function AppLayout() {
                             >
                                 <ChevronLeftIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                             </Pressable>
-                        ) : !isDesktop && (
-                            <View className="mr-3">
+                        ) : !showSidebar && (
+                            <Pressable onPress={handleLogoPress} className="mr-3 active:opacity-70">
                                 <ApplicationLogo size={32} />
-                            </View>
+                            </Pressable>
                         )}
-                        <Text className="text-xl font-black tracking-tight text-secondary-900 dark:text-white" numberOfLines={1}>
+                        <Text 
+                            className="text-xl font-black tracking-tight" 
+                            style={{ color: theme.primary600 }}
+                            numberOfLines={1}
+                        >
                             {getRouteTitle()}
                         </Text>
                     </View>
@@ -351,11 +428,10 @@ export default function AppLayout() {
                         <Pressable 
                             onPress={() => setShowAccountMenu(true)} 
                             onLayout={e => setAccountBtnLayout(e.nativeEvent.layout)}
-                            className="p-1 rounded-xl border active:opacity-70"
-                            style={{ backgroundColor: isDark ? '#1f2937' : '#ffffff', borderColor: borderColor }}
+                            className="active:opacity-70"
                         >
-                            <View className="w-8 h-8 rounded-lg items-center justify-center overflow-hidden" style={{ backgroundColor: theme.primary600 }}>
-                                <UserIcon size={18} color="white" />
+                            <View className="w-9 h-9 rounded-xl items-center justify-center overflow-hidden" style={{ backgroundColor: theme.primary600 }}>
+                                <UserIcon size={20} color="white" />
                             </View>
                         </Pressable>
                     </View>
@@ -367,6 +443,8 @@ export default function AppLayout() {
                         theme={theme} 
                         isDark={isDark} 
                         isDesktop={isDesktop} 
+                        isTablet={isTablet}
+                        isPortrait={isPortrait}
                         headerBg={headerBg} 
                         borderColor={borderColor} 
                         insets={insets} 

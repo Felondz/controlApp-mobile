@@ -9,14 +9,18 @@ import { formatCurrency } from '../../../shared/currency';
 import PrimaryButton from '../../../shared/components/PrimaryButton';
 import DangerButton from '../../../shared/components/DangerButton';
 
+import { ThemeColors } from '../../../shared/themes';
+
 interface BalanceWidgetProps {
     proyectoId: number;
     compact?: boolean;
+    theme?: ThemeColors;
 }
 
-export const BalanceWidget = ({ proyectoId, compact = false }: BalanceWidgetProps) => {
+export const BalanceWidget = ({ proyectoId, compact = false, theme: providedTheme }: BalanceWidgetProps) => {
     const { t } = useTranslate();
-    const { theme, isDark } = useAppTheme();
+    const { theme: appTheme, isDark } = useAppTheme();
+    const theme = providedTheme || appTheme;
     const [balance, setBalance] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -55,7 +59,7 @@ export const BalanceWidget = ({ proyectoId, compact = false }: BalanceWidgetProp
                         >
                             {formatCurrency(balance || 0, 'COP')}
                         </Text>
-                        <Text className="text-[8px] font-black text-secondary-400 uppercase tracking-widest mt-0.5">
+                        <Text className="text-sm font-black text-secondary-400 tracking-widest mt-0.5">
                             {t('dashboard.global_balance', 'Saldo Global')}
                         </Text>
                     </View>
@@ -78,7 +82,7 @@ export const BalanceWidget = ({ proyectoId, compact = false }: BalanceWidgetProp
                             <WalletIcon size={18} color={theme.primary600} />
                         </View>
                     </View>
-                    <Text className="text-xs font-bold text-secondary-500 dark:text-secondary-400">
+                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400">
                         {t('dashboard.global_balance', 'Saldo Global')}
                     </Text>
                 </View>
@@ -106,7 +110,7 @@ export const BalanceWidget = ({ proyectoId, compact = false }: BalanceWidgetProp
                 >
                     <View className="flex-row items-center">
                         <PlusIcon size={16} color="white" />
-                        <Text className="text-white font-bold ml-2 text-xs">{t('finance.income', 'Ingreso')}</Text>
+                        <Text className="text-white font-bold ml-2 text-sm">{t('finance.income', 'Ingreso')}</Text>
                     </View>
                 </PrimaryButton>
                 
@@ -117,7 +121,7 @@ export const BalanceWidget = ({ proyectoId, compact = false }: BalanceWidgetProp
                 >
                     <View className="flex-row items-center">
                         <MinusIcon size={16} color="white" />
-                        <Text className="text-white font-bold ml-2 text-xs">{t('finance.expense', 'Gasto')}</Text>
+                        <Text className="text-white font-bold ml-2 text-sm">{t('finance.expense', 'Gasto')}</Text>
                     </View>
                 </DangerButton>
             </View>

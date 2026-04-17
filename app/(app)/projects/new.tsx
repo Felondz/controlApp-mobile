@@ -163,7 +163,7 @@ function NewProjectScreen() {
                         {image ? <Image source={{ uri: image }} className="w-full h-full" /> : 
                         <View className="items-center">
                             <CameraIcon size={24} color={theme.primary600} />
-                            <Text className="text-[10px] font-black text-secondary-500 dark:text-secondary-400 uppercase tracking-widest">Logo</Text>
+                            <Text className="text-sm font-black text-secondary-500 dark:text-secondary-400 uppercase tracking-widest">Logo</Text>
                         </View>}
                     </Pressable>
                 </View>
@@ -176,7 +176,7 @@ function NewProjectScreen() {
                             <Input label={t('projects.name')} placeholder={t('projects.name_placeholder')} value={form.nombre} onChangeText={(v) => setForm({ ...form, nombre: v })} />
                             <Input label={t('projects.description')} placeholder={t('projects.desc_placeholder')} value={form.descripcion} onChangeText={(v) => setForm({ ...form, descripcion: v })} multiline numberOfLines={2} />
                             <View>
-                                <Text className="text-xs font-black text-secondary-500 dark:text-secondary-400 uppercase tracking-widest mb-3">{t('projects.currency')}</Text>
+                                <Text className="text-sm font-black text-secondary-500 dark:text-secondary-400 uppercase tracking-widest mb-3">{t('projects.currency')}</Text>
                                 <View className="flex-row gap-3">
                                     {CURRENCIES.map((curr) => {
                                         const isSel = form.moneda_default === curr.code;
@@ -208,7 +208,7 @@ function NewProjectScreen() {
                                         ...(creationMode === 'template' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 1 } : {})
                                     }}
                                 >
-                                    <Text className={`text-[10px] font-black uppercase ${creationMode === 'template' ? 'text-primary-600 dark:text-primary-400' : 'text-secondary-500'}`}>{t('projects.template_mode')}</Text>
+                                    <Text className={`text-sm font-black uppercase ${creationMode === 'template' ? 'text-primary-600 dark:text-primary-400' : 'text-secondary-500'}`}>{t('projects.template_mode')}</Text>
                                 </Pressable>
                                 <Pressable 
                                     onPress={() => setCreationMode('custom')} 
@@ -220,7 +220,7 @@ function NewProjectScreen() {
                                         ...(creationMode === 'custom' ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 1 } : {})
                                     }}
                                 >
-                                    <Text className={`text-[10px] font-black uppercase ${creationMode === 'custom' ? 'text-primary-600 dark:text-primary-400' : 'text-secondary-500'}`}>{t('projects.custom_mode')}</Text>
+                                    <Text className={`text-sm font-black uppercase ${creationMode === 'custom' ? 'text-primary-600 dark:text-primary-400' : 'text-secondary-500'}`}>{t('projects.custom_mode')}</Text>
                                 </Pressable>
                             </View>
                         </View>
@@ -244,9 +244,9 @@ function NewProjectScreen() {
                                             <View className="flex-1">
                                                 <View className="flex-row items-center gap-2">
                                                     <Text className={`font-black text-base ${isSel ? 'text-secondary-900 dark:text-white' : 'text-secondary-600 dark:text-secondary-400'}`}>{t(`projects.templates.${tmpl.id}`)}</Text>
-                                                    {tmpl.coming_soon && <Text className="text-[8px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full uppercase font-black">Soon</Text>}
+                                                    {tmpl.coming_soon && <Text className="text-sm bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full uppercase font-black">Soon</Text>}
                                                 </View>
-                                                <Text className="text-[11px] text-secondary-500 dark:text-secondary-400 font-medium mt-0.5" numberOfLines={1}>{t(`projects.templates.${tmpl.id}_desc`)}</Text>
+                                                <Text className="text-sm text-secondary-500 dark:text-secondary-400 font-medium mt-0.5" numberOfLines={1}>{t(`projects.templates.${tmpl.id}_desc`)}</Text>
                                             </View>
                                             {isSel && <CheckIcon size={20} color={theme.primary600} />}
                                         </Pressable>
@@ -268,8 +268,8 @@ function NewProjectScreen() {
                                             className={`flex-1 min-w-[45%] p-4 rounded-2xl border-2 items-center ${isEn ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-secondary-200 dark:border-secondary-800'} ${mod.coming_soon || isLck ? 'opacity-50' : ''}`}
                                         >
                                             {isLck ? <LockClosedIcon size={24} color="#9ca3af" /> : <IconComp size={24} color={isEn ? theme.primary600 : '#6b7280'} />}
-                                            <Text className={`mt-3 font-bold text-xs uppercase tracking-wider ${isEn ? 'text-secondary-900 dark:text-white' : 'text-secondary-500 dark:text-secondary-400'}`}>{t(`projects.modules.${mod.id}`)}</Text>
-                                            {isLck && <Text className="text-[8px] text-red-500 font-bold mt-1 text-center">Req: {reqs.join(', ')}</Text>}
+                                            <Text className={`mt-3 font-bold text-sm uppercase tracking-wider ${isEn ? 'text-secondary-900 dark:text-white' : 'text-secondary-500 dark:text-secondary-400'}`}>{t(`projects.modules.${mod.id}`)}</Text>
+                                            {isLck && <Text className="text-sm text-red-500 font-bold mt-1 text-center">Req: {reqs.join(', ')}</Text>}
                                         </Pressable>
                                     );
                                 })}

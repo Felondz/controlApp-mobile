@@ -132,7 +132,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                 {!isEditing ? (
                     <TouchableOpacity onPress={() => setIsEditing(true)} className="flex-row items-center">
                         <PencilIcon size={18} color={isDark ? '#818cf8' : '#6366f1'} />
-                        <Text className={`ml-1 text-sm font-medium ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
+                        <Text className={`ml-1 text-base font-medium ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
                             {t('common.edit', 'Editar')}
                         </Text>
                     </TouchableOpacity>
@@ -175,7 +175,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                                     {trans.titulo || t('finance.no_description', 'Sin descripción')}
                                 </Text>
                             )}
-                            <Text className={`text-[10px] font-bold ${textSecondary} mt-0.5`}>
+                            <Text className={`text-sm font-bold ${textSecondary} mt-0.5`}>
                                 {trans.fecha ? new Date(trans.fecha).toLocaleDateString('es-CO', {
                                     weekday: 'long',
                                     year: 'numeric',
@@ -187,7 +187,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                     </View>
 
                     <View className="items-center py-4 mb-5 bg-secondary-50/50 dark:bg-secondary-900/30 rounded-2xl border border-secondary-100 dark:border-secondary-700/50">
-                        <Text className={`text-xs font-bold ${textSecondary} mb-1`}>
+                        <Text className={`text-sm font-bold ${textSecondary} mb-1`}>
                             {isIncome ? t('finance.income', 'Ingreso') : t('finance.expense', 'Gasto')}
                         </Text>
                         <Text className={`text-3xl font-black ${
@@ -204,10 +204,10 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                             <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
                                 <FolderIcon size={16} color={textSecondary} />
                             </View>
-                            <Text className={`text-xs font-bold ${textSecondary} ml-3 w-20`}>
+                            <Text className={`text-sm font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.account', 'Cuenta')}:
                             </Text>
-                            <Text className={`flex-1 text-sm font-bold ${textColor}`}>
+                            <Text className={`flex-1 text-base font-bold ${textColor}`}>
                                 {cuenta?.nombre || '-'}
                             </Text>
                         </View>
@@ -216,10 +216,10 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                             <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
                                 <TagIcon size={16} color={textSecondary} />
                             </View>
-                            <Text className={`text-xs font-bold ${textSecondary} ml-3 w-20`}>
+                            <Text className={`text-sm font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.category', 'Categoría')}:
                             </Text>
-                            <Text className={`flex-1 text-sm font-bold ${textColor}`}>
+                            <Text className={`flex-1 text-base font-bold ${textColor}`}>
                                 {categoria?.nombre || '-'}
                             </Text>
                         </View>
@@ -228,10 +228,10 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                             <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
                                 <CalendarIcon size={16} color={textSecondary} />
                             </View>
-                            <Text className={`text-xs font-bold ${textSecondary} ml-3 w-20`}>
+                            <Text className={`text-sm font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.date', 'Fecha')}:
                             </Text>
-                            <Text className={`flex-1 text-sm font-bold ${textColor}`}>
+                            <Text className={`flex-1 text-base font-bold ${textColor}`}>
                                 {trans.fecha ? new Date(trans.fecha).toLocaleDateString() : '-'}
                             </Text>
                         </View>
@@ -240,7 +240,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
 
                 {isEditing && (
                     <View className={`${cardBg} ${borderColor} border rounded-2xl p-5 mb-6 shadow-sm`}>
-                        <Text className={`text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1`}>
+                        <Text className={`text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1`}>
                             {t('finance.amount', 'Monto')} (centavos):
                         </Text>
                         <TextInput
@@ -250,10 +250,10 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                                 monto: parseInt(text) || 0 
                             }))}
                             keyboardType="numeric"
-                            className={`${inputBg} ${borderColor} border rounded-xl px-4 py-3 text-sm font-bold ${textColor}`}
+                            className={`${inputBg} ${borderColor} border rounded-xl px-4 py-3 text-base font-bold ${textColor}`}
                             placeholderTextColor={textSecondary}
                         />
-                        <Text className={`text-[10px] font-medium ${textSecondary} mt-2 ml-1`}>
+                        <Text className={`text-sm font-medium ${textSecondary} mt-2 ml-1`}>
                             {t('finance.amount_hint', 'Ingresa el monto en centavos. Positivo para ingresos, negativo para gastos.')}
                         </Text>
                     </View>

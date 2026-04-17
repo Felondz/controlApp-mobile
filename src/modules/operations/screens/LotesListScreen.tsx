@@ -78,7 +78,7 @@ export default function LotesListScreen({ proyectoId, onAdd, onPress }: LotesLis
                             <View className="flex-1 mr-2">
                                 <View className="flex-row items-center mb-1">
                                     <FactoryIcon size={12} color={isDark ? '#4b5563' : '#9ca3af'} />
-                                    <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 ml-1.5" numberOfLines={1}>
+                                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 ml-1.5" numberOfLines={1}>
                                         {lote.productionProcess?.name || t('operations.process_general', 'Proceso')}
                                     </Text>
                                 </View>
@@ -87,7 +87,7 @@ export default function LotesListScreen({ proyectoId, onAdd, onPress }: LotesLis
                                 </Text>
                             </View>
                             <View className={`px-2 py-0.5 rounded-full ${getStatusBadge(lote.status)}`}>
-                                <Text className="text-[10px] font-bold">
+                                <Text className="text-sm font-bold">
                                     {lote.status}
                                 </Text>
                             </View>
@@ -97,31 +97,31 @@ export default function LotesListScreen({ proyectoId, onAdd, onPress }: LotesLis
                             <View className="flex-row justify-between items-center bg-secondary-50 dark:bg-secondary-800/40 px-3.5 py-2.5 rounded-xl border border-secondary-100 dark:border-secondary-800/50">
                                 <View className="flex-row items-center">
                                     <LayersIcon size={14} color={theme.primary600} />
-                                    <Text className="text-xs font-bold text-secondary-500 dark:text-secondary-400 ml-2">
+                                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 ml-2">
                                         {t('operations.current_stage', 'Etapa')}:
                                     </Text>
                                 </View>
-                                <Text className="text-sm font-bold text-secondary-900 dark:text-secondary-100">
+                                <Text className="text-base font-bold text-secondary-900 dark:text-secondary-100">
                                     {lote.stage?.name || 'Inicio'}
                                 </Text>
                             </View>
 
                             <View className="flex-row justify-between items-center">
                                 <View>
-                                    <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-1">
+                                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-1">
                                         {t('operations.quantity', 'Cantidad')}
                                     </Text>
                                     <Text className="text-lg font-black text-secondary-900 dark:text-secondary-50">
-                                        {lote.current_quantity} <Text className="text-[10px] font-bold text-secondary-400">{t('operations.units', 'unidades')}</Text>
+                                        {lote.current_quantity} <Text className="text-sm font-bold text-secondary-400">{t('operations.units', 'unidades')}</Text>
                                     </Text>
                                 </View>
                                 <View className="items-end">
-                                    <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-1">
+                                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-1">
                                         {t('operations.start_date', 'Inicio')}
                                     </Text>
                                     <View className="flex-row items-center">
                                         <ClockIcon size={12} color={isDark ? '#4b5563' : '#9ca3af'} />
-                                        <Text className="text-xs font-bold text-secondary-900 dark:text-secondary-50 ml-1.5">
+                                        <Text className="text-sm font-bold text-secondary-900 dark:text-secondary-50 ml-1.5">
                                             {new Date(lote.start_date).toLocaleDateString()}
                                         </Text>
                                     </View>
@@ -131,10 +131,10 @@ export default function LotesListScreen({ proyectoId, onAdd, onPress }: LotesLis
                             {/* Progress Bar */}
                             <View>
                                 <View className="flex-row justify-between items-end mb-1.5">
-                                    <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400">
+                                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400">
                                         {t('operations.progress', 'Progreso')}
                                     </Text>
-                                    <Text className="text-xs font-bold text-primary-600 dark:text-primary-400">
+                                    <Text className="text-sm font-bold text-primary-600 dark:text-primary-400">
                                         {Math.round(progress)}%
                                     </Text>
                                 </View>
@@ -155,7 +155,7 @@ export default function LotesListScreen({ proyectoId, onAdd, onPress }: LotesLis
                         className="flex-row items-center justify-center py-3.5 border-t border-secondary-100 dark:border-secondary-800/50 bg-secondary-50/30 dark:bg-secondary-800/30 active:bg-secondary-100 dark:active:bg-secondary-800"
                         onPress={() => handlePress(lote)}
                     >
-                        <Text className="text-xs font-bold mr-1.5" style={{ color: theme.primary600 }}>
+                        <Text className="text-sm font-bold mr-1.5" style={{ color: theme.primary600 }}>
                             {t('common.view_details', 'Ver detalles')}
                         </Text>
                         <ChevronRightIcon size={14} color={theme.primary600} />
@@ -174,7 +174,7 @@ export default function LotesListScreen({ proyectoId, onAdd, onPress }: LotesLis
                         <Text className="text-3xl font-black tracking-tighter text-secondary-900 dark:text-secondary-50">
                             {t('operations.title', 'Operaciones')}
                         </Text>
-                        <Text className="text-secondary-400 dark:text-secondary-500 text-xs font-bold uppercase tracking-widest mt-1">
+                        <Text className="text-secondary-400 dark:text-secondary-500 text-sm font-bold uppercase tracking-widest mt-1">
                             {t('operations.production_batches', 'Lotes de Producción')}
                         </Text>
                     </View>
@@ -201,7 +201,7 @@ export default function LotesListScreen({ proyectoId, onAdd, onPress }: LotesLis
                         <Text className="text-xl font-black text-secondary-900 dark:text-secondary-50 mb-2 text-center">
                             {t('operations.no_active_lotes', 'No hay lotes activos')}
                         </Text>
-                        <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 text-center mb-8 leading-relaxed">
+                        <Text className="text-base font-bold text-secondary-500 dark:text-secondary-400 text-center mb-8 leading-relaxed">
                             {t('operations.create_first_lote', 'Crea tu primer lote de producción para comenzar a monitorear tus procesos.')}
                         </Text>
                         <PrimaryButton 

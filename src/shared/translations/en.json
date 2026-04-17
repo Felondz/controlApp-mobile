@@ -22,7 +22,10 @@
         "profile": "Profile",
         "active": "Active",
         "spanish": "Spanish",
-        "english": "English"
+        "english": "English",
+        "photo": "Photo",
+        "view_all": "View all",
+        "title": "Title"
     },
     "auth": {
         "login": "Login",
@@ -49,6 +52,8 @@
         "already_have_account": "Already have an account?",
         "welcome_back": "Welcome back!",
         "create_account": "Create Account",
+        "name": "Name",
+        "name_placeholder": "Your name",
         "registration_success_message": "Registration successful. Please verify your email.",
         "password_requirements_error": "Password does not meet security requirements.",
         "passwords_dont_match": "Passwords do not match",
@@ -62,7 +67,8 @@
         "verification_success": "Your email has been successfully verified.",
         "verification_error": "Verification error.",
         "verification_invalid_link": "The verification link is invalid or has expired.",
-        "verification_link_sent": "Verification link sent."
+        "verification_link_sent": "Verification link sent.",
+        "confirm_logout_msg": "Are you sure you want to logout?"
     },
     "landing": {
         "hero_subtitle": "The complete solution to manage your projects and finances from anywhere."
@@ -77,7 +83,8 @@
         "projects_summary": "Projects Summary",
         "no_projects": "No projects",
         "create_project": "Create Project",
-        "create_first_project_desc": "Start by creating your first project to manage your resources."
+        "create_first_project_desc": "Start by creating your first project to manage your resources.",
+        "global_balance": "Global Balance"
     },
     "projects": {
         "title": "Projects",
@@ -138,6 +145,7 @@
         "balance": "Balance",
         "income": "Income",
         "expenses": "Expenses",
+        "expense": "Expense",
         "transactions": "Transactions",
         "register_income": "Register Income",
         "register_expense": "Register Expense",
@@ -149,12 +157,28 @@
     "inventory": {
         "title": "Inventory",
         "items": "Items",
-        "stock": "Stock"
+        "stock": "Stock",
+        "summary": "Inventory Summary",
+        "total_items": "Items",
+        "total_value": "Value",
+        "low_stock_count": "Low Stock",
+        "active_items": "Active"
     },
     "operations": {
         "title": "Operations",
         "lotes": "Batches",
-        "processes": "Processes"
+        "processes": "Processes",
+        "active_batches": "Active Batches",
+        "units": "units"
+    },
+    "tasks": {
+        "title": "Tasks",
+        "summary": "Tasks Summary",
+        "pending_tasks": "Pending tasks",
+        "pending": "Pending",
+        "in_progress": "In Progress",
+        "done": "Done",
+        "overdue_count": "overdue tasks"
     },
     "settings": {
         "title": "Settings",
@@ -166,21 +190,23 @@
         }
     },
     "tools": {
-        "financial_calculator": "Financial Calculator"
+        "financial_calculator": "Financial Calculator",
+        "financial_calculator_desc": "Simulate loans, interests, and profitability of your investments."
     },
     "profile": {
         "edit": "Edit Profile",
-        "information": "Personal Information"
+        "information": "Personal Information",
+        "email_no_change_notice": "Email address cannot be changed for security reasons.",
+        "update_success": "Profile updated successfully.",
+        "update_error": "Error updating profile.",
+        "permission_denied": "Permission to access gallery is required."
     },
     "inbox": {
         "title": "Inbox"
     },
-    "modules": {
-        "invitations": { "title": "Invitations" },
-        "marketplace": { "title": "Marketplace" }
-    },
     "validation": {
         "required": "This field is required",
+        "required_fields": "Please complete all required fields",
         "password_mismatch": "Passwords do not match",
         "checkbox_required": "Please check this box to continue"
     },
@@ -229,5 +255,20 @@
         "edited": "Edited",
         "reactions": "Reactions",
         "no_messages": "No messages yet. Be the first!"
+    },
+    "modules": {
+        "invitations": { 
+            "title": "Invitations",
+            "no_pending": "You have no pending invitations at this time."
+        },
+        "marketplace": { "title": "Marketplace" }
+    },
+    "marketplace": { 
+        "title": "Tools Marketplace",
+        "subtitle": "Activate global tools to enhance your experience.",
+        "available_tools": "Available Tools",
+        "no_tools": "No more tools available at this time.",
+        "looking_for_more": "Looking for more features?",
+        "looking_for_more_desc": "We are working on new integrated tools to improve your workflow."
     }
 }

@@ -171,7 +171,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ visible, onClose }
                                             <Text className="text-secondary-900 dark:text-secondary-50 font-black text-base" numberOfLines={1}>
                                                 {item.nombre || item.name}
                                             </Text>
-                                            <Text className="text-secondary-500 dark:text-secondary-400 text-xs font-medium" numberOfLines={1}>
+                                            <Text className="text-secondary-500 dark:text-secondary-400 text-sm font-medium" numberOfLines={1}>
                                                 {item.descripcion || t('projects.no_description')}
                                             </Text>
                                         </View>
@@ -194,7 +194,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ visible, onClose }
                         ) : (
                             <View className="flex-1 items-center justify-center opacity-40">
                                 <SearchIcon size={64} color={isDark ? '#374151' : '#e5e7eb'} />
-                                <Text className="mt-4 text-center text-secondary-400 dark:text-secondary-600 font-bold uppercase tracking-widest text-xs">
+                                <Text className="mt-4 text-center text-secondary-400 dark:text-secondary-600 font-bold uppercase tracking-widest text-sm">
                                     {t('common.type_to_search', 'Escribe algo para buscar')}
                                 </Text>
                             </View>

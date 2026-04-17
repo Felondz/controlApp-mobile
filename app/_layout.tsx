@@ -2,7 +2,7 @@ import "../global.css";
 import { StatusBar } from "expo-status-bar";
 import { Slot, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Text, TextInput } from "react-native";
 import { ApolloProvider } from "@apollo/client/react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -13,14 +13,28 @@ import { useAppTheme } from "../src/shared/hooks/useAppTheme";
 import { useColorScheme } from "nativewind";
 import { ReanimatedLogLevel, configureReanimatedLogger } from "react-native-reanimated";
 
-// Disable Reanimated strict mode to avoid warnings about shared value access during render
-// especially when using libraries like NativeWind v4 which rely heavily on shared values.
+// Disable Reanimated strict mode
 configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
     strict: false,
 });
 
-export default function RootLayout() {
+// Set global text accessibility defaults
+// @ts-ignore
+if (Text.defaultProps == null) Text.defaultProps = {};
+// @ts-ignore
+Text.defaultProps.allowFontScaling = true;
+// @ts-ignore
+Text.defaultProps.maxFontSizeMultiplier = 1.3;
+
+// @ts-ignore
+if (TextInput.defaultProps == null) TextInput.defaultProps = {};
+// @ts-ignore
+TextInput.defaultProps.allowFontScaling = true;
+// @ts-ignore
+TextInput.defaultProps.maxFontSizeMultiplier = 1.3;
+
+function RootLayoutContent() {
     const { isAuthenticated, isLoading: authLoading, initialize: initAuth } = useAuthStore();
     const { isInitialized: settingsReady, initialize: initSettings, isDark } = useSettingsStore();
     const segments = useSegments();
@@ -57,19 +71,26 @@ export default function RootLayout() {
     }, [isAuthenticated, segments, authLoading, settingsReady, isAppReady]);
 
     return (
+        <>
+            <StatusBar style={isDark ? "light" : "dark"} />
+            <Slot />
+            {(!isAppReady || authLoading || !settingsReady) && (
+                <View className="absolute inset-0 bg-secondary-50 dark:bg-secondary-900 items-center justify-center z-50">
+                    <ActivityIndicator size="large" color={themeColors.primary500} />
+                </View>
+            )}
+        </>
+    );
+}
+
+export default function RootLayout() {
+    return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaProvider>
                 <ApolloProvider client={apolloClient}>
-                    <StatusBar style={isDark ? "light" : "dark"} />
-                    <Slot />
-                    {(!isAppReady || authLoading || !settingsReady) && (
-                        <View className="absolute inset-0 bg-secondary-50 dark:bg-secondary-900 items-center justify-center z-50">
-                            <ActivityIndicator size="large" color={themeColors.primary500} />
-                        </View>
-                    )}
+                    <RootLayoutContent />
                 </ApolloProvider>
             </SafeAreaProvider>
         </GestureHandlerRootView>
     );
 }
-

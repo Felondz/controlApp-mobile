@@ -15,7 +15,7 @@ export default function InputLabel({
     return (
         <Text
             className={`
-                text-sm font-medium
+                text-base font-medium
                 text-secondary-700 dark:text-secondary-300
                 mb-1.5
                 ${className}

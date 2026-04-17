@@ -27,7 +27,7 @@ export const WidgetCard = ({
     const isTablet = width >= 768;
 
     const content = (
-        <View className={`bg-white dark:bg-secondary-800 rounded-2xl shadow-sm border border-secondary-200 dark:border-secondary-700 mb-6 overflow-hidden ${className}`}>
+        <View className={`bg-white dark:bg-secondary-800 rounded-xl shadow-sm border border-secondary-200 dark:border-secondary-700 mb-6 overflow-hidden ${className}`}>
             {/* Header - Only render if title is present */}
             {title && (
                 <View
@@ -49,7 +49,7 @@ export const WidgetCard = ({
                         {icon && <View>{icon}</View>}
 
                         <Text 
-                            className="font-bold text-sm tracking-tight"
+                            className="font-bold text-base tracking-tight"
                             style={{ color: isDark ? theme.primary400 : theme.primary700 }}
                         >
                             {title}

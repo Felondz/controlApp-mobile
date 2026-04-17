@@ -115,7 +115,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                             <Text className="text-2xl font-black tracking-tighter text-secondary-900 dark:text-secondary-50">
                                 {t('inventory.new_item', 'Nuevo Item')}
                             </Text>
-                            <Text className="text-secondary-500 dark:text-secondary-400 text-[10px] font-bold mt-0.5">
+                            <Text className="text-secondary-500 dark:text-secondary-400 text-sm font-bold mt-0.5">
                                 {t('inventory.registration', 'Registro de Existencias')}
                             </Text>
                         </View>
@@ -145,7 +145,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                             <Text className="text-lg font-bold text-secondary-900 dark:text-secondary-50 leading-tight">
                                 {t('inventory.general_info', 'Información General')}
                             </Text>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400">
                                 {t('inventory.basic_data', 'Datos Básicos')}
                             </Text>
                         </View>
@@ -153,7 +153,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
 
                     <View className="space-y-4">
                         <View>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                                 {t('inventory.name', 'Nombre del Item')} *
                             </Text>
                             <TextInput
@@ -164,12 +164,12 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                                 className={`bg-secondary-50 dark:bg-secondary-950 border ${errors.name ? 'border-danger-500' : 'border-secondary-100 dark:border-secondary-800'} rounded-xl px-4 py-3.5 text-secondary-900 dark:text-secondary-50 font-bold`}
                             />
                             {errors.name && (
-                                <Text className="text-xs font-bold text-danger-500 mt-2 ml-1">{errors.name}</Text>
+                                <Text className="text-sm font-bold text-danger-500 mt-2 ml-1">{errors.name}</Text>
                             )}
                         </View>
 
                         <View>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                                 {t('inventory.sku', 'Código SKU / Identificador')}
                             </Text>
                             <TextInput
@@ -177,12 +177,12 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                                 onChangeText={(text) => updateField('sku', text)}
                                 placeholder="Ej: TORN-M5-001"
                                 placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
-                                className="bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-xl px-4 py-3.5 text-secondary-900 dark:text-secondary-50 font-mono text-sm"
+                                className="bg-secondary-50 dark:bg-secondary-950 border border-secondary-100 dark:border-secondary-800 rounded-xl px-4 py-3.5 text-secondary-900 dark:text-secondary-50 font-mono text-base"
                             />
                         </View>
 
                         <View>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-3 ml-1">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-3 ml-1">
                                 {t('inventory.type', 'Tipo de Recurso')} *
                             </Text>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -197,7 +197,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                                                     : 'bg-secondary-50 dark:bg-secondary-950 border-secondary-100 dark:border-secondary-800'
                                             }`}
                                         >
-                                            <Text className={`text-xs font-bold ${
+                                            <Text className={`text-sm font-bold ${
                                                 form.type === type.value ? 'text-white' : 'text-secondary-600 dark:text-secondary-400'
                                             }`}>
                                                 {type.label}
@@ -209,7 +209,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                         </View>
 
                         <View>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                                 {t('inventory.unit', 'Unidad de Medida')} *
                             </Text>
                             <TextInput
@@ -220,20 +220,20 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                                 className={`bg-secondary-50 dark:bg-secondary-950 border ${errors.unit ? 'border-danger-500' : 'border-secondary-100 dark:border-secondary-800'} rounded-xl px-4 py-3.5 text-secondary-900 dark:text-secondary-50 font-bold`}
                             />
                             {errors.unit && (
-                                <Text className="text-xs font-bold text-danger-500 mt-2 ml-1">{errors.unit}</Text>
+                                <Text className="text-sm font-bold text-danger-500 mt-2 ml-1">{errors.unit}</Text>
                             )}
                         </View>
                     </View>
                 </View>
 
                 <View className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl p-5 shadow-sm mb-8">
-                    <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-6 ml-1">
+                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-6 ml-1">
                         {t('inventory.stock_pricing', 'Control de Stock y Costos')}
                     </Text>
 
                     <View className="flex-row flex-wrap" style={{ marginHorizontal: -8 }}>
                         <View className="px-2 mb-4" style={{ width: isTablet ? '50%' : '50%' }}>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                                 {t('inventory.initial_stock', 'Existencia Inicial')}
                             </Text>
                             <TextInput
@@ -247,7 +247,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                         </View>
 
                         <View className="px-2 mb-4" style={{ width: isTablet ? '50%' : '50%' }}>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                                 {t('inventory.min_stock', 'Stock de Seguridad')}
                             </Text>
                             <TextInput
@@ -261,7 +261,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                         </View>
 
                         <View className="px-2 mb-4" style={{ width: isTablet ? '50%' : '50%' }}>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                                 {t('inventory.cost_price', 'Costo Unitario')}
                             </Text>
                             <View className="relative justify-center">
@@ -278,7 +278,7 @@ export default function CreateInventoryItem({ onSuccess, onCancel }: CreateInven
                         </View>
 
                         <View className="px-2 mb-4" style={{ width: isTablet ? '50%' : '50%' }}>
-                            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
+                            <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1">
                                 {t('inventory.sale_price', 'Precio de Venta')}
                             </Text>
                             <View className="relative justify-center">

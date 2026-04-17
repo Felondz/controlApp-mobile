@@ -25,7 +25,7 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(
         return (
             <View className={`mb-4 ${containerClassName}`}>
                 {label && (
-                    <Text className="text-secondary-700 dark:text-secondary-300 font-medium mb-2 text-sm">
+                    <Text className="text-secondary-700 dark:text-secondary-300 font-medium mb-2 text-base">
                         {label}
                     </Text>
                 )}
@@ -45,7 +45,7 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(
                     {...props}
                 />
                 {error && (
-                    <Text className="text-danger-500 text-xs mt-1 ml-1">
+                    <Text className="text-danger-500 text-sm mt-1 ml-1">
                         {error}
                     </Text>
                 )}

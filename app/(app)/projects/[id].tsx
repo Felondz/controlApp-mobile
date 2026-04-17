@@ -81,8 +81,8 @@ export default function ProjectDetailScreen() {
                                             style={{ backgroundColor: module.color }}
                                         />
                                     </View>
-                                    <Text className="text-secondary-900 dark:text-white font-black uppercase tracking-widest text-[10px]">{module.name}</Text>
-                                    <Text className="text-secondary-500 dark:text-secondary-400 text-[10px] mt-1">Ver más →</Text>
+                                    <Text className="text-secondary-900 dark:text-white font-black uppercase tracking-widest text-sm">{module.name}</Text>
+                                    <Text className="text-secondary-500 dark:text-secondary-400 text-sm mt-1">Ver más →</Text>
                                 </Pressable>
                             ))}
                         </View>

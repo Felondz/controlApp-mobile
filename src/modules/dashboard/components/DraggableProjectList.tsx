@@ -58,7 +58,7 @@ export const DraggableProjectList = () => {
                         <Text className="text-gray-500 dark:text-gray-400 font-medium mb-1">
                             {t('dashboard.create_project')}
                         </Text>
-                        <Text className="text-gray-400 dark:text-gray-500 text-xs text-center">
+                        <Text className="text-gray-400 dark:text-gray-500 text-sm text-center">
                             {t('dashboard.create_first_project_desc')}
                         </Text>
                     </View>

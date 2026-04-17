@@ -27,9 +27,27 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
         if (syncToBackend) {
             try {
+                // 1. Sync to Backend
                 await preferencesApi.updateTheme(theme);
+
+                // 2. Sync to AuthStore user object for session persistence
+                const { useAuthStore } = require('./authStore');
+                const authState = useAuthStore.getState();
+                
+                if (authState.user) {
+                    const updatedUser = { ...authState.user, global_theme: theme };
+                    authState.updateSettings(authState.user.settings || { completed_tours: [] }); // Trigger store update if needed
+                    
+                    // Manually update user with new theme in auth store
+                    useAuthStore.setState({ user: updatedUser });
+                    
+                    // 3. Persist updated user to SecureStore
+                    const SecureStore = require('expo-secure-store');
+                    const { USER_KEY } = require('../services/api');
+                    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(updatedUser));
+                }
             } catch (error) {
-                console.warn('Failed to sync theme with backend:', error);
+                console.warn('Failed to sync theme with backend or auth store:', error);
             }
         }
     },

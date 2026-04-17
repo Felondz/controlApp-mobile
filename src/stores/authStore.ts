@@ -33,6 +33,7 @@ interface AuthState {
     logout: () => Promise<void>;
     clearError: () => void;
     updateSettings: (settings: { completed_tours: string[] }) => void;
+    toggleTool: (toolId: string) => Promise<void>;
 }
 
 // Helper to get device name
@@ -214,6 +215,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     updateSettings: (settings) => set((state) => ({
         user: state.user ? { ...state.user, settings } : null
     })),
+
+    // Toggle tool locally and persist to storage
+    toggleTool: async (toolId: string) => {
+        const { user } = get();
+        if (!user) return;
+
+        const currentTools = user.enabled_tools || [];
+        const newTools = currentTools.includes(toolId)
+            ? currentTools.filter(id => id !== toolId)
+            : [...currentTools, toolId];
+        
+        const updatedUser = { ...user, enabled_tools: newTools };
+        
+        // Optimistic update
+        set({ user: updatedUser });
+        
+        // Persist to storage
+        try {
+            await SecureStore.setItemAsync(USER_KEY, JSON.stringify(updatedUser));
+            // Optional: Call API to sync tools if endpoint exists
+        } catch (error) {
+            console.error('Error saving updated user tools:', error);
+        }
+    },
 }));
 
 // Setup default settings when returning user

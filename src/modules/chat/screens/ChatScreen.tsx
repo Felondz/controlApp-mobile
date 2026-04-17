@@ -43,22 +43,22 @@ const MessageItem = React.memo(({ message, isOwn, isDark }: MessageItemProps) =>
             )}
             <View className={`max-w-[80%] rounded-2xl p-3 ${bgColor} ${!isOwn ? 'border ' + borderColor : ''}`}>
                 {!isOwn && (
-                    <Text className="text-[10px] font-bold text-primary-600 mb-1">
+                    <Text className="text-sm font-bold text-primary-600 mb-1">
                         {message.user.name}
                     </Text>
                 )}
-                <Text className={`text-sm ${textColor}`}>
+                <Text className={`text-base ${textColor}`}>
                     {message.content}
                 </Text>
                 <View className="flex-row items-center justify-end mt-1 gap-2">
                     {message.reactions && message.reactions.length > 0 && (
                         <View className="flex-row bg-gray-100 dark:bg-gray-900 rounded-full px-1.5 py-0.5 border border-gray-200 dark:border-gray-700">
                             {message.reactions.map((r, i) => (
-                                <Text key={i} className="text-[10px]">{r.type} {r.count}</Text>
+                                <Text key={i} className="text-sm">{r.type} {r.count}</Text>
                             ))}
                         </View>
                     )}
-                    <Text className={`text-[9px] ${textSecondary}`}>
+                    <Text className={`text-sm ${textSecondary}`}>
                         {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </Text>
                 </View>
@@ -66,7 +66,7 @@ const MessageItem = React.memo(({ message, isOwn, isDark }: MessageItemProps) =>
                 {message.replies_count && message.replies_count > 0 ? (
                     <View className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 flex-row items-center">
                         <ChatIcon size={12} color={isDark ? '#818cf8' : '#6366f1'} />
-                        <Text className="text-[10px] text-primary-600 ml-1 font-bold">
+                        <Text className="text-sm text-primary-600 ml-1 font-bold">
                             {message.replies_count} hilos
                         </Text>
                     </View>
@@ -120,7 +120,7 @@ export default function ChatScreen({ projectId, onBack }: { projectId: number, o
                     )}
                     <View>
                         <Text className={`font-bold ${textColor}`}>Chat de Proyecto</Text>
-                        <Text className="text-[10px] text-green-500">● En línea</Text>
+                        <Text className="text-sm text-green-500">● En línea</Text>
                     </View>
                 </View>
                 <TouchableOpacity>
@@ -154,7 +154,7 @@ export default function ChatScreen({ projectId, onBack }: { projectId: number, o
                 
                 <View className={`flex-1 flex-row items-center rounded-2xl px-4 py-1 border ${borderColor} ${isDark ? 'bg-gray-800/50' : 'bg-gray-100/50'}`}>
                     <TextInput
-                        className={`flex-1 py-2.5 text-sm font-medium ${textColor}`}
+                        className={`flex-1 py-2.5 text-base font-medium ${textColor}`}
                         placeholder={t('chat.placeholder', 'Escribe un mensaje...')}
                         placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
                         value={inputText}

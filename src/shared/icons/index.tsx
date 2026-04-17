@@ -447,7 +447,7 @@ export function BugIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
             <Path stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" d="M12 9.5a4.5 4.5 0 014.5 3.5c0 2.5-2.015 5-4.5 5s-4.5-2.5-4.5-5a4.5 3.5 0 014.5-3.5z" />
             <Path stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" d="M12 9.5V7m0 0C10.5 7 9.5 6 9.5 4.5M12 7c1.5 0 2.5-1 2.5-2.5" />
-            <Path stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" d="M7.5 13H4m16 0h-3.5M7.5 16.5L5 18m14-1.5l-2.5-1.5M7.5 10L5.5 8.5M18.5 8.5L16.5 10" />
+            <Path stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" d="M7.5 13H4M16.5 13H20M7.5 16.5L5 18M16.5 16.5L19 18M7.5 10L5.5 8.5M16.5 10L18.5 8.5" />
         </Svg>
     );
 }

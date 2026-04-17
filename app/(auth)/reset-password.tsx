@@ -117,7 +117,7 @@ export default function ResetPasswordScreen() {
                                 className="flex-row items-center mb-8"
                             >
                                 <ChevronLeftIcon size={20} color={theme.primary600} />
-                                <Text className="ml-1 font-bold text-sm" style={{ color: theme.primary600 }}>
+                                <Text className="ml-1 font-bold text-base" style={{ color: theme.primary600 }}>
                                     {t('auth.back_to_login')}
                                 </Text>
                             </TouchableOpacity>
@@ -133,7 +133,7 @@ export default function ResetPasswordScreen() {
 
                             {status && (
                                 <View className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 mb-8">
-                                    <Text className="text-green-700 dark:text-green-400 font-bold text-sm text-center leading-5">
+                                    <Text className="text-green-700 dark:text-green-400 font-bold text-base text-center leading-5">
                                         {status}
                                     </Text>
                                 </View>
@@ -141,7 +141,7 @@ export default function ResetPasswordScreen() {
 
                             {error && (
                                 <View className="bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-2xl p-5 mb-8">
-                                    <Text className="text-danger-600 dark:text-danger-400 font-bold text-sm text-center">
+                                    <Text className="text-danger-600 dark:text-danger-400 font-bold text-base text-center">
                                         {error}
                                     </Text>
                                 </View>

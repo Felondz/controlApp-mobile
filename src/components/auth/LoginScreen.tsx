@@ -98,7 +98,7 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
                             <View className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
                                 <Text className="text-red-600 text-center">{error}</Text>
                                 <TouchableOpacity onPress={clearError} className="mt-2">
-                                    <Text className="text-red-400 text-center text-sm">Cerrar</Text>
+                                    <Text className="text-red-400 text-center text-base">Cerrar</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

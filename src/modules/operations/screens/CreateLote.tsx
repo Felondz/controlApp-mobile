@@ -78,7 +78,7 @@ export default function CreateLote({ proyectoId, onSuccess, onCancel }: CreateLo
                         <Text className="text-2xl font-black tracking-tighter text-secondary-900 dark:text-secondary-50">
                             {t('operations.new_lote', 'Nuevo Lote')}
                         </Text>
-                        <Text className="text-secondary-500 dark:text-secondary-400 text-[10px] font-bold mt-0.5">
+                        <Text className="text-secondary-500 dark:text-secondary-400 text-sm font-bold mt-0.5">
                             {t('operations.create_production_unit', 'Crear unidad de producción')}
                         </Text>
                     </View>
@@ -89,7 +89,7 @@ export default function CreateLote({ proyectoId, onSuccess, onCancel }: CreateLo
                 <View className="bg-white dark:bg-secondary-900 rounded-2xl p-5 border border-secondary-100 dark:border-secondary-800 shadow-sm mb-6">
                     {/* Process Selector */}
                     <View className="mb-5">
-                        <Text className="text-secondary-500 dark:text-secondary-400 font-bold mb-2.5 text-[10px] ml-1">
+                        <Text className="text-secondary-500 dark:text-secondary-400 font-bold mb-2.5 text-sm ml-1">
                             {t('operations.production_process', 'Proceso de Producción')}
                         </Text>
                         <TouchableOpacity
@@ -185,10 +185,10 @@ export default function CreateLote({ proyectoId, onSuccess, onCancel }: CreateLo
                                         <FactoryIcon size={18} color={processId === proc.id ? 'white' : (isDark ? '#9ca3af' : '#6b7280')} />
                                     </View>
                                     <View>
-                                        <Text className={`text-sm font-bold ${processId === proc.id ? 'text-primary-700 dark:text-primary-400' : 'text-secondary-900 dark:text-secondary-100'}`}>
+                                        <Text className={`text-base font-bold ${processId === proc.id ? 'text-primary-700 dark:text-primary-400' : 'text-secondary-900 dark:text-secondary-100'}`}>
                                             {proc.name}
                                         </Text>
-                                        <Text className="text-[10px] text-secondary-500 font-bold">
+                                        <Text className="text-sm text-secondary-500 font-bold">
                                             {proc.etapas?.length || 0} {t('operations.stages', 'Etapas')}
                                         </Text>
                                     </View>

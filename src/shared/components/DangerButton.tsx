@@ -29,8 +29,8 @@ export default function DangerButton({
     };
 
     const textSizeClasses = {
-        sm: 'text-xs',
-        md: 'text-sm',
+        sm: 'text-sm',
+        md: 'text-base',
         lg: 'text-base',
         xl: 'text-lg',
     };
@@ -69,7 +69,7 @@ export default function DangerButton({
             ) : (
                 <Text
                     className={`
-                        font-bold uppercase tracking-widest
+                        font-bold
                         ${textColorClasses[variant]}
                         ${textSizeClasses[size]}
                     `}

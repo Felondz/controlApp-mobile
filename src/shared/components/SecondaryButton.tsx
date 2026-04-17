@@ -29,8 +29,8 @@ export default function SecondaryButton({
     };
 
     const textSizeClasses = {
-        sm: 'text-xs',
-        md: 'text-sm',
+        sm: 'text-sm',
+        md: 'text-base',
         lg: 'text-base',
         xl: 'text-lg',
     };

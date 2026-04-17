@@ -131,14 +131,14 @@ export default function LoteDetail({ loteId, onBack }: LoteDetailProps) {
                         <View className="flex-1">
                             <View className="flex-row items-center mb-1">
                                 <FactoryIcon size={14} color={textSecondary} />
-                                <Text className={`text-[10px] font-bold ${textSecondary} ml-1.5`}>
+                                <Text className={`text-sm font-bold ${textSecondary} ml-1.5`}>
                                     {lote.productionProcess?.name || t('operations.process', 'Proceso')}
                                 </Text>
                             </View>
                             <Text className={`text-xl font-bold ${textColor}`}>{lote.code}</Text>
                         </View>
                         <View className={`px-2.5 py-0.5 rounded-full ${getStatusBadge(lote.status)}`}>
-                            <Text className="text-[10px] font-bold">{lote.status}</Text>
+                            <Text className="text-sm font-bold">{lote.status}</Text>
                         </View>
                     </View>
 
@@ -146,18 +146,18 @@ export default function LoteDetail({ loteId, onBack }: LoteDetailProps) {
 
                     <View className="space-y-4">
                         <View className="flex-row justify-between items-center">
-                            <Text className={`text-xs font-bold ${textSecondary}`}>
+                            <Text className={`text-sm font-bold ${textSecondary}`}>
                                 {t('operations.current_stage', 'Etapa Actual')}:
                             </Text>
                             <View className={`px-3 py-1 rounded-xl border ${borderColor} ${isDark ? 'bg-secondary-700' : 'bg-secondary-50'}`}>
-                                <Text className={`text-xs font-bold ${textColor}`}>
+                                <Text className={`text-sm font-bold ${textColor}`}>
                                     {lote.stage?.name || 'Inicio'}
                                 </Text>
                             </View>
                         </View>
 
                         <View className="flex-row justify-between items-center">
-                            <Text className={`text-xs font-bold ${textSecondary}`}>
+                            <Text className={`text-sm font-bold ${textSecondary}`}>
                                 {t('operations.quantity', 'Cantidad')}:
                             </Text>
                             <Text className={`text-base font-black ${textColor}`}>
@@ -168,16 +168,16 @@ export default function LoteDetail({ loteId, onBack }: LoteDetailProps) {
                         <View className="flex-row justify-between items-center">
                             <View className="flex-row items-center">
                                 <ClockIcon size={14} color={textSecondary} /> 
-                                <Text className={`text-xs font-bold ${textSecondary} ml-1`}>{t('operations.start_date', 'Fecha Inicio')}:</Text>
+                                <Text className={`text-sm font-bold ${textSecondary} ml-1`}>{t('operations.start_date', 'Fecha Inicio')}:</Text>
                             </View>
-                            <Text className={`text-xs font-bold ${textColor}`}>
+                            <Text className={`text-sm font-bold ${textColor}`}>
                                 {new Date(lote.start_date).toLocaleDateString()}
                             </Text>
                         </View>
 
                         {lote.productionProcess?.etapas && lote.productionProcess.etapas.length > 0 && (
                             <View className="mt-5">
-                                <Text className={`text-[10px] font-black ${textSecondary} mb-3 uppercase tracking-widest`}>
+                                <Text className={`text-sm font-black ${textSecondary} mb-3 uppercase tracking-widest`}>
                                     {t('operations.workflow', 'Flujo de Trabajo')}:
                                 </Text>
                                 <View className="gap-3">
@@ -197,19 +197,19 @@ export default function LoteDetail({ loteId, onBack }: LoteDetailProps) {
                                                     {isCompleted ? (
                                                         <CheckIcon size={16} color="white" />
                                                     ) : (
-                                                        <Text className={`text-xs font-bold ${isCurrentStage ? 'text-white' : textSecondary}`}>
+                                                        <Text className={`text-sm font-bold ${isCurrentStage ? 'text-white' : textSecondary}`}>
                                                             {index + 1}
                                                         </Text>
                                                     )}
                                                 </View>
-                                                <Text className={`flex-1 text-sm ${
+                                                <Text className={`flex-1 text-base ${
                                                     isCurrentStage ? `font-bold ${textColor}` : `font-medium ${textSecondary}`
                                                 }`}>
                                                     {etapa.name}
                                                 </Text>
                                                 {isCurrentStage && (
                                                     <View className="bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-full border border-primary-100 dark:border-primary-800">
-                                                        <Text className="text-[9px] font-bold text-primary-600 dark:text-primary-400">
+                                                        <Text className="text-sm font-bold text-primary-600 dark:text-primary-400">
                                                             {t('common.current', 'Actual')}
                                                         </Text>
                                                     </View>
