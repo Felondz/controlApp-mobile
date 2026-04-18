@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuthStore } from '../../src/stores/authStore';
 import { useTranslate, useAppTheme } from '../../src/shared/hooks';
 import { Input, PrimaryButton } from '../../src/shared/components';
-import { UserIcon, CameraIcon } from '../../src/shared/icons';
+import { UserIcon, CameraIcon, TrashIcon } from '../../src/shared/icons';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
@@ -114,6 +114,35 @@ export default function ProfileScreen() {
                                 </Text>
                             </View>
                         </View>
+                    </View>
+                </View>
+
+                {/* Danger Zone */}
+                <View className="px-6 mb-6">
+                    <View className="bg-red-50/50 dark:bg-red-950/20 rounded-xl p-6 border border-red-100 dark:border-red-900/30">
+                        <Text className="text-xl font-black text-red-600 dark:text-red-400 tracking-tighter mb-4">
+                            {t('profile.danger_zone')}
+                        </Text>
+                        
+                        <Text className="text-xs text-red-700/70 dark:text-red-400/60 mb-6 leading-5 font-medium">
+                            {t('profile.delete_account_instruction')}
+                        </Text>
+
+                        <Pressable 
+                            onPress={() => {
+                                Alert.alert(
+                                    t('profile.delete_account'),
+                                    t('profile.delete_account_instruction')
+                                );
+                            }}
+                            style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+                            className="flex-row items-center justify-center p-4 bg-red-600 dark:bg-red-700 rounded-xl shadow-sm"
+                        >
+                            <TrashIcon size={18} color="white" />
+                            <Text className="ml-2 text-sm font-bold text-white">
+                                {t('profile.delete_account')}
+                            </Text>
+                        </Pressable>
                     </View>
                 </View>
             </ScrollView>

@@ -9,37 +9,35 @@ import {
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
-    Alert
+    Image
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useTranslate } from '../hooks';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../themes';
 import {
     BugIcon,
     XMarkIcon,
-    ChevronLeftIcon,
-    GlobeAltIcon,
+    WarningIcon,
     CogIcon,
-    InfoIcon,
-    ExclamationTriangleIcon,
-    ClockIcon,
-    CheckCircleIcon,
-    CameraIcon
+    AppIcon,
+    CheckListIcon,
+    ChatIcon,
+    CameraIcon,
+    TrashIcon,
+    ExclamationTriangleIcon
 } from '../icons';
 import PrimaryButton from './PrimaryButton';
 import SecondaryButton from './SecondaryButton';
 import { ptrApi } from '../../services/api';
 
 const CATEGORIES = [
-    { key: 'translation', icon: GlobeAltIcon, color: '#3b82f6' },
     { key: 'functionality', icon: CogIcon, color: '#6366f1' },
-    { key: 'unclear_info', icon: InfoIcon, color: '#f59e0b' },
-    { key: 'ui_visual', icon: ExclamationTriangleIcon, color: '#ec4899' },
-    { key: 'performance', icon: ClockIcon, color: '#8b5cf6' },
-    { key: 'other', icon: CheckCircleIcon, color: '#10b981' },
+    { key: 'ui_visual', icon: WarningIcon, color: '#ec4899' },
+    { key: 'translation', icon: ChatIcon, color: '#3b82f6' },
+    { key: 'performance', icon: AppIcon, color: '#8b5cf6' },
+    { key: 'other', icon: CheckListIcon, color: '#10b981' },
 ];
-
-const SEVERITIES = ['low', 'medium', 'high'] as const;
 
 interface BugReporterWidgetProps {
     visible?: boolean;
@@ -63,57 +61,126 @@ export const BugReporterWidget = ({
     const setIsOpen = (val: boolean) => {
         if (externalOnClose && !val) externalOnClose();
         setInternalVisible(val);
+        if (!val) reset();
     };
 
-    const [step, setStep] = useState(1);
-    const [category, setCategory] = useState('');
+    const [category, setCategory] = useState('functionality');
     const [description, setDescription] = useState('');
     const [severity, setSeverity] = useState<'low' | 'medium' | 'high'>('medium');
+    const [screenshot, setScreenshot] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const reset = () => {
-        setStep(1);
-        setCategory('');
+        setCategory('functionality');
         setDescription('');
         setSeverity('medium');
+        setScreenshot(null);
         setSuccess(false);
+        setError(null);
+    };
+
+    const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            setError(t('profile.permission_denied'));
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            quality: 0.7,
+        });
+
+        if (!result.canceled) {
+            setScreenshot(result.assets[0].uri);
+            setError(null);
+        }
     };
 
     const handleSubmit = async () => {
         if (!description) return;
         setSubmitting(true);
+        setError(null);
+        
         try {
-            // API Integration Parity
-            await ptrApi.reportBug({
+            // Standard data for both JSON and FormData
+            const baseData = {
                 category,
                 description,
+                title: description.substring(0, 50),
                 severity,
+                priority: severity, // Some backends use priority instead of severity
                 platform: 'mobile',
-                device: Platform.Version,
+                device: `${Platform.OS} ${Platform.Version}`,
+                page_url: 'app://bug-reporter',
                 context: 'mobile'
-            });
+            };
+
+            let payload: any;
+            
+            if (screenshot) {
+                const formData = new FormData();
+                Object.entries(baseData).forEach(([key, value]) => {
+                    formData.append(key, value);
+                });
+
+                const filename = screenshot.split('/').pop() || 'screenshot.jpg';
+                const match = /\.(\w+)$/.exec(filename);
+                let type = match ? `image/${match[1]}` : `image/jpeg`;
+
+                // Normalization for common extensions
+                if (type === 'image/jpg') type = 'image/jpeg';
+
+                // @ts-ignore
+                formData.append('screenshot', {
+                    uri: screenshot,
+                    name: filename,
+                    type,
+                });
+                payload = formData;
+            } else {
+                payload = baseData;
+            }
+
+            await ptrApi.reportBug(payload);
             
             setSuccess(true);
             setTimeout(() => {
                 setIsOpen(false);
                 reset();
             }, 2000);
-        } catch (err) {
-            Alert.alert(t('common.error'), t('bug_reporter.submit_error', 'Error al enviar el reporte.'));
+        } catch (err: any) {
+            console.error('Bug report error:', err);
+            
+            let errorMessage = t('bug_reporter.submit_error');
+            
+            if (err.response?.data) {
+                const data = err.response.data;
+                // Log the full error to help debugging 422s
+                console.log('Server validation error details:', JSON.stringify(data));
+                
+                if (data.errors) {
+                    // Laravel validation errors
+                    const firstError = Object.values(data.errors).flat()[0];
+                    errorMessage = String(firstError);
+                } else if (data.message) {
+                    errorMessage = data.message;
+                }
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+            
+            setError(errorMessage.toLowerCase());
         } finally {
             setSubmitting(false);
         }
     };
 
-    const selectCategory = (key: string) => {
-        setCategory(key);
-        setStep(2);
-    };
-
     return (
         <>
-            {/* Floating Action Button */}
             {showFloatingButton && (
                 <TouchableOpacity
                     onPress={() => setIsOpen(true)}
@@ -135,129 +202,146 @@ export const BugReporterWidget = ({
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     className="flex-1 justify-end bg-black/40"
                 >
-                    <View className="bg-white dark:bg-secondary-900 rounded-t-[40px] shadow-2xl border-t border-secondary-100 dark:border-secondary-800 h-[80%]">
-                        {/* Header */}
-                        <View className="flex-row items-center justify-between px-6 py-6 border-b border-secondary-100 dark:border-secondary-800">
+                    <View className="bg-white dark:bg-secondary-900 rounded-t-[32px] shadow-2xl border-t border-secondary-100 dark:border-secondary-800 h-[75%]">
+                        {/* Header Compact */}
+                        <View className="flex-row items-center justify-between px-6 py-4 border-b border-secondary-100 dark:border-secondary-800">
                             <View className="flex-row items-center">
-                                {step === 2 && (
-                                    <TouchableOpacity onPress={() => setStep(1)} className="mr-3 p-2 bg-secondary-100 dark:bg-secondary-800 rounded-xl">
-                                        <ChevronLeftIcon size={18} color={isDark ? '#9ca3af' : '#6b7280'} />
-                                    </TouchableOpacity>
-                                )}
-                                <View className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900/30 items-center justify-center mr-3">
-                                    <BugIcon size={22} color={theme.primary600} />
+                                <View className="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-900/30 items-center justify-center mr-3">
+                                    <BugIcon size={18} color={theme.primary600} />
                                 </View>
-                                <Text className="text-xl font-black text-secondary-900 dark:text-secondary-50 tracking-tighter">
-                                    {t('bug_reporter.title', 'Reportar Bug')}
+                                <Text className="text-lg font-black text-secondary-900 dark:text-secondary-50">
+                                    {t('bug_reporter.title')}
                                 </Text>
                             </View>
-                            <TouchableOpacity onPress={() => setIsOpen(false)} className="p-2 bg-secondary-100 dark:bg-secondary-800 rounded-xl">
-                                <XMarkIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                            <TouchableOpacity onPress={() => setIsOpen(false)} className="p-2 bg-secondary-100 dark:bg-secondary-800 rounded-full">
+                                <XMarkIcon size={16} color={isDark ? '#9ca3af' : '#6b7280'} />
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView className="p-6" contentContainerStyle={{ paddingBottom: 40 }}>
+                        <ScrollView className="px-6 py-4" showsVerticalScrollIndicator={false}>
                             {success ? (
-                                <View className="items-center py-12">
-                                    <View className="w-20 h-20 bg-green-50 dark:bg-green-900/20 rounded-full items-center justify-center mb-6">
-                                        <CheckCircleIcon size={48} color="#10b981" />
+                                <View className="items-center py-10">
+                                    <View className="w-16 h-16 bg-green-50 dark:bg-green-900/20 rounded-full items-center justify-center mb-4">
+                                        <CheckListIcon size={32} color="#10b981" />
                                     </View>
-                                    <Text className="text-2xl font-black text-secondary-900 dark:text-secondary-50 text-center mb-2">
-                                        {t('bug_reporter.success_title', '¡Recibido!')}
+                                    <Text className="text-xl font-black text-secondary-900 dark:text-secondary-50 text-center mb-1">
+                                        {t('bug_reporter.success_title')}
                                     </Text>
-                                    <Text className="text-base text-secondary-500 dark:text-secondary-400 text-center font-medium">
-                                        {t('bug_reporter.success', 'Gracias por ayudarnos a mejorar.')}
+                                    <Text className="text-sm text-secondary-500 dark:text-secondary-400 text-center font-medium">
+                                        {t('bug_reporter.success')}
                                     </Text>
-                                </View>
-                            ) : step === 1 ? (
-                                <View>
-                                    <Text className="text-base font-bold text-secondary-500 dark:text-secondary-400 mb-6 uppercase tracking-widest">
-                                        {t('bug_reporter.select_category', '¿Qué tipo de problema es?')}
-                                    </Text>
-                                    <View className="flex-row flex-wrap gap-4">
-                                        {CATEGORIES.map((cat) => (
-                                            <TouchableOpacity
-                                                key={cat.key}
-                                                onPress={() => selectCategory(cat.key)}
-                                                activeOpacity={0.7}
-                                                className="w-[47%] bg-white dark:bg-secondary-800 p-5 rounded-[24px] border border-secondary-100 dark:border-secondary-700 shadow-sm"
-                                            >
-                                                <View 
-                                                    className="w-12 h-12 rounded-2xl items-center justify-center mb-4"
-                                                    style={{ backgroundColor: `${cat.color}15` }}
-                                                >
-                                                    <cat.icon size={24} color={cat.color} />
-                                                </View>
-                                                <Text className="font-bold text-secondary-900 dark:text-secondary-100 text-sm uppercase tracking-tight">
-                                                    {t(`bug_reporter.category_${cat.key}`, cat.key)}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
                                 </View>
                             ) : (
-                                <View className="gap-6">
-                                    {/* Description */}
-                                    <View>
-                                        <Text className="text-sm font-black text-secondary-400 uppercase tracking-widest mb-2 ml-1">
-                                            {t('bug_reporter.description', 'Descripción')}
-                                        </Text>
-                                        <TextInput
-                                            multiline
-                                            numberOfLines={4}
-                                            value={description}
-                                            onChangeText={setDescription}
-                                            placeholder={t(`bug_reporter.hint_${category}`, 'Explica qué pasó...')}
-                                            placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
-                                            className="bg-secondary-50 dark:bg-secondary-800 p-5 rounded-3xl border border-secondary-100 dark:border-secondary-700 text-secondary-900 dark:text-secondary-100 text-base"
-                                            style={{ textAlignVertical: 'top', minHeight: 120 }}
-                                        />
-                                    </View>
+                                <View className="gap-5 pb-10">
+                                    {/* Error Message UI */}
+                                    {error && (
+                                        <View className="bg-red-50 dark:bg-red-900/20 p-4 rounded-2xl flex-row items-center border border-red-100 dark:border-red-900/30">
+                                            <ExclamationTriangleIcon size={18} color="#ef4444" />
+                                            <Text className="ml-3 flex-1 text-xs font-bold text-red-700 dark:text-red-400">
+                                                {error}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => setError(null)}>
+                                                <XMarkIcon size={14} color="#ef4444" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
 
-                                    {/* Severity */}
+                                    {/* Category Chips */}
                                     <View>
-                                        <Text className="text-sm font-black text-secondary-400 uppercase tracking-widest mb-3 ml-1">
-                                            {t('bug_reporter.severity', 'Prioridad')}
+                                        <Text className="text-[10px] font-black text-secondary-400 uppercase tracking-[2px] mb-3 ml-1">
+                                            {t('bug_reporter.select_category')}
                                         </Text>
-                                        <View className="flex-row gap-3">
-                                            {SEVERITIES.map((sev) => (
+                                        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+                                            {CATEGORIES.map((cat) => (
                                                 <TouchableOpacity
-                                                    key={sev}
-                                                    onPress={() => setSeverity(sev)}
-                                                    className={`flex-1 py-3.5 rounded-2xl border-2 items-center justify-center ${
-                                                        severity === sev 
-                                                            ? (sev === 'high' ? 'bg-red-50 border-red-500' : sev === 'medium' ? 'bg-yellow-50 border-yellow-500' : 'bg-green-50 border-green-500')
+                                                    key={cat.key}
+                                                    onPress={() => {
+                                                        setCategory(cat.key);
+                                                        setError(null);
+                                                    }}
+                                                    activeOpacity={0.7}
+                                                    className={`px-4 py-2.5 rounded-2xl border flex-row items-center mr-2 ${
+                                                        category === cat.key 
+                                                            ? 'bg-primary-50 border-primary-200 dark:bg-primary-900/20 dark:border-primary-800'
                                                             : 'bg-white dark:bg-secondary-800 border-secondary-100 dark:border-secondary-700'
                                                     }`}
                                                 >
-                                                    <Text className={`text-sm font-black uppercase tracking-widest ${
-                                                        severity === sev ? 'text-secondary-900' : 'text-secondary-400'
+                                                    <cat.icon size={16} color={category === cat.key ? theme.primary600 : (isDark ? '#9ca3af' : '#6b7280')} />
+                                                    <Text className={`ml-2 text-xs font-bold ${
+                                                        category === cat.key ? 'text-primary-700 dark:text-primary-400' : 'text-secondary-500 dark:text-secondary-400'
                                                     }`}>
-                                                        {t(`bug_reporter.severity_${sev}`, sev)}
+                                                        {t(`bug_reporter.category_${cat.key}`)}
                                                     </Text>
                                                 </TouchableOpacity>
                                             ))}
+                                        </ScrollView>
+                                    </View>
+
+                                    {/* Description */}
+                                    <View>
+                                        <Text className="text-[10px] font-black text-secondary-400 uppercase tracking-[2px] mb-2 ml-1">
+                                            {t('bug_reporter.description')}
+                                        </Text>
+                                        <TextInput
+                                            multiline
+                                            value={description}
+                                            onChangeText={(text) => {
+                                                setDescription(text);
+                                                if (error) setError(null);
+                                            }}
+                                            placeholder={t(`bug_reporter.hint_${category}`)}
+                                            placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
+                                            className="bg-secondary-50 dark:bg-secondary-800 p-4 rounded-2xl border border-secondary-100 dark:border-secondary-700 text-secondary-900 dark:text-secondary-100 text-sm"
+                                            style={{ textAlignVertical: 'top', minHeight: 80 }}
+                                        />
+                                    </View>
+
+                                    {/* Screenshot Section */}
+                                    <View className="bg-secondary-50 dark:bg-secondary-800/50 p-4 rounded-2xl border border-dashed border-secondary-200 dark:border-secondary-700">
+                                        <View className="flex-row items-center mb-3">
+                                            <CameraIcon size={18} color={theme.primary600} />
+                                            <Text className="ml-2 text-xs font-bold text-secondary-900 dark:text-secondary-100">
+                                                {t('bug_reporter.add_screenshot')}
+                                            </Text>
                                         </View>
+                                        
+                                        <Text className="text-[11px] text-secondary-500 dark:text-secondary-400 leading-4 mb-4">
+                                            {t('bug_reporter.screenshot_instructions')}
+                                        </Text>
+
+                                        {screenshot ? (
+                                            <View className="relative w-full h-40 rounded-xl overflow-hidden bg-black/5">
+                                                <Image source={{ uri: screenshot }} className="w-full h-full" resizeMode="contain" />
+                                                <TouchableOpacity 
+                                                    onPress={() => setScreenshot(null)}
+                                                    className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full items-center justify-center shadow-md"
+                                                >
+                                                    <TrashIcon size={14} color="white" />
+                                                </TouchableOpacity>
+                                            </View>
+                                        ) : (
+                                            <TouchableOpacity 
+                                                onPress={pickImage}
+                                                className="w-full py-4 border border-secondary-200 dark:border-secondary-700 rounded-xl items-center justify-center bg-white dark:bg-secondary-800"
+                                            >
+                                                <Text className="text-xs font-bold text-primary-600">
+                                                    + {t('common.add')}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        )}
                                     </View>
 
                                     {/* Action Buttons */}
-                                    <View className="mt-4 gap-4">
+                                    <View className="mt-2 gap-3">
                                         <PrimaryButton
                                             onPress={handleSubmit}
                                             loading={submitting}
                                             variant="filled"
-                                            size="lg"
+                                            size="md"
                                             disabled={!description}
                                         >
-                                            {t('bug_reporter.submit', 'Enviar Reporte')}
+                                            {t('bug_reporter.submit')}
                                         </PrimaryButton>
-                                        <SecondaryButton
-                                            onPress={() => setStep(1)}
-                                            variant="ghost"
-                                            size="md"
-                                        >
-                                            {t('common.back', 'Atrás')}
-                                        </SecondaryButton>
                                     </View>
                                 </View>
                             )}

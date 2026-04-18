@@ -30,7 +30,13 @@
     },
     "plugins": [
       "expo-secure-store",
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "ControlApp necesita acceder a tus fotos para permitirte adjuntar capturas de pantalla en reportes de error o personalizar tu perfil."
+        }
+      ]
     ]
   }
 }

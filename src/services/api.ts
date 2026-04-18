@@ -184,8 +184,21 @@ export const preferencesApi = {
 
 // Bug Reporter (PTR) API endpoints
 export const ptrApi = {
-    reportBug: (data: any) => api.post('/ptr/bug-reports', data),
-    getStats: () => api.get('/ptr/bug-reports/stats'),
+    reportBug: (data: any) => {
+        // Use absolute URL to bypass the /api prefix from the default instance
+        const url = (api.defaults.baseURL || '').replace('/api', '') + '/ptr/bug-reports';
+        
+        // IMPORTANT: If data is FormData, we must ensure Axios doesn't use the default application/json header
+        const headers = data instanceof FormData 
+            ? { 'Content-Type': 'multipart/form-data' } 
+            : {};
+
+        return api.post(url, data, { headers });
+    },
+    getStats: () => {
+        const url = (api.defaults.baseURL || '').replace('/api', '') + '/ptr/bug-reports/stats';
+        return api.get(url);
+    },
 };
 
 // Search API endpoints
