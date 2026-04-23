@@ -5,12 +5,12 @@ import {
     Modal,
     TextInput,
     TouchableOpacity,
-    FlatList,
     ActivityIndicator,
     Pressable,
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
+import { FlashList } from "@shopify/flash-list";
 import { useTranslate, useAppTheme } from '../hooks';
 import { SearchIcon, XMarkIcon, FolderIcon, ChevronRightIcon } from '../icons';
 import { searchApi } from '../../services/api';
@@ -151,10 +151,11 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ visible, onClose }
                                 </Text>
                             </View>
                         ) : results.length > 0 ? (
-                            <FlatList
+                            <FlashList
                                 data={results}
                                 keyExtractor={(item) => item.id.toString()}
                                 showsVerticalScrollIndicator={false}
+                                estimatedItemSize={80}
                                 renderItem={({ item }) => (
                                     <TouchableOpacity
                                         onPress={() => handleSelectProject(item)}

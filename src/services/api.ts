@@ -114,6 +114,11 @@ export const authApi = {
     getUser: () =>
         api.get('/user'),
 
+    updateProfile: (data: FormData) =>
+        api.post('/profile', data, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }),
+
     verifyEmail: (id: string, hash: string, expires: string, signature: string) =>
         api.get(`/email/verify/${id}/${hash}?expires=${expires}&signature=${signature}`),
 
@@ -131,7 +136,15 @@ export const projectsApi = {
     create: (data: any) => api.post('/proyectos', data, {
         headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
     }),
-    update: (id: number, data: any) => api.put(`/proyectos/${id}`, data),
+    update: (id: number, data: any) => {
+        // Use POST with _method spoofing if it's FormData, else regular PUT
+        if (data instanceof FormData) {
+            return api.post(`/proyectos/${id}`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+        }
+        return api.put(`/proyectos/${id}`, data);
+    },
     delete: (id: number) => api.delete(`/proyectos/${id}`),
 };
 
@@ -178,8 +191,36 @@ export const operationsApi = {
 
 // Preferences API endpoints
 export const preferencesApi = {
-    updateTheme: (global_theme: string) => api.post('/preferences/theme/update', { global_theme }),
-    updateDashboard: (settings: any) => api.post('/preferences/dashboard/update', { settings }),
+    updateTheme: (global_theme: string) => {
+        const { useAuthStore } = require('../stores/authStore');
+        const user = useAuthStore.getState().user;
+        
+        // Try profile update with full data to satisfy validation (name/email usually required)
+        const payload = { 
+            global_theme,
+            name: user?.name,
+            email: user?.email 
+        };
+
+        return api.put('/profile', payload).catch(err => {
+            // Fallback for specific preference endpoint if it exists
+            if (err.response?.status === 404) {
+                return api.post('/preferences/theme/update', { global_theme });
+            }
+            throw err;
+        });
+    },
+    updateDashboard: (settings: any) => api.put('/profile', { settings }),
+    toggleTool: (tool_id: string, enabled: boolean) => {
+        // Send both formats (ES/EN docs) to bypass 422 validation depending on backend version
+        const toolName = tool_id === 'calculator' ? 'financial-calculator' : tool_id;
+        return api.post('/tools/toggle', { 
+            tool_id: tool_id, 
+            enabled: enabled,
+            tool: toolName,
+            enable: enabled
+        });
+    },
 };
 
 // Bug Reporter (PTR) API endpoints

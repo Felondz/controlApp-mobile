@@ -15,6 +15,7 @@ const authLink = setContext(async (_, { headers }) => {
             headers: {
                 ...headers,
                 authorization: token ? `Bearer ${token}` : '',
+                'Accept': 'application/json',
             },
         };
     } catch (error) {

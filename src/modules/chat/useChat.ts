@@ -36,17 +36,17 @@ export function useChat(projectId?: number) {
                     echoInstance.connector.pusher.connect();
                 }
 
-                const channel = echoInstance.private(`project.${projectId}`);
+                const channel = echoInstance.join(`project.${projectId}.chat`);
 
-                channel.listen('MessageUpdated', (e: { message: Message }) => {
+                channel.listen('.App\\Modules\\Chat\\Events\\MessageUpdated', (e: { message: Message }) => {
                     setMessages(prev => prev.map(m => m.id === e.message.id ? e.message : m));
                 });
 
-                channel.listen('MessageDeleted', (e: { messageId: string }) => {
+                channel.listen('.App\\Modules\\Chat\\Events\\MessageDeleted', (e: { messageId: string }) => {
                     setMessages(prev => prev.filter(m => m.id !== e.messageId));
                 });
 
-                channel.listen('MessageCreated', (e: { message: Message }) => {
+                channel.listen('.App\\Modules\\Chat\\Events\\MessageSent', (e: { message: Message }) => {
                     setMessages(prev => {
                         if (prev.find(m => m.id === e.message.id)) return prev;
                         return [e.message, ...prev];
@@ -59,7 +59,7 @@ export function useChat(projectId?: number) {
 
         const disconnect = () => {
             if (echoInstance && projectId) {
-                echoInstance.leave(`project.${projectId}`);
+                echoInstance.leave(`project.${projectId}.chat`);
                 // Opcional: echoInstance.disconnect() si quieres apagar todo el socket
             }
         };

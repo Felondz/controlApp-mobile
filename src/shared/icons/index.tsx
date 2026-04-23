@@ -581,6 +581,14 @@ export function FaceSmileIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
     );
 }
 
+export function ToolboxIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2m-6 0h6m3 0H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2zM8 13h8" />
+        </Svg>
+    );
+}
+
 export function CubeIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
     return (
         <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

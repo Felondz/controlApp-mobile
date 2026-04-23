@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import { useDashboardStore } from "../../../src/stores/dashboardStore";
 import { useProjectStore, Proyecto } from "../../../src/stores/projectStore";
@@ -44,11 +45,12 @@ export default function ProjectsListScreen() {
 
     return (
         <View className="flex-1 bg-secondary-50 dark:bg-secondary-950 p-4">
-            <FlatList
+            <FlashList
                 data={projects}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={{ paddingBottom: 100 }}
                 showsVerticalScrollIndicator={false}
+                estimatedItemSize={120}
                 renderItem={({ item }) => (
                     <ProjectCard 
                         project={{

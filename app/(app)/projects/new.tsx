@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert, Image } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslate, useAppTheme } from '../../../src/shared/hooks';
@@ -24,6 +24,8 @@ import {
 } from '../../../src/shared/icons';
 import Input from '../../../src/shared/components/Input';
 import PrimaryButton from '../../../src/shared/components/PrimaryButton';
+import { resolveImageUrl } from '../../../src/shared/utils/image';
+import { AppImage } from '../../../src/shared/components/media/AppImage';
 
 // Mapeo estático fuera del componente para evitar re-creaciones que rompan el contexto
 const ICONS: Record<string, React.FC<any>> = {
@@ -150,7 +152,12 @@ function NewProjectScreen() {
     const handlePickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') return;
-        const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.8 });
+        const result = await ImagePicker.launchImageLibraryAsync({ 
+            mediaTypes: ['images'], 
+            allowsEditing: true, 
+            aspect: [1, 1], 
+            quality: 0.4 
+        });
         if (!result.canceled) setImage(result.assets[0].uri);
     };
 
@@ -160,7 +167,7 @@ function NewProjectScreen() {
                 {/* Image Picker */}
                 <View className="px-6 mb-8 items-center">
                     <Pressable onPress={handlePickImage} style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]} className="w-32 h-32 rounded-2xl bg-white dark:bg-secondary-800 border-2 border-dashed border-secondary-300 dark:border-secondary-600 items-center justify-center overflow-hidden shadow-sm">
-                        {image ? <Image source={{ uri: image }} className="w-full h-full" /> : 
+                        {image ? <AppImage source={{ uri: image }} contentFit="cover" /> : 
                         <View className="items-center">
                             <CameraIcon size={24} color={theme.primary600} />
                             <Text className="text-sm font-black text-secondary-500 dark:text-secondary-400 uppercase tracking-widest">Logo</Text>

@@ -1,21 +1,35 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform, Pressable, Image } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuthStore } from '../../src/stores/authStore';
 import { useTranslate, useAppTheme } from '../../src/shared/hooks';
 import { Input, PrimaryButton } from '../../src/shared/components';
-import { UserIcon, CameraIcon, TrashIcon } from '../../src/shared/icons';
+import { UserIcon, CameraIcon, TrashIcon, CheckCircleIcon, ExclamationTriangleIcon } from '../../src/shared/icons';
 import { useRouter } from 'expo-router';
+import { authApi } from '../../src/services/api';
+import { Modal } from '../../src/shared/components/Modal';
+import { resolveImageUrl } from '../../src/shared/utils/image';
+import { AppImage } from '../../src/shared/components/media/AppImage';
 
 export default function ProfileScreen() {
-    const { user } = useAuthStore();
+    const { user, setUser } = useAuthStore();
     const { t } = useTranslate();
     const { theme, isDark } = useAppTheme();
     const router = useRouter();
 
     const [name, setName] = useState(user?.name || '');
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string | null>(user?.profile_photo_url || null);
+    const [imageChanged, setImageChanged] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [feedback, setFeedback] = useState<{ visible: boolean; type: 'success' | 'error'; message: string }>({ 
+        visible: false, type: 'success', message: '' 
+    });
+
+    // Resolve the display image URL (handles local picking vs remote URL)
+    const displayImage = useMemo(() => {
+        if (imageChanged) return image; // Local URI from picker
+        return resolveImageUrl(image);
+    }, [image, imageChanged]);
 
     const handlePickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -28,11 +42,12 @@ export default function ProfileScreen() {
             mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [1, 1],
-            quality: 0.8,
+            quality: 0.4,
         });
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
+            setImageChanged(true);
         }
     };
 
@@ -43,16 +58,42 @@ export default function ProfileScreen() {
         }
 
         setLoading(true);
-        // Simulating API call for now
         try {
-            // await authApi.updateProfile({ name, image });
-            setTimeout(() => {
-                Alert.alert(t('common.success'), t('profile.update_success', 'Perfil actualizado correctamente.'));
-                setLoading(false);
-                router.back();
-            }, 1000);
-        } catch (error) {
-            Alert.alert(t('common.error'), t('profile.update_error', 'Error al actualizar el perfil.'));
+            const formData = new FormData();
+            formData.append('_method', 'put');
+            formData.append('name', name);
+            
+            if (imageChanged && image) {
+                const filename = image.split('/').pop() || 'profile.jpg';
+                const match = /\.(\w+)$/.exec(filename);
+                const type = match ? `image/${match[1]}` : `image/jpeg`;
+                // @ts-ignore
+                formData.append('image', {
+                    uri: image,
+                    name: filename,
+                    type,
+                });
+            }
+
+            const response = await authApi.updateProfile(formData);
+            
+            if (response.data.user) {
+                setUser(response.data.user);
+            }
+
+            setFeedback({ 
+                visible: true, 
+                type: 'success', 
+                message: t('profile.update_success', 'Perfil actualizado correctamente.') 
+            });
+        } catch (error: any) {
+            console.error('Profile update error:', error.response?.data || error.message);
+            setFeedback({ 
+                visible: true, 
+                type: 'error', 
+                message: t('profile.update_error', 'Error al actualizar el perfil.') 
+            });
+        } finally {
             setLoading(false);
         }
     };
@@ -74,8 +115,8 @@ export default function ProfileScreen() {
                         style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]} 
                         className="w-32 h-32 rounded-2xl bg-white dark:bg-secondary-800 border-2 border-dashed border-secondary-300 dark:border-secondary-600 items-center justify-center overflow-hidden shadow-sm"
                     >
-                        {image ? (
-                            <Image source={{ uri: image }} className="w-full h-full" />
+                        {displayImage ? (
+                            <AppImage source={{ uri: displayImage }} contentFit="cover" />
                         ) : (
                             <View className="items-center">
                                 <CameraIcon size={24} color={theme.primary600} />
@@ -105,7 +146,7 @@ export default function ProfileScreen() {
                                     {t('auth.email')}
                                 </Text>
                                 <View className="p-4 rounded-xl bg-secondary-50 dark:bg-secondary-800 border border-secondary-100 dark:border-secondary-700">
-                                    <Text className="text-secondary-400 dark:text-secondary-500 font-medium">
+                                    <Text className="text-secondary-400 dark:text-secondary-50 font-medium">
                                         {user?.email}
                                     </Text>
                                 </View>
@@ -146,6 +187,27 @@ export default function ProfileScreen() {
                     </View>
                 </View>
             </ScrollView>
+
+            <Modal 
+                visible={feedback.visible} 
+                onClose={() => { 
+                    setFeedback({ ...feedback, visible: false }); 
+                    if (feedback.type === 'success') router.back(); 
+                }} 
+                title={feedback.type === 'success' ? t('common.success') : t('common.error')}
+                headerTextColor={feedback.type === 'success' ? '#10b981' : '#ef4444'}
+            >
+                <View className="items-center pt-10 pb-16 px-6">
+                    {feedback.type === 'success' ? (
+                        <CheckCircleIcon size={72} color="#10b981" />
+                    ) : (
+                        <ExclamationTriangleIcon size={72} color="#ef4444" />
+                    )}
+                    <Text className="text-xl font-black text-center mt-6 text-secondary-900 dark:text-white">
+                        {feedback.message}
+                    </Text>
+                </View>
+            </Modal>
 
             {/* Floating Action Button Style (Reusing NewProject style) */}
             <View className="absolute bottom-0 left-0 right-0 p-6 bg-white/90 dark:bg-secondary-900/90 backdrop-blur-xl border-t border-secondary-200 dark:border-secondary-800">

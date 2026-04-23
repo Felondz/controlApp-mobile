@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
-// import { FlashList } from '@shopify/flash-list';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChat } from '../useChat';
 import { Message } from '../../../types';
 import { useAuthStore } from '../../../stores/authStore';
@@ -77,6 +77,7 @@ const MessageItem = React.memo(({ message, isOwn, isDark }: MessageItemProps) =>
 });
 
 export default function ChatScreen({ projectId, onBack }: { projectId: number, onBack?: () => void }) {
+    const insets = useSafeAreaInsets();
     const { t } = useTranslate();
     const { isDark } = useSettingsStore();
     const { user } = useAuthStore();
@@ -104,14 +105,13 @@ export default function ChatScreen({ projectId, onBack }: { projectId: number, o
     const textColor = isDark ? 'text-white' : 'text-gray-900';
     const borderColor = isDark ? 'border-gray-800' : 'border-gray-200';
 
+    // Offset completo: Header AppLayout (70) + Header Chat (55) + insets.top
+    const verticalOffset = 125 + insets.top;
+
     return (
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            className={`flex-1 ${bgColor}`}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-        >
-            {/* Header */}
-            <View className={`px-4 py-3 ${headerBg} border-b ${borderColor} flex-row items-center justify-between`}>
+        <View className={`flex-1 ${bgColor}`}>
+            {/* Header Fijo */}
+            <View className={`px-4 py-3 ${headerBg} border-b ${borderColor} flex-row items-center justify-between`} style={{ height: 55 }}>
                 <View className="flex-row items-center">
                     {onBack && (
                         <TouchableOpacity onPress={onBack} className="mr-2">
@@ -128,52 +128,60 @@ export default function ChatScreen({ projectId, onBack }: { projectId: number, o
                 </TouchableOpacity>
             </View>
 
-            {/* Messages */}
-            <View className="flex-1">
-                {loading ? (
-                    <View className="flex-1 items-center justify-center">
-                        <ActivityIndicator color="#6366f1" />
-                    </View>
-                ) : (
-                    <FlashList
-                        data={messages}
-                        renderItem={renderItem}
-                        // @ts-ignore
+            <KeyboardAvoidingView 
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1"
+                keyboardVerticalOffset={verticalOffset}
+            >
+                {/* Messages Area */}
+                <View className="flex-1">
+                    {loading ? (
+                        <View className="flex-1 items-center justify-center">
+                            <ActivityIndicator color="#6366f1" />
+                        </View>
+                    ) : (
+                        <FlashList
+                            data={messages}
+                            renderItem={renderItem}
                             estimatedItemSize={80}
-                        inverted
-                        contentContainerStyle={{ paddingVertical: 10 }}
-                    />
-                )}
-            </View>
-
-            {/* Input Area */}
-            <View className={`p-3 ${inputBg} border-t ${borderColor} flex-row items-center gap-2`}>
-                <TouchableOpacity className="p-2 active:opacity-60">
-                    <PaperClipIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
-                </TouchableOpacity>
-                
-                <View className={`flex-1 flex-row items-center rounded-2xl px-4 py-1 border ${borderColor} ${isDark ? 'bg-gray-800/50' : 'bg-gray-100/50'}`}>
-                    <TextInput
-                        className={`flex-1 py-2.5 text-base font-medium ${textColor}`}
-                        placeholder={t('chat.placeholder', 'Escribe un mensaje...')}
-                        placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
-                        value={inputText}
-                        onChangeText={setInputText}
-                        multiline
-                    />
-                    <TouchableOpacity className="ml-1 active:opacity-60">
-                        <FaceSmileIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
-                    </TouchableOpacity>
+                            inverted
+                            contentContainerStyle={{ paddingVertical: 10 }}
+                        />
+                    )}
                 </View>
 
-                <TouchableOpacity 
-                    onPress={handleSend}
-                    disabled={!inputText.trim()}
-                    className={`w-11 h-11 rounded-xl items-center justify-center ${inputText.trim() ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-700'}`}
+                {/* Input Area */}
+                <View 
+                    className={`p-3 ${inputBg} border-t ${borderColor} flex-row items-center gap-2`}
+                    style={{ paddingBottom: Math.max(insets.bottom, 12) }}
                 >
-                    <Text className="text-white font-black">↑</Text>
-                </TouchableOpacity>
-            </View>
-        </KeyboardAvoidingView>
+                    <TouchableOpacity className="p-2 active:opacity-60">
+                        <PaperClipIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                    </TouchableOpacity>
+                    
+                    <View className={`flex-1 flex-row items-center rounded-2xl px-4 py-1 border ${borderColor} ${isDark ? 'bg-gray-800/50' : 'bg-gray-100/50'}`}>
+                        <TextInput
+                            className={`flex-1 py-2.5 text-base font-medium ${textColor}`}
+                            placeholder={t('chat.placeholder', 'Escribe un mensaje...')}
+                            placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
+                            value={inputText}
+                            onChangeText={setInputText}
+                            multiline
+                        />
+                        <TouchableOpacity className="ml-1 active:opacity-60">
+                            <FaceSmileIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <TouchableOpacity 
+                        onPress={handleSend}
+                        disabled={!inputText.trim()}
+                        className={`w-11 h-11 rounded-xl items-center justify-center ${inputText.trim() ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-700'}`}
+                    >
+                        <Text className="text-white font-black">↑</Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>
+        </View>
     );
 }

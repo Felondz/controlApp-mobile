@@ -13,7 +13,10 @@ export interface User {
     email: string;
     email_verified_at?: string;
     created_at?: string;
+    global_theme?: string;
+    profile_photo_url?: string;
     unread_messages_count?: number;
+    enabled_tools?: string[];
     settings?: UserSettings;
 }
 

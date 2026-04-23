@@ -310,10 +310,9 @@ export const BugReporterWidget = ({
                                         </Text>
 
                                         {screenshot ? (
-                                            <View className="relative w-full h-40 rounded-xl overflow-hidden bg-black/5">
-                                                <Image source={{ uri: screenshot }} className="w-full h-full" resizeMode="contain" />
-                                                <TouchableOpacity 
-                                                    onPress={() => setScreenshot(null)}
+                                           <View className="relative w-full h-40 rounded-xl overflow-hidden bg-black/5">
+                                               <Image source={{ uri: screenshot }} className="w-full h-full" contentFit="contain" />
+                                               <TouchableOpacity                                                    onPress={() => setScreenshot(null)}
                                                     className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full items-center justify-center shadow-md"
                                                 >
                                                     <TrashIcon size={14} color="white" />

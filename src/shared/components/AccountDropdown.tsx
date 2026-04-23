@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Pressable, Modal, TouchableWithoutFeedback } from 'react-native';
 import { useTranslate, useAppTheme } from '../hooks';
 import { useAuthStore } from '../../stores/authStore';
@@ -13,6 +13,8 @@ import {
     ChevronRightIcon
 } from '../icons';
 import { useRouter } from 'expo-router';
+import { resolveImageUrl } from '../utils/image';
+import { AppImage } from './media/AppImage';
 
 interface AccountDropdownProps {
     visible: boolean;
@@ -26,6 +28,8 @@ export const AccountDropdown = ({ visible, onClose, anchorLayout }: AccountDropd
     const { locale, setLocale, isDark } = useSettingsStore();
     const { theme: themeColors } = useAppTheme();
     const router = useRouter();
+
+    const profileImage = useMemo(() => resolveImageUrl(user?.profile_photo_url), [user?.profile_photo_url]);
 
     if (!visible) return null;
 
@@ -56,10 +60,14 @@ export const AccountDropdown = ({ visible, onClose, anchorLayout }: AccountDropd
                         <View className="p-6 bg-secondary-50 dark:bg-secondary-900/50 border-b border-secondary-100 dark:border-secondary-700">
                             <View className="flex-row items-center mb-1">
                                 <View 
-                                    className="w-12 h-12 rounded-2xl items-center justify-center mr-3 shadow-sm"
+                                    className="w-12 h-12 rounded-2xl items-center justify-center mr-3 shadow-sm overflow-hidden"
                                     style={{ backgroundColor: themeColors.primary600 }}
                                 >
-                                    <UserCircleIcon size={28} color="white" />
+                                    {profileImage ? (
+                                        <AppImage source={{ uri: profileImage }} contentFit="cover" />
+                                    ) : (
+                                        <UserCircleIcon size={28} color="white" />
+                                    )}
                                 </View>
                                 <View className="flex-1">
                                     <Text className="font-black text-secondary-900 dark:text-secondary-50 text-base" numberOfLines={1}>
@@ -77,7 +85,7 @@ export const AccountDropdown = ({ visible, onClose, anchorLayout }: AccountDropd
                             <MenuOption 
                                 icon={<Cog6ToothIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />}
                                 label={t('profile.edit', 'Editar Perfil')}
-                                onPress={() => handleNavigate('/(app)/settings')}
+                                onPress={() => handleNavigate('/(app)/profile')}
                                 themeColors={themeColors}
                             />
                             <MenuOption 

@@ -1,10 +1,13 @@
 import React from 'react';
-import { View, Text, Pressable, Image, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useTranslate } from '../../../shared/hooks';
-import { getTheme } from '../../../shared/themes';
-import { useSettingsStore } from '../../../stores/settingsStore';
-import { FinanceQuickActions } from '../../../shared/components';
+import { useTranslate } from '../../../../src/shared/hooks';
+import { getTheme } from '../../../../src/shared/themes';
+import { useSettingsStore } from '../../../../src/stores/settingsStore';
+import { FinanceQuickActions } from '../../../../src/shared/components';
+import { resolveImageUrl } from '../../../../src/shared/utils/image';
+import { AppImage } from '../../../../src/shared/components/media/AppImage';
+
 // Widgets
 import { BalanceWidget } from '../../finance/widgets/BalanceWidget';
 import { InventorySummaryWidget } from '../../inventory/widgets/InventorySummaryWidget';
@@ -15,8 +18,8 @@ import { TasksSummaryWidget } from '../../tasks/widgets/TasksSummaryWidget';
 import {
     FolderIcon, PuzzleIcon, CalendarIcon, CalculatorIcon,
     CurrencyDollarIcon, CheckListIcon, ChatIcon, FactoryIcon,
-    PackageIcon, UsersIcon, PersonalFinanceIcon, PlusIcon, MinusIcon, Bars3Icon
-} from '../../../shared/icons';
+    PackageIcon, UsersIcon, PersonalFinanceIcon, Bars3Icon
+} from '../../../../src/shared/icons';
 
 // Types
 interface Project {
@@ -76,16 +79,16 @@ export const ProjectCard = ({ project, dragHandleProps, onPress }: ProjectCardPr
     };
 
     const getProjectIcon = () => {
-        const apiUrl = process.env.EXPO_PUBLIC_API_URL || '';
-        const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
-
-        const imageUrl = project.image_url
-            || project.imagen
-            || (project.image_path ? `${baseUrl}/storage/${project.image_path}` : null)
-            || (project.icon && (project.icon.startsWith('http') || project.icon.startsWith('/')) ? project.icon : null);
+        const imageUrl = resolveImageUrl(
+            project.image_url || project.imagen || project.image_path
+        ) || (project.icon && (project.icon.startsWith('http') || project.icon.startsWith('/')) ? project.icon : null);
 
         if (imageUrl) {
-            return <Image source={{ uri: imageUrl }} className="h-10 w-10 rounded-xl bg-gray-100" resizeMode="cover" />;
+            return (
+                <View className="h-10 w-10 rounded-xl bg-secondary-100 dark:bg-secondary-800 overflow-hidden">
+                    <AppImage source={{ uri: imageUrl }} contentFit="cover" />
+                </View>
+            );
         }
 
         if (project.es_personal) {
@@ -122,9 +125,6 @@ export const ProjectCard = ({ project, dragHandleProps, onPress }: ProjectCardPr
             </View>
         );
     };
-
-    // Usamos el color personalizado del proyecto si existe, de lo contrario usamos el color del tema
-    const cardColor = project.color || theme.primary600;
 
     return (
         <Pressable
