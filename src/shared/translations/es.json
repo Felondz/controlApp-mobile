@@ -86,7 +86,16 @@
         "no_projects": "No hay proyectos",
         "create_project": "Crear Proyecto",
         "create_first_project_desc": "Empieza creando tu primer proyecto para gestionar tus recursos.",
-        "global_balance": "Saldo Global"
+        "global_balance": "Saldo Global",
+        "manage_widgets": "Administrar Resumen",
+        "widgets": {
+            "finance_balance": "Saldos Disponibles",
+            "finance_charts": "Distribución de Gastos",
+            "tasks": "Tareas Pendientes",
+            "chat": "Mensajería Directa",
+            "inventory": "Stock de Inventario",
+            "operations": "Flujo de Operaciones"
+        }
     },
     "projects": {
         "title": "Proyectos",
@@ -151,7 +160,11 @@
     },
     "finance": {
         "title": "Finanzas",
-        "balance": "Balance",
+        "balance": "Balance Global",
+        "accounts_usage": "Análisis de Fondos",
+        "accounts_distribution": "Distribución de gastos entre cuentas",
+        "no_accounts": "No se encontraron cuentas activas",
+        "charts_loading": "Generando reporte visual...",
         "income": "Ingreso",
         "expenses": "Egresos",
         "expense": "Gasto",

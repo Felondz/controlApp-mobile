@@ -1,17 +1,24 @@
-import TransactionsListScreen from '../../../src/modules/finance/screens/TransactionsListScreen';
-import { useProjectStore } from '../../../src/stores/projectStore';
+import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
+import FinanceDashboardScreen from '../../../src/modules/finance/screens/FinanceDashboardScreen';
 
+/**
+ * Finance Index - Final Stable Version
+ */
 export default function FinanceIndex() {
-    const { activeProject } = useProjectStore();
+    const [isMounted, setIsMounted] = useState(false);
 
-    if (!activeProject) {
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) {
         return (
-            <View className="flex-1 justify-center items-center">
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb' }}>
                 <ActivityIndicator size="large" color="#6366f1" />
             </View>
         );
     }
 
-    return <TransactionsListScreen proyectoId={activeProject.id} />;
+    return <FinanceDashboardScreen />;
 }

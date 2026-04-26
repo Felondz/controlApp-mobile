@@ -4,6 +4,7 @@ import { Slot, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text, TextInput } from "react-native";
 import { ApolloProvider } from "@apollo/client/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { apolloClient } from "../src/services/graphql/client";
@@ -34,6 +35,16 @@ TextInput.defaultProps.allowFontScaling = true;
 // @ts-ignore
 TextInput.defaultProps.maxFontSizeMultiplier = 1.3;
 
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            retry: 2,
+            refetchOnWindowFocus: false,
+        },
+    },
+});
+
 function RootLayoutContent() {
     const { isAuthenticated, isLoading: authLoading, initialize: initAuth } = useAuthStore();
     const { isInitialized: settingsReady, initialize: initSettings, isDark } = useSettingsStore();
@@ -45,9 +56,12 @@ function RootLayoutContent() {
 
     useEffect(() => {
         const prepare = async () => {
-            await initAuth();
-            await initSettings();
-            setIsAppReady(true);
+            try {
+                await initAuth();
+                await initSettings();
+            } finally {
+                setIsAppReady(true);
+            }
         };
         prepare();
     }, []);
@@ -70,15 +84,18 @@ function RootLayoutContent() {
         }
     }, [isAuthenticated, segments, authLoading, settingsReady, isAppReady]);
 
+    if (!isAppReady || authLoading || !settingsReady) {
+        return (
+            <View style={{ flex: 1, backgroundColor: isDark ? '#030712' : '#f9fafb', alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator size="large" color={themeColors.primary500} />
+            </View>
+        );
+    }
+
     return (
         <>
             <StatusBar style={isDark ? "light" : "dark"} />
             <Slot />
-            {(!isAppReady || authLoading || !settingsReady) && (
-                <View className="absolute inset-0 bg-secondary-50 dark:bg-secondary-900 items-center justify-center z-50">
-                    <ActivityIndicator size="large" color={themeColors.primary500} />
-                </View>
-            )}
         </>
     );
 }
@@ -87,9 +104,11 @@ export default function RootLayout() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaProvider>
-                <ApolloProvider client={apolloClient}>
-                    <RootLayoutContent />
-                </ApolloProvider>
+                <QueryClientProvider client={queryClient}>
+                    <ApolloProvider client={apolloClient}>
+                        <RootLayoutContent />
+                    </ApolloProvider>
+                </QueryClientProvider>
             </SafeAreaProvider>
         </GestureHandlerRootView>
     );

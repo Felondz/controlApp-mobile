@@ -79,14 +79,23 @@
         "title": "Home",
         "overview": "Overview",
         "global_dashboard": "Global Dashboard",
-        "current_project": "Active Project",
+        "current_project": "Current Project",
         "quick_access": "Quick Access",
         "tools": "Tools",
         "projects_summary": "Projects Summary",
-        "no_projects": "No projects",
+        "no_projects": "No projects found",
         "create_project": "Create Project",
         "create_first_project_desc": "Start by creating your first project to manage your resources.",
-        "global_balance": "Global Balance"
+        "global_balance": "Global Balance",
+        "manage_widgets": "Manage Overview",
+        "widgets": {
+            "finance_balance": "Available Balances",
+            "finance_charts": "Expense Distribution",
+            "tasks": "Pending Tasks",
+            "chat": "Direct Messaging",
+            "inventory": "Inventory Stock",
+            "operations": "Operations Flow"
+        }
     },
     "projects": {
         "title": "Projects",
@@ -151,7 +160,11 @@
     },
     "finance": {
         "title": "Finance",
-        "balance": "Balance",
+        "balance": "Global Balance",
+        "accounts_usage": "Funds Analysis",
+        "accounts_distribution": "Expense distribution across accounts",
+        "no_accounts": "No active accounts found",
+        "charts_loading": "Generating visual report...",
         "income": "Income",
         "expenses": "Expenses",
         "expense": "Expense",

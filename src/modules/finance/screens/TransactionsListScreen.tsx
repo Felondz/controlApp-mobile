@@ -46,8 +46,9 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
 
     const [deleteTransaccion, { loading: deleting }] = useDeleteTransaccion();
 
-    const transactions = transactionsData?.transacciones || [];
-    const accounts = accountsData?.cuentas || [];
+    const transactions = transactionsData || [];
+    const accounts = accountsData || [];
+    const categories = categoriesData || [];
 
     const filteredTransactions = useMemo(() => {
         return transactions.filter((trans: Transaccion) => {

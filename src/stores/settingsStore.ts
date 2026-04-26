@@ -8,10 +8,12 @@ interface SettingsState {
     theme: string;
     isDark: boolean;
     locale: 'es' | 'en';
+    visibleWidgets: Record<string, boolean>;
     isInitialized: boolean;
     setTheme: (theme: string, syncToBackend?: boolean) => Promise<void>;
     toggleDarkMode: () => Promise<void>;
     setLocale: (locale: 'es' | 'en') => Promise<void>;
+    toggleWidget: (widgetKey: string) => Promise<void>;
     initialize: () => Promise<void>;
 }
 
@@ -19,6 +21,14 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     theme: 'purple-modern',
     isDark: Appearance.getColorScheme() === 'dark',
     locale: 'es',
+    visibleWidgets: {
+        finance_balance: true,
+        finance_charts: true,
+        tasks: true,
+        chat: true,
+        inventory: true,
+        operations: true,
+    },
     isInitialized: false,
 
     setTheme: async (theme: string, syncToBackend = true) => {
@@ -63,14 +73,22 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         await AsyncStorage.setItem('settings_locale', locale);
     },
 
+    toggleWidget: async (widgetKey: string) => {
+        const current = get().visibleWidgets;
+        const updated = { ...current, [widgetKey]: !current[widgetKey] };
+        set({ visibleWidgets: updated });
+        await AsyncStorage.setItem('settings_visible_widgets', JSON.stringify(updated));
+    },
+
     initialize: async () => {
         if (get().isInitialized) return;
 
         try {
-            const [storedTheme, storedIsDark, storedLocale] = await Promise.all([
+            const [storedTheme, storedIsDark, storedLocale, storedWidgets] = await Promise.all([
                 AsyncStorage.getItem('settings_theme'),
                 AsyncStorage.getItem('settings_is_dark'),
                 AsyncStorage.getItem('settings_locale'),
+                AsyncStorage.getItem('settings_visible_widgets'),
             ]);
 
             const systemDark = Appearance.getColorScheme() === 'dark';
@@ -79,6 +97,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
                 theme: storedTheme || 'purple-modern',
                 isDark: storedIsDark !== null ? storedIsDark === 'true' : systemDark,
                 locale: (storedLocale as 'es' | 'en') || 'es',
+                visibleWidgets: storedWidgets ? JSON.parse(storedWidgets) : get().visibleWidgets,
                 isInitialized: true,
             });
         } catch (error) {

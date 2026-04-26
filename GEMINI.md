@@ -32,6 +32,27 @@ El usuario es nuevo en React Native. Antes de actuar:
 3. **Mostrar opciones** si las hay.
 4. **Esperar aprobación** antes de ejecutar cambios complejos.
 
+### 4. 🚀 Estabilidad de Navegación (CRÍTICO)
+**NUNCA** renderizar componentes complejos o que realicen consultas asíncronas pesadas (gráficas, listas largas) directamente sin asegurar que el contexto de navegación esté listo.
+- **Problema recurrente:** `Couldn't find a navigation context`.
+- **Solución Obligatoria:** Usar un estado `isReady` y envolver la activación en `InteractionManager.runAfterInteractions()` dentro de un `useEffect`.
+- **Ejemplo:**
+  ```tsx
+  const [isReady, setIsReady] = useState(false);
+  useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => setIsReady(true));
+    return () => task.cancel();
+  }, []);
+  if (!isReady) return <WidgetPlaceholder />;
+  ```
+
+### 5. 🔍 Diagnóstico con Instrumentación
+Para errores persistentes o difíciles de rastrear (ej. Contextos perdidos, fugas de memoria):
+- **PROHIBIDO** intentar parches a ciegas más de 2 veces.
+- **OBLIGATORIO** insertar logs temporales (`console.log`, `console.trace`) para mapear el flujo de ejecución y el estado de los contextos en tiempo real.
+- Una vez identificado el origen mediante logs, aplicar la corrección definitiva.
+- Eliminar los logs tras la validación.
+
 ---
 
 ## 🛠️ Comandos de Desarrollo
