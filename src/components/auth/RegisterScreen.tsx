@@ -7,9 +7,6 @@ import React, { useState } from 'react';
 import {
     View,
     Text,
-    TextInput,
-    TouchableOpacity,
-    ActivityIndicator,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -17,12 +14,17 @@ import {
 } from 'react-native';
 import { useAuthStore } from '../../stores/authStore';
 import { getTheme } from '../../shared/themes';
+import { useTranslate } from '../../shared/hooks/useTranslate';
+import PrimaryButton from '../../shared/components/PrimaryButton';
+import SecondaryButton from '../../shared/components/SecondaryButton';
+import Input from '../../shared/components/Input';
 
 interface RegisterScreenProps {
     onNavigateToLogin?: () => void;
 }
 
 export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProps) {
+    const { t } = useTranslate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -60,10 +62,10 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                             style={{ backgroundColor: theme.primary500 }}
                         >
                             <Text className="text-5xl font-bold text-white mb-4">
-                                ControlApp
+                                {t('app.name')}
                             </Text>
                             <Text className="text-xl text-white/80 text-center">
-                                Crea tu cuenta y comienza{'\n'}a gestionar tus proyectos
+                                {t('auth.register_subtitle')}
                             </Text>
                         </View>
                     )}
@@ -77,10 +79,10 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                                     className="text-4xl font-bold mb-2"
                                     style={{ color: theme.primary600 }}
                                 >
-                                    ControlApp
+                                    {t('app.name')}
                                 </Text>
                                 <Text className="text-gray-500 text-base">
-                                    Crea tu cuenta
+                                    {t('auth.register_subtitle')}
                                 </Text>
                             </View>
                         )}
@@ -89,10 +91,10 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                         {isTablet && (
                             <View className="mb-6">
                                 <Text className="text-3xl font-bold text-gray-800 mb-2">
-                                    Crear cuenta
+                                    {t('auth.create_account')}
                                 </Text>
                                 <Text className="text-gray-500 text-base">
-                                    Regístrate para empezar
+                                    {t('auth.register_subtitle')}
                                 </Text>
                             </View>
                         )}
@@ -101,92 +103,86 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                         {error && (
                             <View className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
                                 <Text className="text-red-600 text-center">{error}</Text>
-                                <TouchableOpacity onPress={clearError} className="mt-2">
-                                    <Text className="text-red-400 text-center text-base">Cerrar</Text>
-                                </TouchableOpacity>
+                                <SecondaryButton 
+                                    onPress={clearError} 
+                                    variant="ghost" 
+                                    size="sm"
+                                    className="mt-2"
+                                >
+                                    {t('common.cancel')}
+                                </SecondaryButton>
                             </View>
                         )}
 
                         {/* Name Input */}
-                        <View className="mb-4">
-                            <Text className="text-gray-700 font-medium mb-2">Nombre</Text>
-                            <TextInput
-                                className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-base text-gray-800"
-                                placeholder="Tu nombre"
-                                placeholderTextColor="#9ca3af"
-                                value={name}
-                                onChangeText={setName}
-                                autoComplete="name"
-                            />
-                        </View>
+                        <Input
+                            label={t('auth.name')}
+                            placeholder={t('auth.name_placeholder')}
+                            value={name}
+                            onChangeText={setName}
+                            autoComplete="name"
+                            className="mb-4"
+                        />
 
                         {/* Email Input */}
-                        <View className="mb-4">
-                            <Text className="text-gray-700 font-medium mb-2">Correo electrónico</Text>
-                            <TextInput
-                                className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-base text-gray-800"
-                                placeholder="tu@email.com"
-                                placeholderTextColor="#9ca3af"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                autoComplete="email"
-                            />
-                        </View>
+                        <Input
+                            label={t('auth.email')}
+                            placeholder={t('auth.email_placeholder')}
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            autoComplete="email"
+                            className="mb-4"
+                        />
 
                         {/* Password Input */}
-                        <View className="mb-4">
-                            <Text className="text-gray-700 font-medium mb-2">Contraseña</Text>
-                            <TextInput
-                                className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-base text-gray-800"
-                                placeholder="••••••••"
-                                placeholderTextColor="#9ca3af"
-                                value={password}
-                                onChangeText={setPassword}
-                                secureTextEntry
-                                autoComplete="password-new"
-                            />
-                        </View>
+                        <Input
+                            label={t('auth.password')}
+                            placeholder="••••••••"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            autoComplete="password-new"
+                            className="mb-4"
+                        />
 
                         {/* Confirm Password Input */}
-                        <View className="mb-6">
-                            <Text className="text-gray-700 font-medium mb-2">Confirmar contraseña</Text>
-                            <TextInput
-                                className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-base text-gray-800"
-                                placeholder="••••••••"
-                                placeholderTextColor="#9ca3af"
-                                value={passwordConfirmation}
-                                onChangeText={setPasswordConfirmation}
-                                secureTextEntry
-                                autoComplete="password-new"
-                            />
-                        </View>
+                        <Input
+                            label={t('auth.confirm_password')}
+                            placeholder="••••••••"
+                            value={passwordConfirmation}
+                            onChangeText={setPasswordConfirmation}
+                            secureTextEntry
+                            autoComplete="password-new"
+                            className="mb-6"
+                        />
 
                         {/* Register Button */}
-                        <TouchableOpacity
-                            className="rounded-xl py-4 items-center mb-4"
-                            style={{ backgroundColor: theme.primary500 }}
+                        <PrimaryButton
+                            variant="filled"
                             onPress={handleRegister}
-                            disabled={isLoading}
+                            loading={isLoading}
+                            fullWidth
+                            size="lg"
+                            className="mb-4"
                         >
-                            {isLoading ? (
-                                <ActivityIndicator color="white" />
-                            ) : (
-                                <Text className="text-white font-semibold text-lg">
-                                    Crear Cuenta
-                                </Text>
-                            )}
-                        </TouchableOpacity>
+                            {t('auth.register_button')}
+                        </PrimaryButton>
 
                         {/* Login Link */}
                         <View className="flex-row justify-center mt-4">
-                            <Text className="text-gray-500">¿Ya tienes cuenta? </Text>
-                            <TouchableOpacity onPress={onNavigateToLogin}>
-                                <Text style={{ color: theme.primary600 }} className="font-semibold">
-                                    Inicia sesión
+                            <Text className="text-gray-500">{t('auth.already_have_account')} </Text>
+                            <SecondaryButton 
+                                variant="ghost" 
+                                size="sm" 
+                                onPress={onNavigateToLogin}
+                                className="p-0 h-auto"
+                            >
+                                <Text style={{ color: theme.primary600 }} className="font-bold">
+                                    {t('auth.login')}
                                 </Text>
-                            </TouchableOpacity>
+                            </SecondaryButton>
                         </View>
                     </View>
                 </View>

@@ -63,38 +63,33 @@ api.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError) => {
         const originalRequest = error.config as CustomAxiosRequestConfig;
+        const authEndpoints = ['/login', '/register', '/auth/google/token', '/forgot-password', '/reset-password'];
+        const isAuthEndpoint = authEndpoints.some(endpoint => originalRequest.url?.includes(endpoint));
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
             originalRequest._retry = true;
 
             // Attempt silent login if callback configurd
             if (silentLoginCallback) {
                 try {
-                    console.log('Token expired (401), attempting silent login...');
+                    console.log(`[API] 401 en ${originalRequest.url}, intentando silent login...`);
                     const newToken = await silentLoginCallback();
 
                     if (newToken) {
-                        console.log('Silent login successful, retrying request...');
+                        console.log('[API] Silent login exitoso, reintentando petición...');
                         // Update header and retry
-                        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                        if (originalRequest.headers) {
+                            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                        }
                         return api(originalRequest);
                     }
                 } catch (refreshError) {
-                    console.error('Silent login failed:', refreshError);
+                    console.error('[API] Error en silent login:', refreshError);
                 }
             }
 
-            // If we get here, silent login failed or wasn't possible
-            console.log('Silent login failed or not configured, logging out...');
-            await SecureStore.deleteItemAsync(TOKEN_KEY);
-            await SecureStore.deleteItemAsync(USER_KEY);
-            // Don't delete credentials here, let the user decide if they want to clear them on next login screen visit
-            // actually, if silent login failed (e.g. password changed), we SHOULD clear them?
-            // No, maybe network error. But if auth failed (401 on login), authStore logic will handle it.
-
-            if (logoutCallback) {
-                logoutCallback();
-            }
+            console.log('[API] Silent login no disponible o fallido, cerrando sesión...');
+            if (logoutCallback) logoutCallback();
         }
         return Promise.reject(error);
     }
@@ -104,6 +99,9 @@ api.interceptors.response.use(
 export const authApi = {
     login: (email: string, password: string, remember_me: boolean, device_name: string) =>
         api.post('/login', { email, password, remember_me, device_name }),
+
+    loginWithGoogle: (token: string, device_name: string) =>
+        api.post('/auth/google/token', { token, device_name }),
 
     register: (data: { name: string; email: string; password: string; password_confirmation: string }) =>
         api.post('/register', data),

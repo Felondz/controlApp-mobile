@@ -67,15 +67,19 @@ export default function SecondaryButton({
                     color="#6b7280"
                 />
             ) : (
-                <Text
-                    className={`
-                        font-bold uppercase tracking-widest
-                        ${textColorClasses[variant]}
-                        ${textSizeClasses[size]}
-                    `}
-                >
-                    {children}
-                </Text>
+                typeof children === 'string' ? (
+                    <Text
+                        className={`
+                            font-bold tracking-widest
+                            ${textColorClasses[variant]}
+                            ${textSizeClasses[size]}
+                        `}
+                    >
+                        {children}
+                    </Text>
+                ) : (
+                    children
+                )
             )}
         </Pressable>
     );

@@ -103,7 +103,7 @@ export default function RegisterScreen() {
                                         Únete a nosotros
                                     </Text>
                                     <Text className="text-lg text-white/70 text-center max-w-xs mt-4 leading-6 font-medium">
-                                        Empieza a gestionar tus proyectos de manera profesional hoy mismo.
+                                        {t('auth.register_subtitle')}
                                     </Text>
                                 </View>
                             </View>
@@ -187,7 +187,7 @@ export default function RegisterScreen() {
                                     size="lg"
                                     className="flex-1"
                                 >
-                                    {t('auth.cancel') || 'Cancelar'}
+                                    {t('common.cancel')}
                                 </SecondaryButton>
                                 <PrimaryButton
                                     onPress={handleRegister}
@@ -202,7 +202,7 @@ export default function RegisterScreen() {
 
                             <View className="mt-10 flex-row justify-center items-center">
                                 <View className="h-[1px] flex-1 bg-secondary-200 dark:bg-secondary-800" />
-                                <Text className="mx-4 text-sm font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest">
+                                <Text className="mx-4 text-sm font-black text-secondary-400 dark:text-secondary-50 tracking-widest">
                                     {t('auth.already_have_account')}
                                 </Text>
                                 <View className="h-[1px] flex-1 bg-secondary-200 dark:bg-secondary-800" />
@@ -210,11 +210,13 @@ export default function RegisterScreen() {
 
                             <SecondaryButton 
                                 onPress={() => router.push("/(auth)/login")}
-                                variant="outline"
+                                variant="ghost"
                                 size="lg"
-                                className="mt-8 py-4"
+                                className="mt-4"
                             >
-                                {t('auth.login')}
+                                <Text style={{ color: theme.primary600 }} className="font-bold">
+                                    {t('auth.login')}
+                                </Text>
                             </SecondaryButton>
                         </View>
                     </View>

@@ -71,15 +71,19 @@ export default function PrimaryButton({
                     color={loadingColor}
                 />
             ) : (
-                <Text
-                    className={`
-                        font-bold
-                        ${textColorClasses[variant]}
-                        ${textSizeClasses[size]}
-                    `}
-                >
-                    {children}
-                </Text>
+                typeof children === 'string' ? (
+                    <Text
+                        className={`
+                            font-bold
+                            ${textColorClasses[variant]}
+                            ${textSizeClasses[size]}
+                        `}
+                    >
+                        {children}
+                    </Text>
+                ) : (
+                    children
+                )
             )}
         </Pressable>
     );

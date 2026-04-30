@@ -30,6 +30,7 @@ interface AuthState {
     // Actions
     initialize: () => Promise<void>;
     login: (email: string, password: string, remember: boolean) => Promise<boolean>;
+    loginWithGoogle: (token: string) => Promise<boolean>;
     register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<boolean>;
     logout: () => Promise<void>;
     clearError: () => void;
@@ -98,29 +99,38 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             if (token && userJson) {
                 const user = JSON.parse(userJson);
 
-                // Sync Global Theme from cache
+                // Sync Global Theme from cache (optimistic)
                 if (user.global_theme) {
                     useSettingsStore.getState().setTheme(user.global_theme, false);
                 }
 
-                set({ user, token, isAuthenticated: true, isLoading: false });
-
-                // Verify token is still valid
+                // Verify token is still valid before fully committing to authenticated state
                 try {
                     const response = await authApi.getUser();
-                    set({ user: response.data });
-                    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(response.data));
+                    const freshUser = response.data;
+                    
+                    set({ 
+                        user: freshUser, 
+                        token, 
+                        isAuthenticated: true, 
+                        isLoading: false 
+                    });
+                    
+                    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(freshUser));
 
                     // Sync Global Theme from fresh logic
-                    if (response.data.global_theme) {
-                        useSettingsStore.getState().setTheme(response.data.global_theme, false);
+                    if (freshUser.global_theme) {
+                        useSettingsStore.getState().setTheme(freshUser.global_theme, false);
                     }
                 } catch (error) {
-                    // Token invalid/expired will be handled by interceptor -> silent login attempt
-                    // If that fails, interceptor calls logout callback which updates state
+                    console.log('[AuthStore] Token verification failed on init:', error);
+                    // Clear state if verification fails
+                    await SecureStore.deleteItemAsync(TOKEN_KEY);
+                    await SecureStore.deleteItemAsync(USER_KEY);
+                    set({ user: null, token: null, isAuthenticated: false, isLoading: false });
                 }
             } else {
-                set({ isLoading: false });
+                set({ isAuthenticated: false, isLoading: false });
             }
         } catch (error) {
             console.error('Error initializing auth:', error);
@@ -161,6 +171,37 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             return true;
         } catch (error: any) {
             const message = error.response?.data?.message || 'Error al iniciar sesión';
+            set({ error: message, isLoading: false });
+            return false;
+        }
+    },
+
+    // Login with Google
+    loginWithGoogle: async (idToken: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const deviceName = getDeviceName();
+            const response = await authApi.loginWithGoogle(idToken, deviceName);
+            const { access_token: token, user } = response.data;
+
+            // Store token and user
+            await SecureStore.setItemAsync(TOKEN_KEY, token);
+            await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+
+            // Sync Global Theme
+            if (user.global_theme) {
+                useSettingsStore.getState().setTheme(user.global_theme, false);
+            }
+
+            set({
+                user,
+                token,
+                isAuthenticated: true,
+                isLoading: false,
+            });
+            return true;
+        } catch (error: any) {
+            const message = error.response?.data?.message || 'Error al iniciar sesión con Google';
             set({ error: message, isLoading: false });
             return false;
         }

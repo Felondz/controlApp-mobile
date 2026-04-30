@@ -57,10 +57,18 @@ function RootLayoutContent() {
     useEffect(() => {
         const prepare = async () => {
             try {
+                console.log('[RootLayout] Starting initAuth...');
                 await initAuth();
+                console.log('[RootLayout] initAuth finished.');
+                
+                console.log('[RootLayout] Starting initSettings...');
                 await initSettings();
+                console.log('[RootLayout] initSettings finished.');
+            } catch (error) {
+                console.error('[RootLayout] Initialization error:', error);
             } finally {
                 setIsAppReady(true);
+                console.log('[RootLayout] isAppReady set to true.');
             }
         };
         prepare();
@@ -73,13 +81,23 @@ function RootLayoutContent() {
     }, [isDark, settingsReady]);
 
     useEffect(() => {
+        console.log('[RootLayout] Auth Sync Effect:', {
+            isAppReady,
+            authLoading,
+            settingsReady,
+            isAuthenticated,
+            segment: segments[0]
+        });
+
         if (!isAppReady || authLoading || !settingsReady) return;
 
         const inAuthGroup = segments[0] === "(auth)";
 
         if (!isAuthenticated && !inAuthGroup) {
+            console.log('[RootLayout] Not authenticated, redirecting to login...');
             router.replace("/(auth)/login");
         } else if (isAuthenticated && inAuthGroup) {
+            console.log('[RootLayout] Authenticated, redirecting to app...');
             router.replace("/(app)");
         }
     }, [isAuthenticated, segments, authLoading, settingsReady, isAppReady]);

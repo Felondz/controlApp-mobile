@@ -32,6 +32,8 @@
     "auth": {
         "login": "Login",
         "login_button": "Login",
+        "login_google": "Continue with Google",
+        "or_continue_with": "Or continue with",
         "login_subtitle": "Enter your credentials to access",
         "register": "Register",
         "register_button": "Create Account",

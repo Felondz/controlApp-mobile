@@ -3,34 +3,61 @@
  * Responsive design for phone and tablet
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
-    TextInput,
-    TouchableOpacity,
-    ActivityIndicator,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
     useWindowDimensions,
 } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { useAuthStore } from '../../stores/authStore';
 import { getTheme } from '../../shared/themes';
+import { useTranslate } from '../../shared/hooks/useTranslate';
+import PrimaryButton, { PrimaryButtonIcon } from '../../shared/components/PrimaryButton';
+import SecondaryButton from '../../shared/components/SecondaryButton';
+import Input from '../../shared/components/Input';
+import { GoogleIcon } from '../../shared/icons';
+
+WebBrowser.maybeCompleteAuthSession();
 
 interface LoginScreenProps {
     onNavigateToRegister?: () => void;
 }
 
 export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
+    const { t } = useTranslate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login, isLoading, error, clearError } = useAuthStore();
+    const { login, loginWithGoogle, isLoading, error, clearError } = useAuthStore();
     const { width } = useWindowDimensions();
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+        });
+    }, []);
 
     // Responsive: tablet uses split layout
     const isTablet = width >= 768;
     const theme = getTheme('purple-modern');
+
+    const handleGoogleLogin = async () => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            const idToken = userInfo.idToken || (userInfo as any).data?.idToken;
+            
+            if (idToken) {
+                await loginWithGoogle(idToken);
+            }
+        } catch (error: any) {
+            console.error('[LoginScreen] Google Sign-In Error:', error);
+        }
+    };
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -56,10 +83,10 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
                             style={{ backgroundColor: theme.primary500 }}
                         >
                             <Text className="text-5xl font-bold text-white mb-4">
-                                ControlApp
+                                {t('app.name')}
                             </Text>
                             <Text className="text-xl text-white/80 text-center">
-                                Gestiona tus proyectos,{'\n'}finanzas e inventario
+                                {t('landing.hero_subtitle')}
                             </Text>
                         </View>
                     )}
@@ -73,10 +100,10 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
                                     className="text-4xl font-bold mb-2"
                                     style={{ color: theme.primary600 }}
                                 >
-                                    ControlApp
+                                    {t('app.name')}
                                 </Text>
                                 <Text className="text-gray-500 text-base">
-                                    Inicia sesión para continuar
+                                    {t('auth.login_subtitle')}
                                 </Text>
                             </View>
                         )}
@@ -85,10 +112,10 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
                         {isTablet && (
                             <View className="mb-8">
                                 <Text className="text-3xl font-bold text-gray-800 mb-2">
-                                    Bienvenido de nuevo
+                                    {t('auth.welcome_back')}
                                 </Text>
                                 <Text className="text-gray-500 text-base">
-                                    Inicia sesión en tu cuenta
+                                    {t('auth.login_subtitle')}
                                 </Text>
                             </View>
                         )}
@@ -97,69 +124,91 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
                         {error && (
                             <View className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
                                 <Text className="text-red-600 text-center">{error}</Text>
-                                <TouchableOpacity onPress={clearError} className="mt-2">
-                                    <Text className="text-red-400 text-center text-base">Cerrar</Text>
-                                </TouchableOpacity>
+                                <SecondaryButton 
+                                    onPress={clearError} 
+                                    variant="ghost" 
+                                    size="sm"
+                                    className="mt-2"
+                                >
+                                    {t('common.cancel')}
+                                </SecondaryButton>
                             </View>
                         )}
 
                         {/* Email Input */}
-                        <View className="mb-4">
-                            <Text className="text-gray-700 font-medium mb-2">
-                                Correo electrónico
-                            </Text>
-                            <TextInput
-                                className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-base text-gray-800"
-                                placeholder="tu@email.com"
-                                placeholderTextColor="#9ca3af"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                autoComplete="email"
-                            />
-                        </View>
+                        <Input
+                            label={t('auth.email')}
+                            placeholder={t('auth.email_placeholder')}
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            autoComplete="email"
+                            className="mb-4"
+                        />
 
                         {/* Password Input */}
-                        <View className="mb-6">
-                            <Text className="text-gray-700 font-medium mb-2">
-                                Contraseña
-                            </Text>
-                            <TextInput
-                                className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-base text-gray-800"
-                                placeholder="••••••••"
-                                placeholderTextColor="#9ca3af"
-                                value={password}
-                                onChangeText={setPassword}
-                                secureTextEntry
-                                autoComplete="password"
-                            />
-                        </View>
+                        <Input
+                            label={t('auth.password')}
+                            placeholder="••••••••"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            autoComplete="password"
+                            className="mb-6"
+                        />
 
                         {/* Login Button */}
-                        <TouchableOpacity
-                            className="rounded-xl py-4 items-center mb-4"
-                            style={{ backgroundColor: theme.primary500 }}
+                        <PrimaryButton
+                            variant="filled"
                             onPress={handleLogin}
-                            disabled={isLoading}
+                            loading={isLoading}
+                            fullWidth
+                            size="lg"
+                            className="mb-4"
                         >
-                            {isLoading ? (
-                                <ActivityIndicator color="white" />
-                            ) : (
-                                <Text className="text-white font-semibold text-lg">
-                                    Iniciar Sesión
-                                </Text>
-                            )}
-                        </TouchableOpacity>
+                            {t('auth.login_button')}
+                        </PrimaryButton>
+
+                        {/* Separator */}
+                        <View className="flex-row items-center my-4">
+                            <View className="flex-1 h-[1px] bg-gray-200" />
+                            <Text className="mx-4 text-gray-400 text-sm font-medium">
+                                {t('auth.or_continue_with')}
+                            </Text>
+                            <View className="flex-1 h-[1px] bg-gray-200" />
+                        </View>
+
+                        {/* Google Login Button */}
+                        <SecondaryButton
+                            variant="outline"
+                            onPress={handleGoogleLogin}
+                            disabled={isLoading}
+                            fullWidth
+                            size="lg"
+                            className="mb-6 flex-row items-center justify-center"
+                        >
+                            <View className="mr-3">
+                                <GoogleIcon size={20} />
+                            </View>
+                            <Text className="font-semibold text-secondary-700">
+                                {t('auth.login_google')}
+                            </Text>
+                        </SecondaryButton>
 
                         {/* Register Link */}
                         <View className="flex-row justify-center mt-4">
-                            <Text className="text-gray-500">¿No tienes cuenta? </Text>
-                            <TouchableOpacity onPress={onNavigateToRegister}>
-                                <Text style={{ color: theme.primary600 }} className="font-semibold">
-                                    Regístrate
+                            <Text className="text-gray-500">{t('auth.dont_have_account')} </Text>
+                            <SecondaryButton 
+                                variant="ghost" 
+                                size="sm" 
+                                onPress={onNavigateToRegister}
+                                className="p-0 h-auto"
+                            >
+                                <Text style={{ color: theme.primary600 }} className="font-bold">
+                                    {t('auth.register')}
                                 </Text>
-                            </TouchableOpacity>
+                            </SecondaryButton>
                         </View>
                     </View>
                 </View>

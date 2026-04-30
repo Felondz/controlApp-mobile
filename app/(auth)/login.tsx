@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import {
     View,
@@ -12,6 +12,8 @@ import {
     Keyboard,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as WebBrowser from 'expo-web-browser';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { useAuthStore } from "../../src/stores/authStore";
 import { getTheme } from "../../src/shared/themes";
 import { useTranslate } from "../../src/shared/hooks";
@@ -22,19 +24,60 @@ import SecondaryButton from "../../src/shared/components/SecondaryButton";
 import Input from "../../src/shared/components/Input";
 import PasswordInput from "../../src/shared/components/PasswordInput";
 import { Checkbox } from "../../src/shared/components/Checkbox";
+import { GoogleIcon } from "../../src/shared/icons";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
-    const { login, isLoading, error, clearError } = useAuthStore();
+    const { login, loginWithGoogle, isLoading, error, clearError } = useAuthStore();
     const router = useRouter();
     const { width } = useWindowDimensions();
     const { t } = useTranslate();
     const insets = useSafeAreaInsets();
 
+    useEffect(() => {
+        GoogleSignin.configure({
+            webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+        });
+    }, []);
+
     const isTablet = width >= 768;
     const theme = getTheme("purple-modern");
+
+    const handleGoogleLogin = async () => {
+        console.log("[LoginScreen] handleGoogleLogin triggered (Native SDK)");
+        try {
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            
+            // In some versions it's userInfo.idToken, in others userInfo.data.idToken
+            const idToken = userInfo.idToken || (userInfo as any).data?.idToken;
+            
+            console.log("[LoginScreen] Google Native Auth Success, idToken:", !!idToken);
+            
+            if (idToken) {
+                const success = await loginWithGoogle(idToken);
+                if (success) {
+                    router.replace("/(app)");
+                }
+            } else {
+                console.error("[LoginScreen] No idToken received from Google Sign-In");
+            }
+        } catch (error: any) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log("[LoginScreen] User cancelled login");
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                console.log("[LoginScreen] Login in progress");
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                console.error("[LoginScreen] Play services not available");
+            } else {
+                console.error("[LoginScreen] Google Sign-In Error:", error);
+            }
+        }
+    };
 
     const handleLogin = async () => {
         if (!email || !password) return;
@@ -160,9 +203,34 @@ export default function LoginScreen() {
                                 {t('auth.login_button')}
                             </PrimaryButton>
 
+                            <View className="flex-row justify-center items-center mb-8">
+                                <View className="h-[1px] flex-1 bg-secondary-200 dark:bg-secondary-800" />
+                                <Text className="mx-4 text-sm font-black text-secondary-400 dark:text-secondary-500 tracking-widest">
+                                    {t('auth.or_continue_with')}
+                                </Text>
+                                <View className="h-[1px] flex-1 bg-secondary-200 dark:bg-secondary-800" />
+                            </View>
+
+                            <SecondaryButton
+                                variant="outline"
+                                onPress={handleGoogleLogin}
+                                disabled={isLoading}
+                                size="xl"
+                                className="mb-10 py-4"
+                            >
+                                <View className="flex-row items-center justify-center">
+                                    <View className="mr-3">
+                                        <GoogleIcon size={22} />
+                                    </View>
+                                    <Text className="font-bold text-lg text-secondary-700 dark:text-secondary-200">
+                                        {t('auth.login_google')}
+                                    </Text>
+                                </View>
+                            </SecondaryButton>
+
                             <View className="flex-row justify-center items-center">
                                 <View className="h-[1px] flex-1 bg-secondary-200 dark:bg-secondary-800" />
-                                <Text className="mx-4 text-sm font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest">
+                                <Text className="mx-4 text-sm font-black text-secondary-400 dark:text-secondary-50 tracking-widest">
                                     {t('auth.dont_have_account')}
                                 </Text>
                                 <View className="h-[1px] flex-1 bg-secondary-200 dark:bg-secondary-800" />
@@ -170,11 +238,13 @@ export default function LoginScreen() {
 
                             <SecondaryButton 
                                 onPress={() => router.push("/(auth)/register")}
-                                variant="outline"
+                                variant="ghost"
                                 size="lg"
-                                className="mt-8 py-4"
+                                className="mt-4"
                             >
-                                {t('auth.register')}
+                                <Text style={{ color: theme.primary600 }} className="font-bold">
+                                    {t('auth.register')}
+                                </Text>
                             </SecondaryButton>
                         </View>
                     </View>

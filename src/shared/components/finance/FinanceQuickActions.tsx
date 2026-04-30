@@ -22,26 +22,33 @@ export const FinanceQuickActions = ({ proyectoId, className = '' }: FinanceQuick
     return (
         <View className={`flex-row gap-2 ${className}`}>
             <Pressable
-                className="flex-1 flex-row items-center justify-center bg-green-50 dark:bg-green-900/20 py-2.5 rounded-xl border border-green-100 dark:border-green-800 active:opacity-70"
+                className="flex-1 flex-row items-center justify-center bg-green-50 dark:bg-green-900/20 py-2.5 px-2 rounded-xl border border-green-100 dark:border-green-800 active:opacity-70"
                 onPress={(e) => {
                     e.stopPropagation();
                     handlePress('income');
                 }}
-                >
+            >
                 <PlusIcon size={12} color="#10b981" />
-                <Text className="text-green-700 dark:text-green-400 text-sm font-black tracking-widest ml-1.5">
+                <Text 
+                    className="text-green-700 dark:text-green-400 text-xs font-black tracking-tighter ml-1"
+                    numberOfLines={1}
+                >
                     {t('finance.income')}
                 </Text>
-                </Pressable>
+            </Pressable>
 
-                <Pressable
-                className="flex-1 flex-row items-center justify-center bg-red-50 dark:bg-red-900/20 py-2.5 rounded-xl border border-red-100 dark:border-red-800 active:opacity-70"
+            <Pressable
+                className="flex-1 flex-row items-center justify-center bg-red-50 dark:bg-red-900/20 py-2.5 px-2 rounded-xl border border-red-100 dark:border-red-800 active:opacity-70"
                 onPress={(e) => {
                     e.stopPropagation();
                     handlePress('expense');
                 }}
-                >                <MinusIcon size={12} color="#ef4444" />
-                <Text className="text-red-700 dark:text-red-400 text-sm font-black tracking-widest ml-1.5">
+            >
+                <MinusIcon size={12} color="#ef4444" />
+                <Text 
+                    className="text-red-700 dark:text-red-400 text-xs font-black tracking-tighter ml-1"
+                    numberOfLines={1}
+                >
                     {t('finance.expense')}
                 </Text>
             </Pressable>
