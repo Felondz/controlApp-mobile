@@ -8,7 +8,7 @@ import {
     useDeleteTransaccion,
     usePayTransaccion,
     Transaccion 
-} from '../../finance/useFinance';
+} from '../../../hooks/graphql/useFinance';
 import { 
     PlusIcon, 
     FunnelIcon,
@@ -47,7 +47,7 @@ export default function TransactionsListScreen({
     const [refreshing, setRefreshing] = useState(false);
     const [activeTab, setActiveTab] = useState<'all' | 'income' | 'expense'>('all');
 
-    const { data: transactionsData, loading: loadingTransactions, refetch: refetchTransactions } = useTransacciones(proyectoId);
+    const { data: transactionsData, isLoading: loadingTransactions, refetch: refetchTransactions } = useTransacciones(proyectoId);
     const { mutateAsync: deleteTransaccion } = useDeleteTransaccion();
     const { mutateAsync: payTransaccion } = usePayTransaccion();
     const [payingId, setPayingId] = useState<string | null>(null);
@@ -324,7 +324,7 @@ export default function TransactionsListScreen({
                                                                 ? 'text-green-600 dark:text-green-400'
                                                                 : 'text-red-600 dark:text-red-400'
                                                         }`}>
-                                                            {isIncome ? '+' : '-'}{formatCurrency(trans.monto, trans.cuenta?.moneda || 'COP')}
+                                                            {formatCurrency(trans.monto, trans.cuenta?.moneda || 'COP')}
                                                         </Text>
                                                         
                                                         {trans.status === 'pending' && (

@@ -13,6 +13,7 @@ import {
     Platform,
     ViewStyle,
     Dimensions,
+    ScrollView,
 } from 'react-native';
 import { useAppTheme } from '../hooks';
 import { ThemedScrollView } from './ThemedScrollView';
@@ -67,7 +68,8 @@ export function Modal({
         <ThemedScrollView 
             className={title ? '' : 'p-2'}
             bounces={false}
-            style={{ flex: 0 }}
+            style={{ flex: 0, flexGrow: 0, flexShrink: 1, minHeight: 1 }}
+            keyboardShouldPersistTaps="handled"
         >
             {children}
         </ThemedScrollView>

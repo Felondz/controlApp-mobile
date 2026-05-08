@@ -18,7 +18,7 @@ import {
     BanknotesIcon,
     WalletIcon,
 } from '../../../shared/icons';
-import { maskCurrency, parseToCents } from '../../../shared/currency';
+import { maskCurrency as currencyMask, parseToCents } from '../../../shared/currency';
 import DatePicker from '../../../shared/components/inputs/DatePicker';
 
 interface AccountModalProps {
@@ -174,7 +174,7 @@ export const AccountModal = ({ visible, onClose, proyectoId }: AccountModalProps
                     placeholder="$ 0"
                     keyboardType="numeric"
                     value={form.saldo_inicial}
-                    onChangeText={(text) => setForm({ ...form, saldo_inicial: maskCurrency(text, form.moneda) })}
+                    onChangeText={(text) => setForm({ ...form, saldo_inicial: currencyMask(text, form.moneda) })}
                     error={errors.saldo_inicial}
                     required={form.tipo !== 'prestamo'}
                     icon={WalletIcon}
@@ -197,7 +197,7 @@ export const AccountModal = ({ visible, onClose, proyectoId }: AccountModalProps
                                     placeholder="$ 0"
                                     keyboardType="numeric"
                                     value={form.limite_credito}
-                                    onChangeText={(text) => setForm({ ...form, limite_credito: maskCurrency(text, form.moneda) })}
+                                    onChangeText={(text) => setForm({ ...form, limite_credito: currencyMask(text, form.moneda) })}
                                 />
                             </View>
                             <View className="flex-1">

@@ -45,7 +45,7 @@ export const BalanceWidget = ({ proyectoId, compact = false, theme: providedThem
                     <View className="items-center">
                         <Text 
                             className="text-2xl font-black tracking-tighter"
-                            style={{ color: (balance || 0) >= 0 ? (isDark ? theme.primary400 : theme.primary700) : '#ef4444' }}
+                            style={{ color: (balance || 0) >= 0 ? '#10b981' : '#ef4444' }}
                         >
                             {formatCurrency(balance || 0, 'COP')}
                         </Text>
@@ -84,7 +84,7 @@ export const BalanceWidget = ({ proyectoId, compact = false, theme: providedThem
                 ) : (
                     <Text 
                         className="text-3xl font-black tracking-tighter"
-                        style={{ color: (balance || 0) >= 0 ? (isDark ? theme.primary400 : theme.primary700) : '#ef4444' }}
+                        style={{ color: (balance || 0) >= 0 ? '#10b981' : '#ef4444' }}
                     >
                         {formatCurrency(balance || 0, 'COP')}
                     </Text>

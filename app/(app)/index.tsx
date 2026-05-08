@@ -116,38 +116,48 @@ function DashboardScreen() {
                         </View>
                         
                         <View className="gap-6">
-                            {visibleWidgets.finance_balance && activeProject.modules?.some(m => m.toLowerCase() === 'finance') && (
-                                <BalanceSummaryWidget 
-                                    totalBalance={totalBalance}
-                                    accountCount={cuentas.length}
-                                    t={t}
-                                />
-                            )}
+                            {!activeProject ? (
+                                <View className="p-8 items-center justify-center bg-white dark:bg-secondary-800 rounded-3xl border border-dashed border-secondary-300 dark:border-secondary-700">
+                                    <Text className="text-secondary-500 dark:text-secondary-400 text-center font-medium">
+                                        {t('dashboard.select_project_to_view_widgets', 'Selecciona un proyecto para ver tus widgets')}
+                                    </Text>
+                                </View>
+                            ) : (
+                                <>
+                                    {visibleWidgets.finance_balance && activeProject?.modules?.some(m => m.toLowerCase() === 'finance') && (
+                                        <BalanceSummaryWidget 
+                                            totalBalance={totalBalance}
+                                            accountCount={cuentas.length}
+                                            t={t}
+                                        />
+                                    )}
 
-                            {visibleWidgets.finance_charts && activeProject.modules?.some(m => m.toLowerCase() === 'finance') && (
-                                <AccountUsageChartWidget 
-                                    cuentas={cuentas}
-                                    t={t}
-                                    theme={projectTheme}
-                                    isDark={isDark}
-                                    isLoading={loadingCuentas}
-                                />
-                            )}
+                                    {visibleWidgets.finance_charts && activeProject?.modules?.some(m => m.toLowerCase() === 'finance') && (
+                                        <AccountUsageChartWidget 
+                                            cuentas={cuentas}
+                                            t={t}
+                                            isDark={isDark}
+                                            theme={projectTheme}
+                                            isLoading={loadingCuentas}
+                                        />
+                                    )}
 
-                            {visibleWidgets.inventory && activeProject.modules?.some(m => m.toLowerCase() === 'inventory') && (
-                                <InventorySummaryWidget proyectoId={activeProject.id} />
-                            )}
+                                    {visibleWidgets.inventory && activeProject?.modules?.some(m => m.toLowerCase() === 'inventory') && (
+                                        <InventorySummaryWidget proyectoId={activeProject.id} />
+                                    )}
 
-                            {visibleWidgets.operations && activeProject.modules?.some(m => m.toLowerCase() === 'operations') && (
-                                <OperationsSummaryWidget proyectoId={activeProject.id} />
-                            )}
+                                    {visibleWidgets.operations && activeProject?.modules?.some(m => m.toLowerCase() === 'operations') && (
+                                        <OperationsSummaryWidget proyectoId={activeProject.id} />
+                                    )}
 
-                            {visibleWidgets.tasks && activeProject.modules?.some(m => m.toLowerCase() === 'tasks') && (
-                                <TasksSummaryWidget proyectoId={activeProject.id} />
-                            )}
+                                    {visibleWidgets.tasks && activeProject?.modules?.some(m => m.toLowerCase() === 'tasks') && (
+                                        <TasksSummaryWidget proyectoId={activeProject.id} />
+                                    )}
 
-                            {visibleWidgets.chat && activeProject.modules?.some(m => m.toLowerCase() === 'chat') && (
-                                <ChatWidget projectId={activeProject.id} />
+                                    {visibleWidgets.chat && activeProject?.modules?.some(m => m.toLowerCase() === 'chat') && (
+                                        <ChatWidget projectId={activeProject.id} />
+                                    )}
+                                </>
                             )}
                         </View>
                     </View>
@@ -255,7 +265,7 @@ function DashboardScreen() {
                             { key: 'chat', label: t('dashboard.widgets.chat'), icon: UsersIcon, module: 'chat' },
                             { key: 'inventory', label: t('dashboard.widgets.inventory'), icon: PackageIcon, module: 'inventory' },
                             { key: 'operations', label: t('dashboard.widgets.operations'), icon: FactoryIcon, module: 'operations' },
-                        ].filter(w => activeProject.modules?.some(m => m.toLowerCase() === w.module)).map((widget) => {
+                        ].filter(w => activeProject?.modules?.some(m => m.toLowerCase() === w.module)).map((widget) => {
                             const isVisible = visibleWidgets[widget.key];
                             return (
                                 <Pressable

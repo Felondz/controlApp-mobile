@@ -1,4 +1,4 @@
-import { useWindowDimensions, View, Text, Pressable, ScrollView, AppState, AppStateStatus } from "react-native";
+import { useWindowDimensions, View, Text, Pressable, ScrollView, AppState, AppStateStatus, InteractionManager } from "react-native";
 import { useState, memo, useMemo, useCallback, useEffect } from "react";
 import { Tabs, useRouter, usePathname, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -137,6 +137,14 @@ export default function AppLayout() {
     const [showBugReporter, setShowBugReporter] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const [accountBtnLayout, setAccountBtnLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        const task = InteractionManager.runAfterInteractions(() => {
+            setIsReady(true);
+        });
+        return () => task.cancel();
+    }, []);
 
     const userProfileImage = useMemo(() => resolveImageUrl(user?.profile_photo_url), [user?.profile_photo_url]);
 
@@ -300,6 +308,8 @@ export default function AppLayout() {
     };
 
     const showSidebar = isDesktop || (isTablet && isPortrait);
+
+    if (!isReady) return <View className="flex-1 bg-secondary-50 dark:bg-secondary-950" />;
 
     return (
         <View className="flex-1 flex-row bg-secondary-50 dark:bg-secondary-950">

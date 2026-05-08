@@ -67,6 +67,19 @@ export default function AccountDetailScreen() {
     const accountTransactions = allAccountTransactions.slice(0, 20);
     const hasTransactions = allAccountTransactions.length > 0;
 
+    const getHealthColor = () => {
+        const tipo = (cuenta?.tipo || '').toLowerCase();
+        const saldo = cuenta?.saldo_actual ?? cuenta?.saldo ?? 0;
+        const isLiability = ['credito', 'tarjeta', 'credit_card'].includes(tipo);
+
+        if (isLiability) {
+            return saldo > 0 ? '#ef4444' : '#10b981';
+        } else {
+            return saldo >= 0 ? '#10b981' : '#ef4444';
+        }
+    };
+
+    const healthColor = getHealthColor();
     const statusColor = cuenta.estado === 'due' ? '#ef4444' : (cuenta.estado === 'warning' ? '#f59e0b' : '#10b981');
     const statusKey = (cuenta.estado === 'active' || cuenta.estado === 'activa') ? 'active_f' : 
                       (cuenta.estado === 'inactive' || cuenta.estado === 'inactiva') ? 'inactive_f' : 
@@ -78,7 +91,7 @@ export default function AccountDetailScreen() {
                 options={{
                     headerShown: true,
                     title: cuenta.nombre,
-                    headerStyle: { backgroundColor: theme.primary600 },
+                    headerStyle: { backgroundColor: healthColor },
                     headerTintColor: 'white',
                     headerLeft: () => (
                         <TouchableOpacity 
@@ -99,7 +112,7 @@ export default function AccountDetailScreen() {
                 {/* Account Summary Card */}
                 <View 
                     className="rounded-3xl p-6 shadow-lg mb-6 border border-white/10"
-                    style={{ backgroundColor: theme.primary600 }}
+                    style={{ backgroundColor: healthColor }}
                 >
                     <View className="flex-row justify-between items-center mb-4">
                         <View className="w-12 h-12 rounded-2xl bg-white/20 items-center justify-center">

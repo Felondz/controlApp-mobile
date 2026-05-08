@@ -44,6 +44,10 @@ export interface Transaccion {
     recurrence_interval?: string;
     recurrence_day?: number;
     next_occurrence?: string;
+    numero_factura?: string;
+    fecha_emision?: string;
+    fecha_vencimiento?: string;
+    fecha_pago?: string;
     cuenta?: Cuenta;
     categoria?: Categoria;
     created_at: string;
@@ -77,6 +81,21 @@ export const useTransacciones = (
             return response.transacciones || [];
         },
         enabled: !!proyectoId,
+    });
+};
+
+export const useTransaccion = (id: string) => {
+    return useQuery({
+        queryKey: ['transaccion', id],
+        queryFn: async () => {
+            const client = await getGraphQLClient();
+            const response = await client.request<{ transaccion: Transaccion }>(
+                FINANCE_QUERIES.GET_TRANSACCION,
+                { id }
+            );
+            return response.transaccion;
+        },
+        enabled: !!id,
     });
 };
 

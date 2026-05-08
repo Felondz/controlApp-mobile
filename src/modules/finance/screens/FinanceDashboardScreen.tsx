@@ -185,7 +185,7 @@ const FinanceDashboardScreenComponent = () => {
 
                     <UpcomingObligationsWidget 
                         obligations={obligations}
-                        t={t}
+                        proyectoId={proyectoId}
                         theme={theme}
                     />
                     
@@ -193,7 +193,7 @@ const FinanceDashboardScreenComponent = () => {
                         transactions={transacciones}
                         t={t}
                         theme={theme}
-                        onViewAll={() => {}}
+                        onViewAll={() => router.push('/(app)/finance/transactions')}
                     />
                 </View>
             </ThemedScrollView>

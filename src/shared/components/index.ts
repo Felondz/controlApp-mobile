@@ -10,6 +10,7 @@ export { default as Input } from './Input';
 export { default as TextInput } from './TextInput';
 export { default as PasswordInput } from './PasswordInput';
 export { default as DatePicker } from './inputs/DatePicker';
+export { default as Select } from './inputs/Select';
 export type { TextInputProps } from './TextInput';
 export type { PasswordInputProps } from './PasswordInput';
 

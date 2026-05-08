@@ -26,6 +26,37 @@ export const FINANCE_QUERIES = {
         }
     `,
 
+    GET_TRANSACCION: `
+        query GetTransaccion($id: ID!) {
+            transaccion(id: $id) {
+                id
+                titulo
+                descripcion
+                monto
+                fecha
+                status
+                proyecto_id
+                numero_factura
+                fecha_emision
+                fecha_vencimiento
+                fecha_pago
+                categoria_id
+                cuenta_id
+                categoria {
+                    id
+                    nombre
+                    tipo
+                }
+                cuenta {
+                    id
+                    nombre
+                    icono
+                    moneda
+                }
+            }
+        }
+    `,
+
     GET_CUENTAS: `
         query GetCuentas($proyecto_id: ID!) {
             cuentas(proyecto_id: $proyecto_id) {

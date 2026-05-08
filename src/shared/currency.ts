@@ -91,7 +91,8 @@ export const formatCurrency = (
         maximumFractionDigits: decimals,
     }).format(Math.abs(value));
 
-    return `${symbol}${formatted}`;
+    const sign = value < 0 ? '-' : '';
+    return `${sign}${symbol}${formatted}`;
 };
 
 /**

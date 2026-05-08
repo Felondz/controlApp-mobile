@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useTranslate } from '../../../shared/hooks/useTranslate';
-import { useTransaccion, useUpdateTransaccion, useCuentas, useCategorias, Transaccion } from '../useFinance';
+import { 
+    useTransaccion, 
+    useUpdateTransaccion, 
+    useCuentas, 
+    useCategorias, 
+    Transaccion 
+} from '../../../hooks/graphql/useFinance';
 import { useProjectStore } from '../../../stores/projectStore';
-import { useSettingsStore } from '../../../stores/settingsStore';
+import { useAppTheme } from '../../../shared/hooks';
 import { useRouter } from 'expo-router';
 import { 
     ArrowLeftIcon,
@@ -19,33 +25,32 @@ import {
 import PrimaryButton from '../../../shared/components/PrimaryButton';
 import SecondaryButton from '../../../shared/components/SecondaryButton';
 import { SkeletonList } from '../../../shared/components/Skeleton';
+import { formatCurrency } from '../../../shared/currency';
 
 interface TransactionDetailProps {
     transactionId: string;
     onBack?: () => void;
 }
 
-type EditableField = 'titulo' | 'monto';
-
 export default function TransactionDetail({ transactionId, onBack }: TransactionDetailProps) {
     const { t } = useTranslate();
     const router = useRouter();
     const { activeProject } = useProjectStore();
-    const { isDark } = useSettingsStore();
+    const { theme, isDark } = useAppTheme();
     
-    const { data, loading, error, refetch } = useTransaccion(transactionId);
-    const { data: cuentasData } = useCuentas(activeProject?.id ?? 0);
-    const { data: categoriasData } = useCategorias(activeProject?.id ?? 0);
-    const [updateTransaccion, { loading: updating }] = useUpdateTransaccion();
+    const { data: trans, isLoading, isError, refetch } = useTransaccion(transactionId);
+    const { data: cuentas = [] } = useCuentas(activeProject?.id ?? '');
+    const { data: categorias = [] } = useCategorias(activeProject?.id ?? '');
+    const { mutateAsync: updateTransaccion, isPending: updating } = useUpdateTransaccion();
     
     const [isEditing, setIsEditing] = useState(false);
     const [editedTrans, setEditedTrans] = useState<Partial<Transaccion>>({});
 
     useEffect(() => {
-        if (data?.transaccion) {
-            setEditedTrans(data.transaccion);
+        if (trans) {
+            setEditedTrans(trans);
         }
-    }, [data]);
+    }, [trans]);
 
     const textColor = isDark ? 'text-white' : 'text-secondary-900';
     const textSecondary = isDark ? 'text-secondary-400' : 'text-secondary-500';
@@ -58,12 +63,9 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
         
         try {
             await updateTransaccion({
-                variables: {
-                    id: editedTrans.id,
-                    proyecto_id: activeProject.id,
-                    titulo: editedTrans.titulo || '',
-                    monto: editedTrans.monto || 0,
-                }
+                id: editedTrans.id,
+                titulo: editedTrans.titulo || '',
+                monto: editedTrans.monto || 0,
             });
             setIsEditing(false);
             refetch();
@@ -75,22 +77,13 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
     };
 
     const handleCancel = () => {
-        if (data?.transaccion) {
-            setEditedTrans(data.transaccion);
+        if (trans) {
+            setEditedTrans(trans);
         }
         setIsEditing(false);
     };
 
-    const formatMonto = (monto: number) => {
-        const isIncome = monto > 0;
-        return new Intl.NumberFormat('es-CO', {
-            style: 'currency',
-            currency: 'COP',
-            minimumFractionDigits: 0,
-        }).format(Math.abs(monto) / 100);
-    };
-
-    if (loading) {
+    if (isLoading) {
         return (
             <View className={`flex-1 ${isDark ? 'bg-secondary-900' : 'bg-secondary-50'}`}>
                 <View className={`px-4 py-3 ${cardBg} ${borderColor} border-b`}>
@@ -100,7 +93,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
         );
     }
 
-    if (error || !data?.transaccion) {
+    if (isError || !trans) {
         return (
             <View className={`flex-1 ${isDark ? 'bg-secondary-900' : 'bg-secondary-50'} justify-center items-center`}>
                 <Text className={textSecondary}>{t('common.error', 'Error al cargar')}</Text>
@@ -111,19 +104,17 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
         );
     }
 
-    const trans = isEditing ? editedTrans : data.transaccion;
-    const isIncome = (trans.monto ?? 0) > 0;
-    const cuentas = cuentasData?.cuentas || [];
-    const categorias = categoriasData?.categorias || [];
-    const cuenta = cuentas.find(c => String(c.id) === String(trans.cuenta_id));
-    const categoria = categorias.find(c => String(c.id) === String(trans.categoria_id));
+    const currentTrans = isEditing ? editedTrans : trans;
+    const isIncome = (currentTrans.monto ?? 0) > 0;
+    const cuenta = cuentas.find(c => String(c.id) === String(currentTrans.cuenta_id));
+    const categoria = categorias.find(c => String(c.id) === String(currentTrans.categoria_id));
 
     return (
         <View className={`flex-1 ${isDark ? 'bg-secondary-900' : 'bg-secondary-50'}`}>
             <View className={`px-4 py-3 ${cardBg} ${borderColor} border-b flex-row items-center justify-between`}>
                 <View className="flex-row items-center">
                     <TouchableOpacity onPress={onBack || (() => router.back())} className="mr-3">
-                        <ArrowLeftIcon size={24} color={textColor} />
+                        <ArrowLeftIcon size={24} color={isDark ? 'white' : 'black'} />
                     </TouchableOpacity>
                     <Text className={`text-lg font-bold ${textColor}`}>
                         {t('finance.transaction_detail', 'Detalle de Transacción')}
@@ -131,8 +122,8 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                 </View>
                 {!isEditing ? (
                     <TouchableOpacity onPress={() => setIsEditing(true)} className="flex-row items-center">
-                        <PencilIcon size={18} color={isDark ? '#818cf8' : '#6366f1'} />
-                        <Text className={`ml-1 text-base font-medium ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
+                        <PencilIcon size={18} color={theme.primary600} />
+                        <Text className={`ml-1 text-base font-medium`} style={{ color: theme.primary600 }}>
                             {t('common.edit', 'Editar')}
                         </Text>
                     </TouchableOpacity>
@@ -142,7 +133,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                             <XIcon size={24} color="#ef4444" />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={handleSave} disabled={updating}>
-                            <CheckIcon size={24} color={updating ? textSecondary : '#22c55e'} />
+                            <CheckIcon size={24} color={updating ? '#94a3b8' : '#22c55e'} />
                         </TouchableOpacity>
                     </View>
                 )}
@@ -157,26 +148,26 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                                 : isDark ? 'bg-red-900/30' : 'bg-red-50'
                         }`}>
                             {isIncome ? (
-                                <ArrowTrendingUpIcon size={24} color={isDark ? '#4ade80' : '#16a34a'} />
+                                <ArrowTrendingUpIcon size={24} color="#10b981" />
                             ) : (
-                                <ArrowTrendingDownIcon size={24} color={isDark ? '#f87171' : '#dc2626'} />
+                                <ArrowTrendingDownIcon size={24} color="#ef4444" />
                             )}
                         </View>
                         <View className="flex-1">
                             {isEditing ? (
                                 <TextInput
-                                    value={trans.titulo || ''}
+                                    value={currentTrans.titulo || ''}
                                     onChangeText={(text) => setEditedTrans(prev => ({ ...prev, titulo: text }))}
                                     className={`text-lg font-bold ${inputBg} ${borderColor} border rounded-xl px-3 py-1.5 ${textColor}`}
-                                    placeholderTextColor={textSecondary}
+                                    placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
                                 />
                             ) : (
                                 <Text className={`text-lg font-bold ${textColor}`} numberOfLines={1}>
-                                    {trans.titulo || t('finance.no_description', 'Sin descripción')}
+                                    {currentTrans.titulo || t('finance.no_description', 'Sin descripción')}
                                 </Text>
                             )}
                             <Text className={`text-sm font-bold ${textSecondary} mt-0.5`}>
-                                {trans.fecha ? new Date(trans.fecha).toLocaleDateString('es-CO', {
+                                {currentTrans.fecha ? new Date(currentTrans.fecha).toLocaleDateString('es-CO', {
                                     weekday: 'long',
                                     year: 'numeric',
                                     month: 'long',
@@ -195,14 +186,14 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                                 ? isDark ? 'text-green-400' : 'text-green-600'
                                 : isDark ? 'text-red-400' : 'text-red-600'
                         }`}>
-                            {isIncome ? '+' : '-'}{formatMonto(trans.monto ?? 0)}
+                            {isIncome ? '+ ' : '- '}{formatCurrency(Math.abs(currentTrans.monto ?? 0), cuenta?.moneda)}
                         </Text>
                     </View>
 
                     <View className="gap-4">
                         <View className="flex-row items-center">
                             <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
-                                <FolderIcon size={16} color={textSecondary} />
+                                <FolderIcon size={16} color={isDark ? '#94a3b8' : '#64748b'} />
                             </View>
                             <Text className={`text-sm font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.account', 'Cuenta')}:
@@ -214,7 +205,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
 
                         <View className="flex-row items-center">
                             <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
-                                <TagIcon size={16} color={textSecondary} />
+                                <TagIcon size={16} color={isDark ? '#94a3b8' : '#64748b'} />
                             </View>
                             <Text className={`text-sm font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.category', 'Categoría')}:
@@ -226,13 +217,13 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
 
                         <View className="flex-row items-center">
                             <View className="w-8 h-8 rounded-lg items-center justify-center bg-secondary-100 dark:bg-secondary-700">
-                                <CalendarIcon size={16} color={textSecondary} />
+                                <CalendarIcon size={16} color={isDark ? '#94a3b8' : '#64748b'} />
                             </View>
                             <Text className={`text-sm font-bold ${textSecondary} ml-3 w-20`}>
                                 {t('finance.date', 'Fecha')}:
                             </Text>
                             <Text className={`flex-1 text-base font-bold ${textColor}`}>
-                                {trans.fecha ? new Date(trans.fecha).toLocaleDateString() : '-'}
+                                {currentTrans.fecha ? new Date(currentTrans.fecha).toLocaleDateString() : '-'}
                             </Text>
                         </View>
                     </View>
@@ -244,14 +235,14 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                             {t('finance.amount', 'Monto')}:
                         </Text>
                         <TextInput
-                            value={String(trans.monto ?? 0)}
+                            value={String(currentTrans.monto ?? 0)}
                             onChangeText={(text) => setEditedTrans(prev => ({ 
                                 ...prev, 
                                 monto: parseInt(text) || 0 
                             }))}
                             keyboardType="numeric"
                             className={`${inputBg} ${borderColor} border rounded-xl px-4 py-3 text-base font-bold ${textColor}`}
-                            placeholderTextColor={textSecondary}
+                            placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
                         />
                         <Text className={`text-sm font-medium ${textSecondary} mt-2 ml-1`}>
                             {t('finance.amount_hint', 'Ingresa el monto en centavos. Positivo para ingresos, negativo para gastos.')}

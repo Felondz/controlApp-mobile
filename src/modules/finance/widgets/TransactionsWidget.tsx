@@ -4,8 +4,11 @@ import { formatCurrency } from '../../../shared/currency';
 import { 
     ArrowTrendingUpIcon, 
     ArrowTrendingDownIcon,
+    ClockIcon,
+    ChevronRightIcon
 } from '../../../shared/icons';
 import { Transaccion } from '../../../hooks/graphql/useFinance';
+import { useAppTheme } from '../../../shared/hooks';
 
 interface TransactionsWidgetProps {
     transactions: Transaccion[];
@@ -16,7 +19,7 @@ interface TransactionsWidgetProps {
 }
 
 /**
- * TransactionsWidget - Pure Data-Safe Component
+ * TransactionsWidget - Mirroring AccountDetailScreen style but for global activity
  */
 export const TransactionsWidget = ({ 
     transactions = [], 
@@ -25,46 +28,52 @@ export const TransactionsWidget = ({
     onViewAll,
     onSelect 
 }: TransactionsWidgetProps) => {
+    const { isDark } = useAppTheme();
+    // Tomamos las últimas 5 transacciones globales
     const items = Array.isArray(transactions) 
-        ? [...transactions].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).slice(0, 5)
+        ? [...transactions]
+            .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+            .slice(0, 5)
         : [];
 
     return (
-        <View className="bg-white dark:bg-secondary-900 rounded-xl p-6 border border-secondary-100 dark:border-secondary-800 shadow-sm">
-            <View className="flex-row items-center justify-between mb-6">
-                <View>
-                    <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black tracking-[2px] mb-1">
+        <View>
+            <View className="flex-row items-center justify-between mb-4 px-1">
+                <View className="flex-row items-center gap-2">
+                    <ClockIcon size={18} color={theme.primary600} />
+                    <Text className="text-lg font-black text-secondary-900 dark:text-white">
                         {t('finance.activity', 'Actividad Reciente')}
                     </Text>
-                    <Text className="text-xl font-black text-secondary-900 dark:text-white">
-                        {t('finance.transactions', 'Transacciones')}
-                    </Text>
                 </View>
-                <TouchableOpacity 
-                    onPress={onViewAll}
-                    className="px-3 py-1.5 rounded-lg bg-primary-50 dark:bg-primary-900/20 active:opacity-70"
-                >
-                    <Text className="text-xs font-bold" style={{ color: theme?.primary600 }}>
-                        {t('common.view_all', 'Ver Todo')}
-                    </Text>
-                </TouchableOpacity>
+                {items.length > 0 && (
+                    <TouchableOpacity 
+                        onPress={onViewAll}
+                        className="px-3 py-1 bg-primary-50 dark:bg-primary-900/20 rounded-lg active:opacity-70"
+                    >
+                        <Text className="text-xs font-bold" style={{ color: theme?.primary600 }}>
+                            {t('common.view_all', 'Ver Todo')}
+                        </Text>
+                    </TouchableOpacity>
+                )}
             </View>
 
             {items.length === 0 ? (
-                <View className="py-8 items-center justify-center">
-                    <Text className="text-secondary-400 dark:text-secondary-500 text-sm italic">
+                <View className="bg-white dark:bg-secondary-900 rounded-3xl p-10 items-center justify-center border border-secondary-100 dark:border-secondary-800 shadow-sm">
+                    <Text className="text-secondary-400 dark:text-secondary-500 text-sm italic text-center">
                         {t('finance.no_transactions', 'No hay transacciones registradas')}
                     </Text>
                 </View>
             ) : (
-                <View className="gap-4">
+                <View className="gap-3">
                     {items.map((trans) => {
                         const isIncome = (trans.monto || 0) > 0;
+                        const amountColor = isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400';
+                        
                         return (
                             <TouchableOpacity 
                                 key={trans.id}
                                 onPress={() => onSelect?.(trans)}
-                                className="flex-row items-center justify-between"
+                                className="bg-white dark:bg-secondary-900 rounded-2xl p-4 flex-row items-center justify-between border border-secondary-100 dark:border-secondary-800 shadow-sm active:scale-[0.98] transition-all"
                             >
                                 <View className="flex-row items-center flex-1">
                                     <View className={`w-10 h-10 rounded-xl items-center justify-center mr-3 ${
@@ -78,16 +87,20 @@ export const TransactionsWidget = ({
                                     </View>
                                     <View className="flex-1">
                                         <Text className="text-secondary-900 dark:text-white font-bold text-sm" numberOfLines={1}>
-                                            {trans.titulo || trans.categoria?.nombre || t('finance.expense')}
+                                            {trans.descripcion || trans.categoria?.nombre || t('finance.expense')}
                                         </Text>
-                                        <Text className="text-secondary-400 dark:text-secondary-500 text-[10px]">
-                                            {trans.fecha} {trans.cuenta?.nombre ? `• ${trans.cuenta.nombre}` : ''}
+                                        <Text className="text-secondary-400 dark:text-secondary-500 text-[10px]" numberOfLines={1}>
+                                            {trans.fecha} • {trans.categoria?.nombre || t('finance.no_category')}
+                                            {trans.cuenta?.nombre ? ` • ${trans.cuenta.nombre}` : ''}
                                         </Text>
                                     </View>
                                 </View>
-                                <Text className={`font-black text-sm ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                                    {isIncome ? '+' : '-'}{formatCurrency(Math.abs(trans.monto || 0))}
-                                </Text>
+                                
+                                <View className="items-end justify-center ml-2">
+                                    <Text className={`font-black text-sm ${amountColor}`}>
+                                        {formatCurrency(trans.monto || 0, trans.cuenta?.moneda)}
+                                    </Text>
+                                </View>
                             </TouchableOpacity>
                         );
                     })}

@@ -20,13 +20,22 @@ export const AccountCard = ({ cuenta, onPress }: AccountCardProps) => {
     // Safety check for malformed account data
     if (!cuenta) return null;
 
-    const getStatusColor = () => {
-        if (cuenta.estado === 'due') return '#ef4444'; // Red
-        if (cuenta.estado === 'warning') return '#f59e0b'; // Amber
-        return '#10b981'; // Green
+    const getBalanceColor = () => {
+        const tipo = (cuenta.tipo || '').toLowerCase();
+        const saldo = cuenta.saldo_actual ?? cuenta.saldo ?? 0;
+        const isLiability = ['credito', 'tarjeta', 'credit_card'].includes(tipo);
+
+        if (isLiability) {
+            // Para deudas, saldo > 0 significa que debes dinero
+            return saldo > 0 ? '#ef4444' : '#10b981';
+        } else {
+            // Para ahorros, saldo > 0 es dinero a favor
+            return saldo >= 0 ? '#10b981' : '#ef4444';
+        }
     };
 
-    const statusColor = getStatusColor();
+    const balanceColor = getBalanceColor();
+    const statusColor = cuenta.estado === 'due' ? '#ef4444' : (cuenta.estado === 'warning' ? '#f59e0b' : '#10b981');
 
     const getIcon = () => {
         const tipo = (cuenta.tipo || '').toLowerCase();
@@ -76,7 +85,7 @@ export const AccountCard = ({ cuenta, onPress }: AccountCardProps) => {
                     </Text>
                     <Text 
                         className="font-black text-base"
-                        style={{ color: statusColor }}
+                        style={{ color: balanceColor }}
                     >
                         {formatCurrency(cuenta.saldo_actual ?? cuenta.saldo ?? 0)}
                     </Text>
@@ -87,8 +96,10 @@ export const AccountCard = ({ cuenta, onPress }: AccountCardProps) => {
                         className="w-2 h-2 rounded-full mr-1.5"
                         style={{ backgroundColor: statusColor }}
                     />
-                    <Text className="text-secondary-500 dark:text-secondary-400 text-[8px] font-black uppercase">
-                        {cuenta.estado === 'active' || !cuenta.estado ? t('common.active', 'Activa') : t('common.inactive', 'Inactiva')}
+                    <Text className="text-secondary-500 dark:text-secondary-400 text-[8px] font-black">
+                        {['active', 'activa'].includes(cuenta.estado?.toLowerCase()) || !cuenta.estado 
+                            ? t('common.active', 'Activa') 
+                            : t('common.inactive', 'Inactiva')}
                     </Text>
                 </View>
             </View>
