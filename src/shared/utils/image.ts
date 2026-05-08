@@ -21,6 +21,13 @@ export const resolveImageUrl = (path?: string | null): string | null => {
         apiUrl = apiUrl.slice(0, -1);
     }
 
+    // New Secure Project Image Route: /api/projects/{uuid}/image
+    // Check if the path is a UUID (approximate check)
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(path);
+    if (isUuid) {
+        return `${apiUrl}/proyectos/${path}/image`;
+    }
+
     const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
 
     // If it starts with /, it's an absolute path from server root (e.g. /storage/...)
@@ -36,3 +43,4 @@ export const resolveImageUrl = (path?: string | null): string | null => {
     // Otherwise, assume it's a relative storage path (e.g. profiles/abc.jpg)
     return `${baseUrl}/storage/${path}`;
 };
+

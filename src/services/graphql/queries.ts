@@ -1,5 +1,59 @@
 import { gql } from '@apollo/client';
 
+export const GET_PROJECTS = gql`
+    query GetProjects {
+        projects {
+            id
+            uuid
+            nombre
+            descripcion
+            user_id
+            es_personal
+            image_path
+            image_url
+            enabled_features
+            modules
+            created_at
+            updated_at
+        }
+    }
+`;
+
+export const GET_PROJECT = gql`
+    query GetProject($id: ID!) {
+        project(id: $id) {
+            id
+            uuid
+            nombre
+            descripcion
+            user_id
+            es_personal
+            image_path
+            image_url
+            enabled_features
+            modules
+            created_at
+            updated_at
+        }
+    }
+`;
+
+export const GET_TASKS = gql`
+    query GetTasks($project_id: ID!) {
+        tasks(project_id: $project_id) {
+            id
+            title
+            status
+            priority
+            due_date
+            assignee {
+                id
+                name
+            }
+        }
+    }
+`;
+
 export const GET_INVENTORY_ITEMS = gql`
     query GetInventoryItems($proyecto_id: ID!, $name: String, $type: String, $is_active: Boolean, $first: Int = 15, $page: Int) {
         inventoryItems(proyecto_id: $proyecto_id, name: $name, type: $type, is_active: $is_active, first: $first, page: $page) {
@@ -287,7 +341,7 @@ export const GET_LOTE_PRODUCCION = gql`
 `;
 
 export const GET_TRANSACCIONES = gql`
-    query GetTransacciones($proyecto_id: Int!, $status: String) {
+    query GetTransacciones($proyecto_id: ID!, $status: String) {
         transacciones(proyecto_id: $proyecto_id, status: $status) {
             id
             proyecto_id
@@ -324,7 +378,7 @@ export const GET_TRANSACCIONES = gql`
 `;
 
 export const GET_CUENTAS = gql`
-    query GetCuentas($proyecto_id: Int!) {
+    query GetCuentas($proyecto_id: ID!) {
         cuentas(proyecto_id: $proyecto_id) {
             id
             nombre
@@ -353,7 +407,7 @@ export const GET_CUENTAS = gql`
 `;
 
 export const GET_CATEGORIAS = gql`
-    query GetCategorias($proyecto_id: Int!) {
+    query GetCategorias($proyecto_id: ID!) {
         categorias(proyecto_id: $proyecto_id) {
             id
             proyecto_id

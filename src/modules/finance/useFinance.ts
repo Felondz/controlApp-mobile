@@ -19,7 +19,7 @@ import {
 
 export interface Cuenta {
     id: string;
-    proyecto_id?: number;
+    proyecto_id?: string;
     nombre: string;
     tipo: string;
     moneda: string;
@@ -30,16 +30,16 @@ export interface Cuenta {
 
 export interface Categoria {
     id: string;
-    proyecto_id: number;
+    proyecto_id: string;
     nombre: string;
     tipo: string;
 }
 
 export interface Transaccion {
     id: string;
-    proyecto_id: number;
-    cuenta_id?: number;
-    categoria_id: number;
+    proyecto_id: string;
+    cuenta_id?: string;
+    categoria_id: string;
     monto: number;
     titulo?: string;
     fecha: string;
@@ -48,7 +48,7 @@ export interface Transaccion {
     categoria?: Categoria;
 }
 
-export function useTransacciones(proyectoId: number, status?: string) {
+export function useTransacciones(proyectoId: string, status?: string) {
     return useQuery<{ transacciones: Transaccion[] }>(GET_TRANSACCIONES, {
         variables: { proyecto_id: proyectoId, status },
         skip: !proyectoId
@@ -62,14 +62,14 @@ export function useTransaccion(id: string) {
     });
 }
 
-export function useCuentas(proyectoId: number) {
+export function useCuentas(proyectoId: string) {
     return useQuery<{ cuentas: Cuenta[] }>(GET_CUENTAS, {
         variables: { proyecto_id: proyectoId },
         skip: !proyectoId
     });
 }
 
-export function useCategorias(proyectoId: number) {
+export function useCategorias(proyectoId: string) {
     return useQuery<{ categorias: Categoria[] }>(GET_CATEGORIAS, {
         variables: { proyecto_id: proyectoId },
         skip: !proyectoId

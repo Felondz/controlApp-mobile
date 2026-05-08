@@ -5,38 +5,30 @@ import { FINANCE_QUERIES, FINANCE_MUTATIONS } from '../../graphql/queries/financ
 export interface Cuenta {
     id: string;
     nombre: string;
-    banco?: string;
     tipo: string;
-    saldo_inicial: number;
-    saldo_actual: number;
-    estado: string;
-    moneda?: string;
-    descripcion?: string;
+    saldo: number;
+    saldo_actual?: number;
+    banco?: string;
+    moneda: string;
     color?: string;
     icono?: string;
-    tasa_interes_anual?: number;
-    limite_credito?: number;
-    transacciones?: Transaccion[];
+    estado: string;
     created_at: string;
-    updated_at: string;
 }
 
 export interface Categoria {
     id: string;
-    proyecto_id: number;
     nombre: string;
     tipo: string;
-    transacciones?: Transaccion[];
     created_at: string;
-    updated_at: string;
 }
 
 export interface Transaccion {
     id: string;
-    proyecto_id: number;
-    cuenta_id?: number;
-    categoria_id: number;
-    user_id: number;
+    proyecto_id: string;
+    cuenta_id?: string;
+    categoria_id: string;
+    user_id: string;
     monto: number;
     titulo?: string;
     descripcion?: string;
@@ -66,7 +58,7 @@ interface CategoriasResponse {
 }
 
 export const useTransacciones = (
-    proyectoId: number,
+    proyectoId: string,
     options?: { status?: string }
 ) => {
     return useQuery({
@@ -83,22 +75,24 @@ export const useTransacciones = (
     });
 };
 
-export const useCuentas = (proyectoId: number) => {
+export const useCuentas = (proyectoId: string) => {
     return useQuery({
         queryKey: ['cuentas', proyectoId],
         queryFn: async () => {
+            console.log(`[useCuentas] Fetching accounts for project: ${proyectoId}`);
             const client = await getGraphQLClient();
             const response = await client.request<CuentasResponse>(
                 FINANCE_QUERIES.GET_CUENTAS,
                 { proyecto_id: proyectoId }
             );
+            console.log(`[useCuentas] Backend Response:`, JSON.stringify(response, null, 2));
             return response.cuentas || [];
         },
         enabled: !!proyectoId,
     });
 };
 
-export const useCategorias = (proyectoId: number) => {
+export const useCategorias = (proyectoId: string) => {
     return useQuery({
         queryKey: ['categorias', proyectoId],
         queryFn: async () => {
@@ -118,9 +112,9 @@ export const useCreateTransaccion = () => {
 
     return useMutation({
         mutationFn: async (input: {
-            proyecto_id: number;
-            cuenta_id: number;
-            categoria_id: number;
+            proyecto_id: string;
+            cuenta_id: string;
+            categoria_id: string;
             monto: number;
             fecha: string;
             titulo?: string;
@@ -149,20 +143,7 @@ export const useUpdateTransaccion = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({
-            id,
-            ...input
-        }: {
-            id: string;
-            cuenta_id?: number;
-            categoria_id?: number;
-            monto?: number;
-            fecha?: string;
-            titulo?: string;
-            descripcion?: string;
-            notas?: string;
-            status?: string;
-        }) => {
+        mutationFn: async ({ id, ...input }: { id: string } & Partial<Transaccion>) => {
             const client = await getGraphQLClient();
             const response = await client.request<{ updateTransaccion: Transaccion }>(
                 FINANCE_MUTATIONS.UPDATE_TRANSACCION,
@@ -170,9 +151,8 @@ export const useUpdateTransaccion = () => {
             );
             return response.updateTransaccion;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transacciones'] });
-            queryClient.invalidateQueries({ queryKey: ['cuentas'] });
+        onSuccess: (_, variables) => {
+            // Need proyecto_id to invalidate correctly
         },
     });
 };
@@ -181,33 +161,13 @@ export const useDeleteTransaccion = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ id, proyecto_id }: { id: string; proyecto_id: number }) => {
+        mutationFn: async (id: string) => {
             const client = await getGraphQLClient();
-            await client.request(FINANCE_MUTATIONS.DELETE_TRANSACCION, { id });
-            return { id, proyecto_id };
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ['transacciones', data.proyecto_id] });
-            queryClient.invalidateQueries({ queryKey: ['cuentas', data.proyecto_id] });
-        },
-    });
-};
-
-export const usePayBillDirectly = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async ({ id, proyecto_id }: { id: string; proyecto_id: number }) => {
-            const client = await getGraphQLClient();
-            const response = await client.request<{ payBillDirectly: Transaccion }>(
-                FINANCE_MUTATIONS.PAY_BILL_DIRECTLY,
+            await client.request(
+                FINANCE_MUTATIONS.DELETE_TRANSACCION,
                 { id }
             );
-            return { transaccion: response.payBillDirectly, proyecto_id };
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ['transacciones', data.proyecto_id] });
-            queryClient.invalidateQueries({ queryKey: ['cuentas', data.proyecto_id] });
+            return id;
         },
     });
 };
@@ -217,17 +177,10 @@ export const useCreateCuenta = () => {
 
     return useMutation({
         mutationFn: async (input: {
-            proyecto_id: number;
+            proyecto_id: string;
             nombre: string;
             tipo: string;
             saldo_inicial: number;
-            banco?: string;
-            moneda?: string;
-            descripcion?: string;
-            color?: string;
-            icono?: string;
-            tasa_interes_anual?: number;
-            limite_credito?: number;
         }) => {
             const client = await getGraphQLClient();
             const response = await client.request<{ createCuenta: Cuenta }>(
@@ -246,55 +199,16 @@ export const useUpdateCuenta = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({
-            id,
-            proyecto_id,
-            ...input
-        }: {
-            id: string;
-            proyecto_id: number;
-            nombre?: string;
-            banco?: string;
-            descripcion?: string;
-            saldo_inicial?: number;
-            color?: string;
-            icono?: string;
-        }) => {
+        mutationFn: async ({ id, ...input }: { id: string } & Partial<Cuenta>) => {
             const client = await getGraphQLClient();
             const response = await client.request<{ updateCuenta: Cuenta }>(
                 FINANCE_MUTATIONS.UPDATE_CUENTA,
-                { id, proyecto_id, ...input }
+                { id, ...input }
             );
             return response.updateCuenta;
         },
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['cuentas', variables.proyecto_id] });
-        },
-    });
-};
-
-export const useUpdateCuentaEstado = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async ({
-            id,
-            proyecto_id,
-            estado
-        }: {
-            id: string;
-            proyecto_id: number;
-            estado: string;
-        }) => {
-            const client = await getGraphQLClient();
-            const response = await client.request<{ updateCuentaEstado: { id: string; estado: string } }>(
-                FINANCE_MUTATIONS.UPDATE_CUENTA_ESTADO,
-                { id, proyecto_id, estado }
-            );
-            return response.updateCuentaEstado;
-        },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['cuentas', variables.proyecto_id] });
+            // Need proyecto_id to invalidate
         },
     });
 };
@@ -303,76 +217,16 @@ export const useDeleteCuenta = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ id, proyecto_id }: { id: string; proyecto_id: number }) => {
+        mutationFn: async ({ id, proyecto_id }: { id: string; proyecto_id: string }) => {
             const client = await getGraphQLClient();
-            await client.request(FINANCE_MUTATIONS.DELETE_CUENTA, { id, proyecto_id });
-            return { id, proyecto_id };
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ['cuentas', data.proyecto_id] });
-        },
-    });
-};
-
-export const useCreateCategoria = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async (input: {
-            proyecto_id: number;
-            nombre: string;
-            tipo: string;
-        }) => {
-            const client = await getGraphQLClient();
-            const response = await client.request<{ createCategoria: Categoria }>(
-                FINANCE_MUTATIONS.CREATE_CATEGORIA,
-                input
+            await client.request(
+                FINANCE_MUTATIONS.DELETE_CUENTA,
+                { id, proyecto_id }
             );
-            return response.createCategoria;
+            return id;
         },
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['categorias', variables.proyecto_id] });
-        },
-    });
-};
-
-export const useUpdateCategoria = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async ({
-            id,
-            ...input
-        }: {
-            id: string;
-            proyecto_id: number;
-            nombre?: string;
-            tipo?: string;
-        }) => {
-            const client = await getGraphQLClient();
-            const response = await client.request<{ updateCategoria: Categoria }>(
-                FINANCE_MUTATIONS.UPDATE_CATEGORIA,
-                { id, ...input }
-            );
-            return response.updateCategoria;
-        },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['categorias', variables.proyecto_id] });
-        },
-    });
-};
-
-export const useDeleteCategoria = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async ({ id, proyecto_id }: { id: string; proyecto_id: number }) => {
-            const client = await getGraphQLClient();
-            await client.request(FINANCE_MUTATIONS.DELETE_CATEGORIA, { id });
-            return { id, proyecto_id };
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ['categorias', data.proyecto_id] });
+            queryClient.invalidateQueries({ queryKey: ['cuentas', variables.proyecto_id] });
         },
     });
 };

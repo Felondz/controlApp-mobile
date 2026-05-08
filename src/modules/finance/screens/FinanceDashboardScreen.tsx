@@ -1,5 +1,5 @@
 import React, { useState, useMemo, memo } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Switch } from 'react-native';
+import { View, Text, ActivityIndicator, RefreshControl, Switch, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useProjectStore } from '../../../stores/projectStore';
 import { useSettingsStore } from '../../../stores/settingsStore';
@@ -10,6 +10,7 @@ import { useCuentas, useTransacciones } from '../../../hooks/graphql/useFinance'
 import { FinanceControlBar } from '../components/FinanceControlBar';
 import { AccountCard } from '../components/AccountCard';
 import { TransactionModal } from '../components/TransactionModal';
+import { PlusIcon } from '../../../shared/icons';
 
 // Isolated Widgets (Dumb Components)
 import { BalanceSummaryWidget } from '../widgets/BalanceSummaryWidget';
@@ -19,6 +20,7 @@ import { TransactionsWidget } from '../widgets/TransactionsWidget';
 
 // Shared Components
 import Modal from '../../../shared/components/Modal';
+import { ThemedScrollView } from '../../../shared/components';
 
 const FinanceDashboardScreenComponent = () => {
     const { activeProject } = useProjectStore();
@@ -36,19 +38,26 @@ const FinanceDashboardScreenComponent = () => {
     });
 
     // Centralized Data Fetching (TanStack Query)
-    const proyectoId = activeProject?.id || 0;
-    
-    const { data: cuentas = [], isLoading: loadingCuentas, refetch: refetchCuentas } = useCuentas(proyectoId);
+    const proyectoId = activeProject?.id || '';
+    const { data: cuentasData = [], isLoading: loadingCuentas, refetch: refetchCuentas } = useCuentas(proyectoId);
+    const cuentas = Array.isArray(cuentasData) ? cuentasData : [];
+
     const { data: transacciones = [], isLoading: loadingTransacciones } = useTransacciones(proyectoId);
     const { data: obligations = [], isLoading: loadingPending } = useTransacciones(proyectoId, { status: 'pending' });
 
     const filteredAccounts = useMemo(() => {
+        if (!cuentas || !Array.isArray(cuentas)) return [];
         if (showInactive) return cuentas;
         return cuentas.filter(c => c.estado !== 'inactivo');
     }, [cuentas, showInactive]);
 
     const totalBalance = useMemo(() => {
-        return cuentas.reduce((acc, c) => acc + (c.saldo_actual || 0), 0);
+        if (!cuentas || !Array.isArray(cuentas)) return 0;
+        return cuentas.reduce((acc, c) => {
+            const balance = c.saldo_actual ?? c.saldo ?? 0;
+            // Subtract for credit, add for others
+            return c.tipo === 'credito' ? acc - balance : acc + balance;
+        }, 0);
     }, [cuentas]);
 
     const onRefresh = async () => {
@@ -61,6 +70,21 @@ const FinanceDashboardScreenComponent = () => {
         if (type === 'new_account') {
             router.push('/(app)/finance/accounts/new');
         } else {
+            // Requisito: No se puede realizar transacciones sin una cuenta
+            if (!cuentas || cuentas.length === 0) {
+                Alert.alert(
+                    t('finance.no_accounts_title', 'Requiere una Cuenta'),
+                    t('finance.no_accounts_message', 'Debes crear al menos una cuenta para poder registrar ingresos o gastos.'),
+                    [
+                        { text: t('common.cancel'), style: 'cancel' },
+                        { 
+                            text: t('finance.create_account', 'Crear Cuenta'), 
+                            onPress: () => router.push('/(app)/finance/accounts/new') 
+                        }
+                    ]
+                );
+                return;
+            }
             setTransactionModal({ visible: true, type });
         }
     };
@@ -75,10 +99,9 @@ const FinanceDashboardScreenComponent = () => {
 
     return (
         <View className="flex-1 bg-secondary-50 dark:bg-secondary-950">
-            <ScrollView 
+            <ThemedScrollView 
                 className="flex-1"
                 contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
-                showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary500} />
                 }
@@ -108,9 +131,15 @@ const FinanceDashboardScreenComponent = () => {
                                 ))}
                             </View>
                         ) : filteredAccounts.length === 0 ? (
-                            <View style={{ width: 300, padding: 20, backgroundColor: isDark ? '#1f2937' : '#ffffff', borderRadius: 12, borderStyle: 'dashed', borderWidth: 1, borderColor: '#d1d5db', alignItems: 'center' }}>
-                                <Text className="text-secondary-400 text-xs italic">{t('finance.no_accounts_to_show', 'No hay cuentas para mostrar')}</Text>
-                            </View>
+                            <TouchableOpacity 
+                                onPress={() => router.push('/(app)/finance/accounts/new')}
+                                className="bg-white dark:bg-secondary-900 rounded-xl p-8 border border-dashed border-secondary-300 dark:border-secondary-700 items-center justify-center min-w-[300px]"
+                            >
+                                <PlusIcon size={24} color={theme.primary600} />
+                                <Text className="text-secondary-500 dark:text-secondary-400 mt-2 font-bold text-center">
+                                    {t('finance.add_first_account', 'Agregar mi primera cuenta')}
+                                </Text>
+                            </TouchableOpacity>
                         ) : (
                             filteredAccounts.map(cuenta => (
                                 <AccountCard 
@@ -155,7 +184,7 @@ const FinanceDashboardScreenComponent = () => {
                         onViewAll={() => {}}
                     />
                 </View>
-            </ScrollView>
+            </ThemedScrollView>
 
             <TransactionModal 
                 visible={transactionModal.visible}

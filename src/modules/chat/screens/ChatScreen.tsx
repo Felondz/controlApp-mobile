@@ -76,7 +76,7 @@ const MessageItem = React.memo(({ message, isOwn, isDark }: MessageItemProps) =>
     );
 });
 
-export default function ChatScreen({ projectId, onBack }: { projectId: number, onBack?: () => void }) {
+export default function ChatScreen({ projectId, onBack }: { projectId: string, onBack?: () => void }) {
     const insets = useSafeAreaInsets();
     const { t } = useTranslate();
     const { isDark } = useSettingsStore();

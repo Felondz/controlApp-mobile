@@ -23,7 +23,8 @@ import {
 
 // Types
 interface Project {
-    id: number;
+    id: string;
+    uuid?: string;
     nombre: string;
     descripcion?: string;
     modules: string[];
@@ -79,14 +80,19 @@ export const ProjectCard = ({ project, dragHandleProps, onPress }: ProjectCardPr
     };
 
     const getProjectIcon = () => {
-        const imageUrl = resolveImageUrl(
-            project.image_url || project.imagen || project.image_path
-        ) || (project.icon && (project.icon.startsWith('http') || project.icon.startsWith('/')) ? project.icon : null);
+        // Prefer UUID-based API route for authenticated image access
+        // Construct the URL using the project uuid which resolveImageUrl will turn into /api/proyectos/{uuid}/image
+        const imageUrl = (project.uuid && project.image_path ? resolveImageUrl(project.uuid) : null)
+            || resolveImageUrl(project.image_url || project.imagen || project.image_path)
+            || (project.icon && (project.icon.startsWith('http') || project.icon.startsWith('/')) ? project.icon : null);
 
         if (imageUrl) {
             return (
                 <View className="h-10 w-10 rounded-xl bg-secondary-100 dark:bg-secondary-800 overflow-hidden">
-                    <AppImage source={{ uri: imageUrl }} contentFit="cover" />
+                    <AppImage 
+                        source={{ uri: imageUrl }} 
+                        contentFit="cover"
+                    />
                 </View>
             );
         }

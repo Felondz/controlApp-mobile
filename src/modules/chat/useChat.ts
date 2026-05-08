@@ -1,26 +1,32 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState } from 'react-native';
 import { getEcho } from '../../services/echo';
 import { Message } from '../../types';
 import { useAuthStore } from '../../stores/authStore';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client/react';
+import { CHAT_QUERIES, CHAT_MUTATIONS } from '../../graphql/queries/chat';
 
-export function useChat(projectId?: number) {
+interface MessagesResponse {
+    messages: Message[];
+}
+
+export function useChat(projectId?: string) {
     const [messages, setMessages] = useState<Message[]>([]);
-    const [loading, setLoading] = useState(true);
     const { user } = useAuthStore();
     const appState = useRef(AppState.currentState);
+    const client = useApolloClient();
 
-    // Initial Fetch (Mock)
-    useEffect(() => {
-        if (!projectId) return;
+    // GraphQL Query for initial messages
+    const { loading, refetch } = useQuery<MessagesResponse>(CHAT_QUERIES.GET_MESSAGES, {
+        variables: { proyectoId: projectId },
+        skip: !projectId,
+        onCompleted: (data) => {
+            setMessages(data.messages || []);
+        },
+    });
 
-        setLoading(true);
-        setTimeout(() => {
-            const mockMessages: Message[] = [];
-            setMessages(mockMessages);
-            setLoading(false);
-        }, 1000);
-    }, [projectId]);
+    // GraphQL Mutation for sending messages
+    const [sendMessageMutation] = useMutation(CHAT_MUTATIONS.SEND_MESSAGE);
 
     // Echo Connection Manager
     useEffect(() => {
@@ -31,7 +37,6 @@ export function useChat(projectId?: number) {
         const connectAndListen = async () => {
             try {
                 echoInstance = await getEcho();
-                // Conectar explícitamente si estaba desconectado
                 if (echoInstance.connector.pusher.connection.state === 'disconnected') {
                     echoInstance.connector.pusher.connect();
                 }
@@ -60,59 +65,48 @@ export function useChat(projectId?: number) {
         const disconnect = () => {
             if (echoInstance && projectId) {
                 echoInstance.leave(`project.${projectId}.chat`);
-                // Opcional: echoInstance.disconnect() si quieres apagar todo el socket
             }
         };
 
-        // 1. Conectar al montar
         connectAndListen();
 
-        // 2. Gestionar estado de la aplicación (Background/Foreground)
         const subscription = AppState.addEventListener('change', nextAppState => {
-            if (
-                appState.current.match(/inactive|background/) &&
-                nextAppState === 'active'
-            ) {
+            if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
                 console.log('App ha vuelto al primer plano. Reconectando WebSocket...');
                 connectAndListen();
-                
-                // TODO: Idealmente aquí deberías hacer un refetch (REST/GraphQL) 
-                // para obtener los mensajes perdidos mientras la app dormía.
+                refetch(); // Fetch latest messages
             } else if (nextAppState === 'background') {
-                console.log('App en segundo plano. Desconectando WebSocket para ahorrar batería...');
+                console.log('App en segundo plano. Desconectando WebSocket...');
                 disconnect();
             }
             appState.current = nextAppState;
         });
 
-        // 3. Limpiar al desmontar
         return () => {
             disconnect();
             subscription.remove();
         };
-    }, [projectId]);
+    }, [projectId, refetch]);
 
-    const sendMessage = useCallback(async (content: string, parentId?: string) => {
-        if (!user) return;
+    const sendMessage = useCallback(async (content: string) => {
+        if (!user || !projectId) return;
         
-        const newMessage: Message = {
-            id: Date.now().toString(),
-            content,
-            user_id: user.id,
-            user: { ...user },
-            parent_id: parentId,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-        };
-
-        setMessages(prev => [newMessage, ...prev]);
-    }, [user]);
+        try {
+            await sendMessageMutation({
+                variables: { content, proyectoId: projectId }
+            });
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
+    }, [user, projectId, sendMessageMutation]);
 
     const deleteMessage = useCallback(async (messageId: string) => {
+        // Placeholder for delete mutation if needed
         setMessages(prev => prev.filter(m => m.id !== messageId));
     }, []);
 
     const updateMessage = useCallback(async (messageId: string, content: string) => {
+        // Placeholder for update mutation if needed
         setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content, updated_at: new Date().toISOString() } : m));
     }, []);
 
@@ -122,5 +116,6 @@ export function useChat(projectId?: number) {
         sendMessage,
         deleteMessage,
         updateMessage,
+        refetch,
     };
 }

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { WidgetCard } from '../../../shared/components/WidgetCard';
 import { useTranslate, useAppTheme } from '../../../shared/hooks';
-import { tasksApi } from '../../../services/api';
+import { useTasks } from '../useTasks';
 import { CheckListIcon } from '../../../shared/icons';
 import { ThemeColors } from '../../../shared/themes';
 
 interface TasksSummaryWidgetProps {
-    project: { id: number };
+    project: { id: string };
     compact?: boolean;
     theme?: ThemeColors;
     [key: string]: any;
@@ -17,41 +17,23 @@ export const TasksSummaryWidget = ({ project, compact = false, theme: providedTh
     const { t } = useTranslate();
     const { theme: appTheme } = useAppTheme();
     const theme = providedTheme || appTheme;
-    const [stats, setStats] = useState<{ pending: number; completed: number; in_progress: number; overdue: number } | null>(null);
-    const [loading, setLoading] = useState(true);
+    
+    const { tasks, loading } = useTasks(project.id);
 
-    useEffect(() => {
-        let isMounted = true;
+    const stats = useMemo(() => {
+        if (!tasks) return null;
+        
+        const pending = tasks.filter((t: any) => t.status === 'pending' || t.status === 'iniciada' || t.status === 'pendiente').length;
+        const in_progress = tasks.filter((t: any) => t.status === 'in_progress' || t.status === 'en_proceso').length;
+        const completed = tasks.filter((t: any) => t.status === 'completed' || t.status === 'completada').length;
+        
+        const now = new Date();
+        const overdue = tasks.filter((t: any) => 
+            (t.status !== 'completed' && t.status !== 'completada') && t.due_date && new Date(t.due_date) < now
+        ).length;
 
-        const fetchTasks = async () => {
-            if (!project?.id) return;
-            try {
-                const response = await tasksApi.getAll(project.id);
-                const tasks = Array.isArray(response.data) ? response.data : (response.data?.data || []);
-
-                if (isMounted && tasks) {
-                    const pending = tasks.filter((t: any) => t.status === 'pending' || t.status === 'iniciada').length;
-                    const in_progress = tasks.filter((t: any) => t.status === 'in_progress' || t.status === 'en_proceso').length;
-                    const completed = tasks.filter((t: any) => t.status === 'completed' || t.status === 'completada').length;
-                    
-                    const now = new Date();
-                    const overdue = tasks.filter((t: any) => 
-                        (t.status !== 'completed' && t.status !== 'completada') && t.due_date && new Date(t.due_date) < now
-                    ).length;
-
-                    setStats({ pending, completed, in_progress, overdue });
-                    setLoading(false);
-                }
-            } catch (error) {
-                console.error(`Failed to fetch tasks for project ${project.id}:`, error);
-                if (isMounted) setLoading(false);
-            }
-        };
-
-        fetchTasks();
-
-        return () => { isMounted = false; };
-    }, [project.id]);
+        return { pending, completed, in_progress, overdue };
+    }, [tasks]);
 
     if (loading && compact) {
         return <ActivityIndicator size="small" color={theme.primary500} />;

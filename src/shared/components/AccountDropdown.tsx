@@ -43,6 +43,8 @@ export const AccountDropdown = ({ visible, onClose, anchorLayout }: AccountDropd
         logout();
     };
 
+    const totalNotifications = (user?.unread_messages_count || 0) + (user?.pending_invitations_count || 0);
+
     return (
         <Modal
             visible={visible}
@@ -91,7 +93,7 @@ export const AccountDropdown = ({ visible, onClose, anchorLayout }: AccountDropd
                             <MenuOption 
                                 icon={<InboxIcon size={20} color={isDark ? '#9ca3af' : '#6b7280'} />}
                                 label={t('inbox.title', 'Buzón de entrada')}
-                                badge={user?.unread_messages_count}
+                                badge={totalNotifications}
                                 onPress={() => handleNavigate('/(app)/invitations')}
                                 themeColors={themeColors}
                             />

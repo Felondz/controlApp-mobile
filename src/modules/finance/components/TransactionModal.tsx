@@ -6,12 +6,12 @@ import Modal from '../../../shared/components/Modal';
 import Input from '../../../shared/components/Input';
 import PrimaryButton from '../../../shared/components/PrimaryButton';
 import SecondaryButton from '../../../shared/components/SecondaryButton';
-import { formatCurrency } from '../../../shared/currency';
+import { formatCurrency, maskCurrency, parseToUnits } from '../../../shared/currency';
 
 interface TransactionModalProps {
     visible: boolean;
     onClose: () => void;
-    proyectoId: number;
+    proyectoId: string;
     type: 'income' | 'expense' | 'invoice';
 }
 
@@ -21,7 +21,7 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
     const { mutateAsync: createTransaccion, isPending } = useCreateTransaccion();
     const { data: accounts } = useCuentas(proyectoId);
     const { data: categories } = useCategorias(proyectoId);
-
+    
     const [form, setForm] = useState({
         titulo: '',
         monto: '',
@@ -30,6 +30,9 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
         categoria_id: '',
         notas: '',
     });
+
+    // Get currency of selected account
+    const accountCurrency = accounts?.find(a => a.id === form.cuenta_id)?.moneda || 'COP';
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -61,12 +64,13 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
 
         try {
             // Amount is positive for income, negative for expense/invoice
-            const finalAmount = type === 'income' ? parseFloat(form.monto) : -Math.abs(parseFloat(form.monto));
+            const unitValue = parseToUnits(form.monto, accountCurrency);
+            const finalAmount = type === 'income' ? unitValue : -Math.abs(unitValue);
 
             await createTransaccion({
                 proyecto_id: proyectoId,
-                cuenta_id: parseInt(form.cuenta_id),
-                categoria_id: parseInt(form.categoria_id),
+                cuenta_id: form.cuenta_id,
+                categoria_id: form.categoria_id,
                 monto: finalAmount,
                 fecha: form.fecha,
                 titulo: form.titulo || undefined,
@@ -97,14 +101,14 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
             headerBackgroundColor={headerColor}
             headerTextColor="white"
         >
-            <ScrollView className="p-4" showsVerticalScrollIndicator={false}>
-                <View className="gap-5 pb-10">
+            <View className="p-6">
+                <View className="gap-5">
                     <Input
                         label={t('finance.amount', 'Monto')}
-                        placeholder="0.00"
+                        placeholder="$ 0"
                         keyboardType="numeric"
                         value={form.monto}
-                        onChangeText={(text) => setForm({ ...form, monto: text })}
+                        onChangeText={(text) => setForm({ ...form, monto: maskCurrency(text, accountCurrency) })}
                         error={errors.monto}
                         required
                     />
@@ -179,7 +183,7 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                         </PrimaryButton>
                     </View>
                 </View>
-            </ScrollView>
+            </View>
         </Modal>
     );
 };

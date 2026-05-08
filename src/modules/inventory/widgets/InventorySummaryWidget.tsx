@@ -9,7 +9,7 @@ import { GET_INVENTORY_ITEMS } from '../../../services/graphql/queries';
 import { ThemeColors } from '../../../shared/themes';
 
 interface InventorySummaryWidgetProps {
-    proyectoId: number;
+    proyectoId: string;
     compact?: boolean;
     theme?: ThemeColors;
 }

@@ -182,7 +182,9 @@ export default function AppLayout() {
                     .listen('.InvitationReceived', (e: any) => {
                         console.log('[Realtime] Invitation Received');
                         const { fetchProjects } = useDashboardStore.getState();
+                        const { fetchUser } = useAuthStore.getState();
                         fetchProjects();
+                        fetchUser();
                         apolloClient.refetchQueries({ include: "active" }).catch(err => 
                             console.warn('Apollo refetch error:', err)
                         );

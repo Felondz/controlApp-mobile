@@ -9,7 +9,7 @@ import {
 
 export interface InventoryItem {
     id: string;
-    proyecto_id: number;
+    proyecto_id: string;
     name: string;
     sku?: string;
     type: string;
@@ -42,7 +42,7 @@ export interface InventoryItemResponse {
 }
 
 interface CreateInventoryItemInput {
-    proyecto_id: number;
+    proyecto_id: string;
     name: string;
     type: string;
     unit: string;
@@ -59,7 +59,7 @@ interface UpdateInventoryItemInput extends Partial<CreateInventoryItemInput> {
 }
 
 export function useInventoryItems(
-    proyectoId: number,
+    proyectoId: string,
     options: {
         name?: string;
         type?: string;
@@ -119,7 +119,7 @@ export function useUpdateInventoryItem() {
 export function useDeleteInventoryItem() {
     const client = useApolloClient();
 
-    return useMutation<{ deleteInventoryItem: boolean }, { id: string; proyecto_id: number }>(
+    return useMutation<{ deleteInventoryItem: boolean }, { id: string; proyecto_id: string }>(
         DELETE_INVENTORY_ITEM,
         {
             onCompleted: () => {

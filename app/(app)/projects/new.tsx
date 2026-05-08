@@ -311,7 +311,13 @@ function NewProjectScreen() {
             </ScrollView>
 
             <View className="absolute bottom-0 left-0 right-0 p-6 bg-white/90 dark:bg-secondary-900/90 backdrop-blur-xl border-t border-secondary-200 dark:border-secondary-800">
-                <PrimaryButton onPress={handleCreate} loading={loading} size="xl">{t('projects.create_button')}</PrimaryButton>
+                <PrimaryButton 
+                    onPress={handleCreate} 
+                    loading={loading} 
+                    size="xl"
+                >
+                    {loading ? t('common.uploading_and_processing', 'Subiendo y procesando...') : t('projects.create_button')}
+                </PrimaryButton>
             </View>
         </View>
     );

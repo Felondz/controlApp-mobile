@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
     View,
-    ScrollView,
     KeyboardAvoidingView,
     Platform,
     StyleSheet,
     useWindowDimensions,
 } from 'react-native';
+import { ThemedScrollView } from '../ThemedScrollView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ApplicationLogo } from '../index';
 
@@ -53,13 +53,12 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                     )}
 
                     {!isTablet && (
-                        <ScrollView
+                        <ThemedScrollView
                             contentContainerClassName="flex-grow items-center justify-center p-6"
                             keyboardShouldPersistTaps="handled"
-                            showsVerticalScrollIndicator={false}
                         >
                             <View className="w-full max-w-md">{children}</View>
-                        </ScrollView>
+                        </ThemedScrollView>
                     )}
                 </View>
             </KeyboardAvoidingView>

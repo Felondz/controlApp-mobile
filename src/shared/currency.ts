@@ -93,3 +93,70 @@ export const formatCurrency = (
 
     return `${symbol}${formatted}`;
 };
+
+/**
+ * Parse a formatted currency string back to a raw integer of digits
+ */
+const getRawDigits = (value: string): number => {
+    return parseInt(value.replace(/[^\d]/g, '') || '0', 10);
+};
+
+/**
+ * Real-time mask for currency inputs
+ */
+export const maskCurrency = (value: string, currencyCode: string = 'COP'): string => {
+    const numericValue = getRawDigits(value);
+    
+    const showDecimals = shouldShowDecimals(currencyCode);
+    const symbol = getCurrencySymbol(currencyCode);
+    const locale = getCurrencyLocale(currencyCode);
+    
+    const floatValue = showDecimals ? numericValue / 100 : numericValue;
+    const decimals = showDecimals ? 2 : 0;
+
+    let formatted = '';
+    try {
+        formatted = new Intl.NumberFormat(locale, {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals,
+        }).format(floatValue);
+    } catch (e) {
+        // Fallback for environments with limited Intl support
+        const fixed = floatValue.toFixed(decimals);
+        const parts = fixed.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, currencyCode === 'USD' ? ',' : '.');
+        formatted = parts.join(currencyCode === 'USD' ? '.' : ',');
+    }
+
+    return `${symbol} ${formatted}`;
+};
+
+/**
+ * Parse masked value to cents (integer)
+ * Backend expects standard 2-decimal shift for EVERYTHING.
+ * $ 1,000.00 -> 100,000
+ * $ 1.000 -> 100.000
+ */
+export const parseToCents = (value: string, _currencyCode: string = 'COP'): number => {
+    const digits = getRawDigits(value);
+    // If it's COP and the mask didn't use decimals, we still need to shift by 100
+    // because the backend expects cents.
+    if (!shouldShowDecimals(_currencyCode)) {
+        return digits * 100;
+    }
+    return digits;
+};
+
+/**
+ * Parse masked value to units (float)
+ * $ 12.34 -> 12.34
+ * $ 1.234 -> 1234.0
+ */
+export const parseToUnits = (value: string, currencyCode: string = 'COP'): number => {
+    const digits = getRawDigits(value);
+    if (shouldShowDecimals(currencyCode)) {
+        return digits / 100;
+    }
+    return digits;
+};
+

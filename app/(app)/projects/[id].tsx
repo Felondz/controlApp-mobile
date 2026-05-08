@@ -15,7 +15,7 @@ export default function ProjectDetailScreen() {
     const theme = getTheme("purple-modern");
     const { t } = useTranslate();
     const router = useRouter();
-    const proyectoId = parseInt(id);
+    const proyectoId = id;
 
     return (
         <>

@@ -312,21 +312,21 @@ export const CONSUME_LOTE_INPUT = gql`
 
 export const CREATE_TRANSACCION = gql`
     mutation CreateTransaccion(
-        $proyecto_id: Int!
-        $cuenta_id: Int!
-        $categoria_id: Int!
+        $proyecto_id: ID!
+        $cuenta_id: ID!
+        $categoria_id: ID!
         $monto: Float!
         $fecha: String!
         $titulo: String
         $descripcion: String
         $notas: String
         $status: String
-        $cuenta_predeterminada_id: Int
+        $cuenta_predeterminada_id: ID
         $debito_automatico: Boolean
         $is_recurring: Boolean
         $recurrence_day: Int
         $cuotas: Int
-        $task_id: Int
+        $task_id: ID
     ) {
         createTransaccion(
             proyecto_id: $proyecto_id
@@ -509,7 +509,7 @@ export const UPDATE_CUENTA = gql`
 `;
 
 export const DELETE_CUENTA = gql`
-    mutation DeleteCuenta($id: ID!, $proyecto_id: Int!) {
+    mutation DeleteCuenta($id: ID!, $proyecto_id: ID!) {
         deleteCuenta(id: $id, proyecto_id: $proyecto_id)
     }
 `;
@@ -526,9 +526,9 @@ export const UPDATE_CUENTA_ESTADO = gql`
 
 export const PAY_CREDIT_CARD_BILL = gql`
     mutation PayCreditCardBill(
-        $proyecto_id: Int!
-        $cuenta_id: Int!
-        $cuenta_origen_id: Int!
+        $proyecto_id: ID!
+        $cuenta_id: ID!
+        $cuenta_origen_id: ID!
         $monto: Int!
         $tipo_pago: String!
     ) {
@@ -551,7 +551,7 @@ export const PAY_CREDIT_CARD_BILL = gql`
 `;
 
 export const CREATE_CATEGORIA = gql`
-    mutation CreateCategoria($proyecto_id: Int!, $nombre: String!, $tipo: String!) {
+    mutation CreateCategoria($proyecto_id: ID!, $nombre: String!, $tipo: String!) {
         createCategoria(proyecto_id: $proyecto_id, nombre: $nombre, tipo: $tipo) {
             id
             proyecto_id
@@ -590,3 +590,4 @@ export const COMPLETE_TOUR = gql`
         }
     }
 `;
+;

@@ -24,7 +24,7 @@ import { useTranslate } from '../../../shared/hooks/useTranslate';
 import { formatCurrency } from '../../../shared/currency';
 
 interface TransactionsListScreenProps {
-    proyectoId: number;
+    proyectoId: string;
     onAdd?: () => void;
     onEdit?: (transaction: Transaccion) => void;
 }
@@ -54,13 +54,13 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
         return transactions.filter((trans: Transaccion) => {
             if (activeTab === 'income' && trans.monto <= 0) return false;
             if (activeTab === 'expense' && trans.monto > 0) return false;
-            if (selectedAccount !== 'all' && trans.cuenta_id !== parseInt(selectedAccount)) return false;
-            if (selectedCategory !== 'all' && trans.categoria_id !== parseInt(selectedCategory)) return false;
+            if (selectedAccount !== 'all' && trans.cuenta_id !== selectedAccount) return false;
+            if (selectedCategory !== 'all' && trans.categoria_id !== selectedCategory) return false;
             return true;
         }).sort((a: Transaccion, b: Transaccion) => {
             const dateComparison = new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
             if (dateComparison !== 0) return dateComparison;
-            return Number(b.id) - Number(a.id);
+            return String(b.id).localeCompare(String(a.id));
         });
     }, [transactions, selectedAccount, selectedCategory, activeTab]);
 

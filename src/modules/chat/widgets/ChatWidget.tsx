@@ -7,7 +7,7 @@ import { ChatIcon, ChevronRightIcon } from '../../../shared/icons';
 import { WidgetCard } from '../../../shared/components/WidgetCard';
 import { AppImage } from '../../../shared/components/media/AppImage';
 
-export function ChatWidget({ projectId, onPress }: { projectId: number, onPress?: () => void }) {
+export function ChatWidget({ projectId, onPress }: { projectId: string, onPress?: () => void }) {
     const { t } = useTranslate();
     const { isDark } = useSettingsStore();
     const { messages, loading } = useChat(projectId);

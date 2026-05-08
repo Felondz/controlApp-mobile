@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Proyecto {
-    id: number;
+    id: string;
+    uuid: string;
     nombre: string;
     descripcion?: string;
     modules?: string[];

@@ -13,14 +13,14 @@ import {
 } from "../../src/shared/icons";
 import { Project } from "../../src/stores/dashboardStore";
 import { ProjectCard } from '../../src/modules/projects/components/ProjectCard';
-import { Modal, Checkbox } from '../../src/shared/components';
+import { Modal, Checkbox, ThemedScrollView } from '../../src/shared/components';
 import { getTheme } from '../../src/shared/themes';
 
 // Widgets
 import { BalanceSummaryWidget } from '../../src/modules/finance/widgets/BalanceSummaryWidget';
 import { InventorySummaryWidget } from '../../src/modules/inventory/widgets/InventorySummaryWidget';
 import { OperationsSummaryWidget } from '../../src/modules/operations/widgets/OperationsSummaryWidget';
-import { TasksSummaryWidget } from '../../src/modules/tasks/tasks/TasksSummaryWidget'; // Fix path if needed
+import { TasksSummaryWidget } from '../../src/modules/tasks/widgets/TasksSummaryWidget';
 import { ChatWidget } from '../../src/modules/chat/widgets/ChatWidget';
 import { AccountUsageChartWidget } from '../../src/modules/finance/widgets/AccountUsageChartWidget';
 import { useCuentas } from '../../src/hooks/graphql/useFinance';
@@ -39,7 +39,7 @@ function DashboardScreen() {
     const [isMounted, setIsMounted] = useState(false);
 
     // Centralized Data for Finance Widgets in Overview
-    const proyectoId = activeProject?.id || 0;
+    const proyectoId = activeProject?.id || '';
     const { data: cuentasData, isLoading: loadingCuentas } = useCuentas(proyectoId);
     const cuentas = Array.isArray(cuentasData) ? cuentasData : [];
 
@@ -61,6 +61,7 @@ function DashboardScreen() {
     const handleSelectProject = async (project: Project) => {
         const proyecto: Proyecto = {
             id: project.id,
+            uuid: project.uuid,
             nombre: project.nombre,
             descripcion: project.descripcion,
             modules: project.modules,
@@ -80,10 +81,9 @@ function DashboardScreen() {
 
     return (
         <View className="flex-1 bg-secondary-50 dark:bg-secondary-950">
-            <ScrollView 
+            <ThemedScrollView 
                 className="flex-1"
                 contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
-                showsVerticalScrollIndicator={false}
             >
                 {activeProject ? (
                     <View className="mt-2">
@@ -100,7 +100,7 @@ function DashboardScreen() {
                         <View className="gap-6">
                             {visibleWidgets.finance_balance && (activeProject.modules?.some(m => m.toLowerCase() === 'finance') || true) && (
                                 <BalanceSummaryWidget 
-                                    totalBalance={cuentas.reduce((acc, c) => acc + (c.saldo_actual || 0), 0)}
+                                    totalBalance={cuentas.reduce((acc, c) => acc + (c.saldo_actual ?? c.saldo ?? 0), 0)}
                                     accountCount={cuentas.length}
                                     t={t}
                                 />
@@ -223,7 +223,7 @@ function DashboardScreen() {
                         </View>
                     </View>
                 )}
-            </ScrollView>
+            </ThemedScrollView>
 
             {!activeProject && (
                 <Pressable

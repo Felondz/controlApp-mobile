@@ -130,61 +130,67 @@ export const authApi = {
 // Projects API endpoints
 export const projectsApi = {
     getAll: () => api.get('/proyectos'),
-    getOne: (id: number) => api.get(`/proyectos/${id}`),
+    getOne: (uuid: string) => api.get(`/proyectos/${uuid}`),
     create: (data: any) => api.post('/proyectos', data, {
         headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
     }),
-    update: (id: number, data: any) => {
+    update: (uuid: string, data: any) => {
         // Use POST with _method spoofing if it's FormData, else regular PUT
         if (data instanceof FormData) {
-            return api.post(`/proyectos/${id}`, data, {
+            return api.post(`/proyectos/${uuid}`, data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
         }
-        return api.put(`/proyectos/${id}`, data);
+        return api.put(`/proyectos/${uuid}`, data);
     },
-    delete: (id: number) => api.delete(`/proyectos/${id}`),
+    delete: (uuid: string) => api.delete(`/proyectos/${uuid}`),
 };
 
 // Finance API endpoints
 export const financeApi = {
-    getAccounts: (projectId: number) => api.get(`/proyectos/${projectId}/cuentas`),
-    getTransactions: (projectId: number) => api.get(`/proyectos/${projectId}/transacciones`),
-    getBalance: (projectId: number) => api.get(`/proyectos/${projectId}/finance/balance`),
-    createTransaction: (projectId: number, data: any) =>
-        api.post(`/proyectos/${projectId}/transacciones`, data),
+    getAccounts: (projectUuid: string) => api.get(`/proyectos/${projectUuid}/cuentas`),
+    getTransactions: (projectUuid: string) => api.get(`/proyectos/${projectUuid}/transacciones`),
+    getBalance: (projectUuid: string) => api.get(`/proyectos/${projectUuid}/finance/balance`),
+    createTransaction: (projectUuid: string, data: any) =>
+        api.post(`/proyectos/${projectUuid}/transacciones`, data),
 };
 
 // Tasks API endpoints
 export const tasksApi = {
-    getAll: (projectId: number) => api.get(`/proyectos/${projectId}/tasks`),
-    create: (projectId: number, data: any) => api.post(`/proyectos/${projectId}/tasks`, data),
-    update: (projectId: number, taskId: number, data: any) =>
-        api.put(`/proyectos/${projectId}/tasks/${taskId}`, data),
-    delete: (projectId: number, taskId: number) =>
-        api.delete(`/proyectos/${projectId}/tasks/${taskId}`),
+    getAll: (projectUuid: string) => api.get(`/proyectos/${projectUuid}/tasks`),
+    create: (projectUuid: string, data: any) => api.post(`/proyectos/${projectUuid}/tasks`, data),
+    update: (projectUuid: string, taskId: string, data: any) =>
+        api.put(`/proyectos/${projectUuid}/tasks/${taskId}`, data),
+    delete: (projectUuid: string, taskId: string) =>
+        api.delete(`/proyectos/${projectUuid}/tasks/${taskId}`),
 };
 
 // Inventory API endpoints
 export const inventoryApi = {
-    getItems: (projectId: number) => api.get(`/proyectos/${projectId}/inventory/items`),
-    createItem: (projectId: number, data: any) =>
-        api.post(`/proyectos/${projectId}/inventory/items`, data),
-    updateItem: (projectId: number, itemId: number, data: any) =>
-        api.put(`/proyectos/${projectId}/inventory/items/${itemId}`, data),
-    deleteItem: (projectId: number, itemId: number) =>
-        api.delete(`/proyectos/${projectId}/inventory/items/${itemId}`),
+    getItems: (projectUuid: string) => api.get(`/proyectos/${projectUuid}/inventory/items`),
+    createItem: (projectUuid: string, data: any) =>
+        api.post(`/proyectos/${projectUuid}/inventory/items`, data),
+    updateItem: (projectUuid: string, itemId: string, data: any) =>
+        api.put(`/proyectos/${projectUuid}/inventory/items/${itemId}`, data),
+    deleteItem: (projectUuid: string, itemId: string) =>
+        api.delete(`/proyectos/${projectUuid}/inventory/items/${itemId}`),
 };
 
 // Operations API endpoints
 export const operationsApi = {
-    getLotes: (projectId: number) => api.get(`/proyectos/${projectId}/operations/lotes`),
-    createLote: (projectId: number, data: any) =>
-        api.post(`/proyectos/${projectId}/operations/lotes`, data),
-    updateLoteStage: (projectId: number, loteId: number, data: any) =>
-        api.put(`/proyectos/${projectId}/operations/lotes/${loteId}/stage`, data),
-    finishLote: (projectId: number, loteId: number) =>
-        api.post(`/proyectos/${projectId}/operations/lotes/${loteId}/finish`),
+    getLotes: (projectUuid: string) => api.get(`/proyectos/${projectUuid}/operations/lotes`),
+    createLote: (projectUuid: string, data: any) =>
+        api.post(`/proyectos/${projectUuid}/operations/lotes`, data),
+    updateLoteStage: (projectUuid: string, loteId: string, data: any) =>
+        api.put(`/proyectos/${projectUuid}/operations/lotes/${loteId}/stage`, data),
+    finishLote: (projectUuid: string, loteId: string) =>
+        api.post(`/proyectos/${projectUuid}/operations/lotes/${loteId}/finish`),
+};
+
+// Invitations API endpoints
+export const invitationsApi = {
+    accept: (uuid: string) => api.post(`/invitations/${uuid}/accept`),
+    reject: (uuid: string) => api.post(`/invitations/${uuid}/reject`),
 };
 
 // Preferences API endpoints

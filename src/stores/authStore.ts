@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 import { useSettingsStore } from './settingsStore';
 
 export interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
     email_verified_at?: string;
@@ -14,6 +14,7 @@ export interface User {
     global_theme?: string;
     profile_photo_url?: string;
     unread_messages_count?: number;
+    pending_invitations_count?: number;
     enabled_tools?: string[];
     settings?: {
         completed_tours: string[];

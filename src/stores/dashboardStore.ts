@@ -1,18 +1,24 @@
 import { create } from 'zustand';
-import { preferencesApi, projectsApi, financeApi, tasksApi, inventoryApi, operationsApi } from '../services/api';
+import { preferencesApi, projectsApi } from '../services/api';
+import { getGraphQLClient } from '../graphql/client';
 
-// Widget definition interface
 // Project interface matching API response
 export interface Project {
-    id: number;
+    id: string;
+    uuid: string;
     nombre: string;
     descripcion?: string;
-    modules: string[]; // ['finance', 'tasks']
+    modules: string[];
     theme?: string;
     color?: string;
     image_url?: string;
+    image_path?: string;
     icon?: string;
     isAdmin?: boolean;
+}
+
+interface ProjectsResponse {
+    projects: Project[];
 }
 
 interface DashboardState {
@@ -36,12 +42,17 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await projectsApi.getAll();
-            // Assuming the API returns an array of projects in 'data' or directly
-            // Adjust based on actual API response structure (usually { data: [...] })
-            const projects = Array.isArray(response.data) ? response.data : response.data.data;
+            const projectsData = Array.isArray(response.data) ? response.data : response.data.data;
+            
+            // Map string ID if necessary since backend might return integer ID but frontend uses string ID
+            const projects = (projectsData || []).map((p: any) => ({
+                ...p,
+                id: p.id ? String(p.id) : undefined
+            }));
 
-            set({ projects: projects || [], isLoading: false });
-        } catch (error) {
+            console.log('[dashboardStore] REST Success!', projects.length, 'projects found');
+            set({ projects, isLoading: false });
+        } catch (error: any) {
             console.error('Error fetching projects:', error);
             set({ error: 'Failed to load projects', isLoading: false });
         }

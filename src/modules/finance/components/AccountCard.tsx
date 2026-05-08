@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useTranslate, useAppTheme } from '../../../shared/hooks';
 import { formatCurrency } from '../../../shared/currency';
-import { WalletIcon, BanknotesIcon, CreditCardIcon } from '../../../shared/icons';
+import { WalletIcon, CurrencyDollarIcon, CreditCardIcon } from '../../../shared/icons';
 import { Cuenta } from '../../../hooks/graphql/useFinance';
 
 interface AccountCardProps {
@@ -30,8 +30,8 @@ export const AccountCard = ({ cuenta, onPress }: AccountCardProps) => {
 
     const getIcon = () => {
         const tipo = (cuenta.tipo || '').toLowerCase();
-        if (tipo === 'banco') return <BanknotesIcon size={18} color="white" />;
-        if (tipo === 'credit_card' || tipo === 'tarjeta') return <CreditCardIcon size={18} color="white" />;
+        if (tipo === 'banco' || tipo === 'ahorro') return <CurrencyDollarIcon size={18} color="white" />;
+        if (tipo === 'credito' || tipo === 'tarjeta' || tipo === 'credit_card') return <CreditCardIcon size={18} color="white" />;
         return <WalletIcon size={18} color="white" />;
     };
 
@@ -71,7 +71,7 @@ export const AccountCard = ({ cuenta, onPress }: AccountCardProps) => {
                     className="font-black text-lg"
                     style={{ color: statusColor }}
                 >
-                    {formatCurrency(cuenta.saldo_actual || 0)}
+                    {formatCurrency(cuenta.saldo_actual ?? cuenta.saldo ?? 0)}
                 </Text>
             </View>
         </Pressable>

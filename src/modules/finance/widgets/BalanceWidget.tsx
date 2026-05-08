@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Pressable } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { useTranslate, useAppTheme } from '../../../shared/hooks';
-import { financeApi } from '../../../services/api';
+import { useCuentas } from '../../../hooks/graphql/useFinance';
 import { PlusIcon, MinusIcon, WalletIcon } from '../../../shared/icons';
 import { formatCurrency } from '../../../shared/currency';
 
@@ -12,7 +12,7 @@ import DangerButton from '../../../shared/components/DangerButton';
 import { ThemeColors } from '../../../shared/themes';
 
 interface BalanceWidgetProps {
-    proyectoId: number;
+    proyectoId: string;
     compact?: boolean;
     theme?: ThemeColors;
 }
@@ -21,30 +21,20 @@ export const BalanceWidget = ({ proyectoId, compact = false, theme: providedThem
     const { t } = useTranslate();
     const { theme: appTheme, isDark } = useAppTheme();
     const theme = providedTheme || appTheme;
-    const [balance, setBalance] = useState<number | null>(null);
-    const [loading, setLoading] = useState(true);
+    
+    const { data: cuentas, isLoading: loading } = useCuentas(proyectoId);
 
-    useEffect(() => {
-        let isMounted = true;
-
-        const fetchBalance = async () => {
-            if (!proyectoId) return;
-            try {
-                const response = await financeApi.getBalance(proyectoId);
-                if (isMounted) {
-                    setBalance((response.data.balance ?? 0) / 100);
-                    setLoading(false);
-                }
-            } catch (error) {
-                console.error(`Failed to fetch balance for project ${proyectoId}:`, error);
-                if (isMounted) setLoading(false);
-            }
-        };
-
-        fetchBalance();
-
-        return () => { isMounted = false; };
-    }, [proyectoId]);
+    const balance = useMemo(() => {
+        if (!cuentas || !Array.isArray(cuentas)) return 0;
+        return cuentas.reduce((acc, c) => {
+            const val = c.saldo_actual ?? c.saldo ?? 0;
+            // If it's a credit card, we usually subtract from global balance if it's debt
+            // But here saldo might be positive or negative.
+            // Convention: credit accounts subtract from balance if they have debt?
+            // Actually let's follow FinanceDashboardScreen logic.
+            return c.tipo === 'credito' || c.tipo === 'tarjeta' ? acc - val : acc + val;
+        }, 0);
+    }, [cuentas]);
 
     if (compact) {
         return (

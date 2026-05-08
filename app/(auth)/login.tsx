@@ -51,6 +51,14 @@ export default function LoginScreen() {
         console.log("[LoginScreen] handleGoogleLogin triggered (Native SDK)");
         try {
             await GoogleSignin.hasPlayServices();
+            
+            // Force account selection by signing out first if already signed in
+            try {
+                await GoogleSignin.signOut();
+            } catch (e) {
+                // Ignore if not signed in
+            }
+
             const userInfo = await GoogleSignin.signIn();
             
             // In some versions it's userInfo.idToken, in others userInfo.data.idToken

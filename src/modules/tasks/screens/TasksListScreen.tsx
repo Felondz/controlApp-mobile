@@ -23,9 +23,8 @@ import SecondaryButton from '../../../shared/components/SecondaryButton';
 import DangerButton from '../../../shared/components/DangerButton';
 import Modal from '../../../shared/components/Modal';
 import { SkeletonList } from '../../../shared/components/Skeleton';
-
 interface TasksListScreenProps {
-    proyectoId: number;
+    proyectoId: string;
     onAdd?: () => void;
     onEdit?: (task: Task) => void;
 }

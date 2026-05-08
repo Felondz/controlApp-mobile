@@ -50,7 +50,7 @@ export const AccountUsageChartWidget = ({
 
     // Transform data for the BarChart safely
     const chartData = items.map((cuenta) => ({
-        value: Math.max(0, cuenta.saldo_actual || 0),
+        value: Math.max(0, cuenta.saldo_actual ?? cuenta.saldo ?? 0),
         label: (cuenta.nombre || '').length > 6 ? cuenta.nombre.substring(0, 6) + '..' : (cuenta.nombre || 'N/A'),
         frontColor: cuenta.color || theme?.primary500 || '#6366f1',
         labelTextStyle: { 

@@ -13,8 +13,10 @@ import {
     Platform,
     ViewStyle,
     Dimensions,
+    ScrollView,
 } from 'react-native';
 import { useAppTheme } from '../hooks';
+import { ThemedScrollView } from './ThemedScrollView';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
@@ -24,6 +26,7 @@ export interface ModalProps {
     children: React.ReactNode;
     size?: ModalSize;
     closeable?: boolean;
+    scrollable?: boolean;
     style?: ViewStyle;
     title?: string;
     headerBackgroundColor?: string;
@@ -31,10 +34,10 @@ export interface ModalProps {
 }
 
 const sizeWidths: Record<ModalSize, number> = {
-    sm: 320,
-    md: 400,
-    lg: 500,
-    xl: 600,
+    sm: 360,
+    md: 480,
+    lg: 640,
+    xl: 800,
     full: 9999,
 };
 
@@ -44,6 +47,7 @@ export function Modal({
     children,
     size = 'md',
     closeable = true,
+    scrollable = true,
     style,
     title,
     headerBackgroundColor,
@@ -52,13 +56,26 @@ export function Modal({
     const { isDark } = useAppTheme();
     const screenWidth = Dimensions.get('window').width;
     const isFull = size === 'full';
-    const maxWidth = isFull ? screenWidth - 32 : Math.min(sizeWidths[size], screenWidth - 32);
+    const maxWidth = isFull ? screenWidth - 24 : Math.min(sizeWidths[size], screenWidth - 32);
 
     const handleBackdropPress = () => {
         if (closeable) {
             onClose();
         }
     };
+
+    const content = scrollable ? (
+        <ThemedScrollView 
+            className={title ? '' : 'p-2'}
+            bounces={false}
+        >
+            {children}
+        </ThemedScrollView>
+    ) : (
+        <View className={title ? 'flex-1' : 'flex-1 p-2'}>
+            {children}
+        </View>
+    );
 
     return (
         <RNModal
@@ -74,15 +91,17 @@ export function Modal({
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        padding: 16,
+                        padding: 12,
                     }}
                 >
                     <TouchableWithoutFeedback>
                         <KeyboardAvoidingView
                             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                            keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+                            className="flex-1 w-full items-center justify-center"
                         >
                             <View
-                                className="bg-white dark:bg-secondary-900 rounded-2xl overflow-hidden shadow-2xl"
+                                className="bg-white dark:bg-secondary-900 rounded-3xl overflow-hidden shadow-2xl"
                                 style={[
                                     {
                                         width: maxWidth,
@@ -93,11 +112,11 @@ export function Modal({
                             >
                                 {title && (
                                     <View 
-                                        className="flex-row items-center justify-between px-6 py-4 border-b border-secondary-100 dark:border-secondary-800"
+                                        className="flex-row items-center justify-between px-6 py-5 border-b border-secondary-100 dark:border-secondary-800"
                                         style={headerBackgroundColor ? { backgroundColor: headerBackgroundColor, borderBottomWidth: 0 } : null}
                                     >
                                         <Text 
-                                            className="text-lg font-black text-secondary-900 dark:text-white tracking-tight"
+                                            className="text-xl font-black text-secondary-900 dark:text-white tracking-tight"
                                             style={headerTextColor ? { color: headerTextColor } : { color: isDark ? '#ffffff' : '#111827' }}
                                         >
                                             {title}
@@ -105,11 +124,11 @@ export function Modal({
                                         {closeable && (
                                             <TouchableOpacity 
                                                 onPress={onClose} 
-                                                className="w-8 h-8 rounded-lg items-center justify-center active:scale-95 transition-all"
+                                                className="w-10 h-10 rounded-xl items-center justify-center active:scale-95 transition-all"
                                                 style={{ backgroundColor: headerBackgroundColor ? 'rgba(255,255,255,0.2)' : (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)') }}
                                             >
                                                 <Text 
-                                                    className="text-secondary-500 dark:text-secondary-400 text-base font-bold"
+                                                    className="text-secondary-500 dark:text-secondary-400 text-xl font-bold"
                                                     style={headerTextColor ? { color: headerTextColor } : null}
                                                 >
                                                     ✕
@@ -118,9 +137,7 @@ export function Modal({
                                         )}
                                     </View>
                                 )}
-                                <View className={title ? '' : 'p-2'}>
-                                    {children}
-                                </View>
+                                {content}
                             </View>
                         </KeyboardAvoidingView>
                     </TouchableWithoutFeedback>

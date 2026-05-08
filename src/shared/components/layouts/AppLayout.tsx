@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
     View,
-    ScrollView,
     TouchableOpacity,
     Text,
     StyleSheet,
     useWindowDimensions,
 } from 'react-native';
+import { ThemedScrollView } from '../ThemedScrollView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import {
@@ -123,7 +123,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                                     {NAV_ITEMS.find((item) => isActive(item.href))?.label || 'App'}
                                 </Text>
                             </View>
-                            <ScrollView className="flex-1 p-6">{children}</ScrollView>
+                            <ThemedScrollView className="flex-1 p-6">{children}</ThemedScrollView>
                         </View>
                     </View>
                 )}
@@ -143,7 +143,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                             <View className="w-10" />
                         </View>
 
-                        <ScrollView className="flex-1 p-4 pb-24">{children}</ScrollView>
+                        <ThemedScrollView className="flex-1 p-4 pb-24">{children}</ThemedScrollView>
 
                         <View
                             className="

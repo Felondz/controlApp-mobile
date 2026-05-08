@@ -97,7 +97,7 @@ function EditProjectScreen() {
                 formData.append('image', { uri: image, name: filename, type: match ? `image/${match[1]}` : `image/jpeg` });
             }
 
-            const response = await projectsApi.update(activeProject.id, formData);
+            const response = await projectsApi.update(activeProject.uuid, formData);
             setActiveProject(response.data.proyecto || response.data);
             await fetchProjects();
             setFeedback({ visible: true, type: 'success', message: t('projects.update_success') });
@@ -117,7 +117,7 @@ function EditProjectScreen() {
                 style: 'destructive',
                 onPress: async () => {
                     try {
-                        await projectsApi.delete(activeProject.id);
+                        await projectsApi.delete(activeProject.uuid);
                         clearActiveProject();
                         await fetchProjects();
                         router.replace('/(app)');
@@ -215,7 +215,13 @@ function EditProjectScreen() {
                 </View>
 
                 <View className="px-6 mb-10">
-                    <PrimaryButton onPress={handleUpdate} loading={loading} size="xl">{t('common.save_changes')}</PrimaryButton>
+                    <PrimaryButton 
+                        onPress={handleUpdate} 
+                        loading={loading} 
+                        size="xl"
+                    >
+                        {loading ? t('common.uploading_and_processing', 'Subiendo y procesando...') : t('common.save_changes')}
+                    </PrimaryButton>
                 </View>
             </ScrollView>
 

@@ -5,7 +5,7 @@ import { PlusIcon, MinusIcon } from '../../icons';
 import { TransactionModal } from '../../../modules/finance/components/TransactionModal';
 
 interface FinanceQuickActionsProps {
-    proyectoId: number;
+    proyectoId: string;
     className?: string;
 }
 

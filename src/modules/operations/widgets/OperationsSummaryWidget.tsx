@@ -8,7 +8,7 @@ import { GET_LOTE_PRODUCCIONES } from '../../../services/graphql/queries';
 import { ThemeColors } from '../../../shared/themes';
 
 interface OperationsSummaryWidgetProps {
-    proyectoId: number;
+    proyectoId: string;
     compact?: boolean;
     theme?: ThemeColors;
 }

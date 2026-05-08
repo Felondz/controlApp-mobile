@@ -216,7 +216,7 @@ export default function ProfileScreen() {
                     loading={loading} 
                     size="xl"
                 >
-                    {t('common.save')}
+                    {loading ? t('common.uploading_and_processing', 'Subiendo y procesando...') : t('common.save')}
                 </PrimaryButton>
             </View>
         </KeyboardAvoidingView>

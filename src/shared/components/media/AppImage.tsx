@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Image as ExpoImage } from 'expo-image';
+import { Image as ExpoImage, ImageProps as ExpoImageProps } from 'expo-image';
+import { useAuthStore } from '../../../stores/authStore';
 
 interface AppImageProps {
     source: { uri: string } | number;
@@ -12,6 +13,7 @@ interface AppImageProps {
     priority?: 'low' | 'normal' | 'high';
     recyclingKey?: string;
     alt?: string;
+    cachePolicy?: ExpoImageProps['cachePolicy'];
 }
 
 export function AppImage({
@@ -24,10 +26,32 @@ export function AppImage({
     priority = 'normal',
     recyclingKey,
     alt,
+    cachePolicy = 'memory-disk',
 }: AppImageProps) {
+    const { token } = useAuthStore();
+
+    const authenticatedSource = useMemo(() => {
+        if (typeof source === 'number' || !source?.uri) {
+            return source;
+        }
+        
+        // Only attach headers to remote HTTP/HTTPS URLs
+        if (source.uri.startsWith('http://') || source.uri.startsWith('https://')) {
+            return {
+                uri: source.uri,
+                headers: {
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    Accept: 'image/*',
+                }
+            };
+        }
+
+        return source;
+    }, [source, token]);
+
     return (
         <ExpoImage
-            source={source}
+            source={authenticatedSource}
             style={[styles.image, style]}
             className={className}
             contentFit={contentFit}
@@ -36,6 +60,11 @@ export function AppImage({
             priority={priority}
             recyclingKey={recyclingKey}
             accessibilityLabel={alt}
+            cachePolicy={cachePolicy}
+            onError={(e) => {
+                const uri = typeof authenticatedSource === 'object' && 'uri' in authenticatedSource ? authenticatedSource.uri : 'unknown';
+                console.warn(`[AppImage] Failed to load: ${uri}`, e);
+            }}
         />
     );
 }

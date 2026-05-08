@@ -20,6 +20,7 @@ export type { AlertProps, AlertType } from './Alert';
 
 export { default as Modal } from './Modal';
 export type { ModalProps, ModalSize } from './Modal';
+export { default as ThemedScrollView } from './ThemedScrollView';
 
 export { default as Skeleton, SkeletonCard, SkeletonList } from './Skeleton';
 

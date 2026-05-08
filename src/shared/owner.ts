@@ -99,7 +99,15 @@ const OWNER_COLORS: OwnerColorScheme[] = [
  */
 export const getOwnerColor = (ownerId?: number | string): OwnerColorScheme => {
     if (!ownerId) return OWNER_COLORS[0];
-    const index = parseInt(String(ownerId)) % OWNER_COLORS.length;
+    
+    // Stable index for string/UUID IDs
+    let hash = 0;
+    const str = String(ownerId);
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0; // Convert to 32bit integer
+    }
+    const index = Math.abs(hash) % OWNER_COLORS.length;
     return OWNER_COLORS[index];
 };
 
@@ -125,11 +133,11 @@ export const getOwnerInitials = (name: string): string => {
 /**
  * Check if account belongs to current user
  */
-export const isMyAccount = (account: Account, currentUserId: number): boolean => {
+export const isMyAccount = (account: Account, currentUserId: string): boolean => {
     if (!account?.propietario_id || !currentUserId) return false;
     return (
         account.propietario_type === 'App\\Models\\User' &&
-        parseInt(String(account.propietario_id)) === parseInt(String(currentUserId))
+        String(account.propietario_id) === String(currentUserId)
     );
 };
 
@@ -185,6 +193,16 @@ export const calculateOwnerContributions = (
 
         const amount = transaction.monto || 0;
         if (amount > 0) {
+            contributions[ownerIdStr].income += amount;
+        } else {
+            contributions[ownerIdStr].expense += Math.abs(amount);
+        }
+        contributions[ownerIdStr].net += amount;
+    });
+
+    return contributions;
+};
+   if (amount > 0) {
             contributions[ownerIdStr].income += amount;
         } else {
             contributions[ownerIdStr].expense += Math.abs(amount);
