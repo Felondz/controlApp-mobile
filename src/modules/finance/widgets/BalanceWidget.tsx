@@ -49,7 +49,7 @@ export const BalanceWidget = ({ proyectoId, compact = false, theme: providedThem
                         >
                             {formatCurrency(balance || 0, 'COP')}
                         </Text>
-                        <Text className="text-sm font-black text-secondary-400 tracking-widest mt-0.5">
+                        <Text className="text-sm font-black text-secondary-400 mt-0.5">
                             {t('dashboard.global_balance', 'Saldo Global')}
                         </Text>
                     </View>

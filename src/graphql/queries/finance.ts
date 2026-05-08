@@ -3,7 +3,7 @@ export const FINANCE_QUERIES = {
         query GetTransacciones($proyecto_id: ID!, $status: String) {
             transacciones(proyecto_id: $proyecto_id, status: $status) {
                 id
-                titulo
+                descripcion
                 monto
                 fecha
                 status
@@ -55,7 +55,6 @@ export const FINANCE_MUTATIONS = {
             $categoria_id: ID!
             $monto: Float!
             $fecha: String!
-            $titulo: String
             $descripcion: String
             $notas: String
             $status: String
@@ -72,7 +71,6 @@ export const FINANCE_MUTATIONS = {
                 categoria_id: $categoria_id
                 monto: $monto
                 fecha: $fecha
-                titulo: $titulo
                 descripcion: $descripcion
                 notas: $notas
                 status: $status
@@ -84,7 +82,7 @@ export const FINANCE_MUTATIONS = {
                 task_id: $task_id
             ) {
                 id
-                titulo
+                descripcion
                 monto
                 status
             }

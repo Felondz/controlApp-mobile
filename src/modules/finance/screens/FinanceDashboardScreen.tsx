@@ -10,6 +10,7 @@ import { useCuentas, useTransacciones } from '../../../hooks/graphql/useFinance'
 import { FinanceControlBar } from '../components/FinanceControlBar';
 import { AccountCard } from '../components/AccountCard';
 import { TransactionModal } from '../components/TransactionModal';
+import { AccountModal } from '../components/AccountModal';
 import { PlusIcon } from '../../../shared/icons';
 
 // Isolated Widgets (Dumb Components)
@@ -36,6 +37,7 @@ const FinanceDashboardScreenComponent = () => {
         visible: false,
         type: 'expense'
     });
+    const [accountModalVisible, setAccountModalVisible] = useState(false);
 
     // Centralized Data Fetching (TanStack Query)
     const proyectoId = activeProject?.id || '';
@@ -68,7 +70,7 @@ const FinanceDashboardScreenComponent = () => {
 
     const handleAction = (type: 'income' | 'expense' | 'invoice' | 'new_account') => {
         if (type === 'new_account') {
-            router.push('/(app)/finance/accounts/new');
+            setAccountModalVisible(true);
         } else {
             // Requisito: No se puede realizar transacciones sin una cuenta
             if (!cuentas || cuentas.length === 0) {
@@ -115,10 +117,10 @@ const FinanceDashboardScreenComponent = () => {
 
                 <View className="mb-8">
                     <View className="flex-row items-center justify-between mb-4 px-1">
-                        <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase tracking-[2px]">
+                        <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-bold">
                             {t('finance.your_accounts', 'Mis Cuentas')}
                         </Text>
-                        <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black">
+                        <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-bold">
                             {filteredAccounts.length} {t('common.total', 'Total')}
                         </Text>
                     </View>
@@ -191,6 +193,12 @@ const FinanceDashboardScreenComponent = () => {
                 onClose={() => setTransactionModal({ ...transactionModal, visible: false })}
                 proyectoId={activeProject.id}
                 type={transactionModal.type}
+            />
+
+            <AccountModal 
+                visible={accountModalVisible}
+                onClose={() => setAccountModalVisible(false)}
+                proyectoId={activeProject.id}
             />
 
             <Modal

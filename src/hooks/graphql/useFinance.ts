@@ -30,7 +30,6 @@ export interface Transaccion {
     categoria_id: string;
     user_id: string;
     monto: number;
-    titulo?: string;
     descripcion?: string;
     fecha: string;
     notas?: string;
@@ -117,7 +116,6 @@ export const useCreateTransaccion = () => {
             categoria_id: string;
             monto: number;
             fecha: string;
-            titulo?: string;
             descripcion?: string;
             notas?: string;
             status?: string;

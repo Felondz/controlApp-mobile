@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { formatCurrency } from '../../../shared/currency';
-import { BoltIcon } from '../../../shared/icons';
+import { DocumentTextIcon } from '../../../shared/icons';
 import { Transaccion } from '../../../hooks/graphql/useFinance';
 
 interface UpcomingObligationsWidgetProps {
@@ -23,7 +23,7 @@ export const UpcomingObligationsWidget = ({
     return (
         <View className="bg-white dark:bg-secondary-900 rounded-xl p-6 border border-secondary-100 dark:border-secondary-800 shadow-sm">
             <View className="mb-4">
-                <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase tracking-[2px] mb-1">
+                <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black tracking-[2px] mb-1">
                     {t('finance.obligations', 'Próximos Vencimientos')}
                 </Text>
                 <Text className="text-xl font-black text-secondary-900 dark:text-white">
@@ -46,7 +46,7 @@ export const UpcomingObligationsWidget = ({
                         >
                             <View className="flex-row items-center flex-1">
                                 <View className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 items-center justify-center mr-3">
-                                    <BoltIcon size={16} color={theme?.primary600 || '#6366f1'} />
+                                    <DocumentTextIcon size={16} color={theme?.primary600 || '#6366f1'} />
                                 </View>
                                 <View className="flex-1">
                                     <Text className="text-secondary-900 dark:text-white font-bold text-xs" numberOfLines={1}>

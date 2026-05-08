@@ -21,7 +21,7 @@ export const BalanceSummaryWidget = ({
     return (
         <View className="bg-primary-600 rounded-xl p-6 border border-primary-500 shadow-lg shadow-primary-600/30">
             <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-primary-100 text-[10px] font-black uppercase tracking-[2px]">
+                <Text className="text-primary-100 text-[10px] font-black tracking-[2px]">
                     {t('finance.global_balance', 'Balance General')}
                 </Text>
                 <View className="w-8 h-8 rounded-lg bg-primary-500/30 items-center justify-center">

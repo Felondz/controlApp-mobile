@@ -67,10 +67,10 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
             });
             setIsEditing(false);
             refetch();
-            Alert.alert('Éxito', 'Transacción actualizada correctamente');
+            Alert.alert(t('common.success', 'Éxito'), t('finance.transaction_update_success', 'Transacción actualizada correctamente'));
         } catch (err) {
             console.error('Error updating transaction:', err);
-            Alert.alert('Error', 'No se pudo actualizar la transacción');
+            Alert.alert(t('common.error', 'Error'), t('finance.transaction_update_error', 'No se pudo actualizar la transacción'));
         }
     };
 
@@ -241,7 +241,7 @@ export default function TransactionDetail({ transactionId, onBack }: Transaction
                 {isEditing && (
                     <View className={`${cardBg} ${borderColor} border rounded-2xl p-5 mb-6 shadow-sm`}>
                         <Text className={`text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2 ml-1`}>
-                            {t('finance.amount', 'Monto')} (centavos):
+                            {t('finance.amount', 'Monto')}:
                         </Text>
                         <TextInput
                             value={String(trans.monto ?? 0)}

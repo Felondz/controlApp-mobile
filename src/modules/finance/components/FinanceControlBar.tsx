@@ -4,7 +4,7 @@ import { useTranslate, useAppTheme } from '../../../shared/hooks';
 import { 
     PlusIcon, 
     CurrencyDollarIcon, 
-    BoltIcon, 
+    DocumentTextIcon, 
     Cog6ToothIcon,
     WalletIcon
 } from '../../../shared/icons';
@@ -45,7 +45,7 @@ export const FinanceControlBar = ({
             <View className="mb-1">
                 <Icon size={20} color={iconColor} />
             </View>
-            <Text className="text-[10px] font-black uppercase tracking-tighter" style={{ color: iconColor }}>
+            <Text className="text-[10px] font-black tracking-tighter text-center" style={{ color: iconColor }}>
                 {label}
             </Text>
         </Pressable>
@@ -92,7 +92,7 @@ export const FinanceControlBar = ({
                 />
                 <ActionButton 
                     label={t('finance.invoice', 'Factura')} 
-                    icon={BoltIcon} 
+                    icon={DocumentTextIcon} 
                     colorClass="bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/30" 
                     iconColor="#3b82f6" 
                     onPress={() => onAction('invoice')} 

@@ -33,7 +33,7 @@ export const TransactionsWidget = ({
         <View className="bg-white dark:bg-secondary-900 rounded-xl p-6 border border-secondary-100 dark:border-secondary-800 shadow-sm">
             <View className="flex-row items-center justify-between mb-6">
                 <View>
-                    <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase tracking-[2px] mb-1">
+                    <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black tracking-[2px] mb-1">
                         {t('finance.activity', 'Actividad Reciente')}
                     </Text>
                     <Text className="text-xl font-black text-secondary-900 dark:text-white">

@@ -68,6 +68,7 @@ export function Modal({
         <ThemedScrollView 
             className={title ? '' : 'p-2'}
             bounces={false}
+            style={{ flex: 0 }}
         >
             {children}
         </ThemedScrollView>

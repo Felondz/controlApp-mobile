@@ -19,6 +19,7 @@ import { useAppTheme } from '../hooks';
 interface ThemedScrollViewProps extends ScrollViewProps {
     children: React.ReactNode;
     indicatorColor?: string;
+    style?: any;
 }
 
 /**
@@ -31,6 +32,7 @@ export const ThemedScrollView = ({
     onScroll: providedOnScroll,
     onContentSizeChange: providedOnContentSizeChange,
     onLayout: providedOnLayout,
+    style,
     ...props 
 }: ThemedScrollViewProps) => {
     const { theme, isDark } = useAppTheme();
@@ -96,7 +98,7 @@ export const ThemedScrollView = ({
     });
 
     return (
-        <View style={styles.container} onLayout={handleLayout}>
+        <View style={[styles.container, style]} onLayout={handleLayout}>
             <ScrollView
                 {...props}
                 showsVerticalScrollIndicator={false} // Hide native

@@ -144,7 +144,7 @@ export default function NewAccountScreen() {
 
                         {/* Account Type Grid */}
                         <View>
-                            <Text className="text-secondary-400 dark:text-secondary-500 text-xs font-black uppercase tracking-widest mb-3">
+                            <Text className="text-secondary-400 dark:text-secondary-500 text-xs font-black tracking-widest mb-3">
                                 {t('finance.account_type')}
                             </Text>
                             <View className="flex-row flex-wrap gap-3">
@@ -258,7 +258,7 @@ export default function NewAccountScreen() {
                         {/* Credit Card Specifics */}
                         {form.tipo === 'credito' && (
                             <View className="gap-4 p-4 bg-primary-50/50 dark:bg-primary-950/20 rounded-2xl border border-primary-100 dark:border-primary-900">
-                                <Text className="text-primary-800 dark:text-primary-300 font-black text-[10px] uppercase tracking-widest">
+                                <Text className="text-primary-800 dark:text-primary-300 font-black text-[10px] tracking-widest">
                                     {t('finance.card_details')}
                                 </Text>
                                 
@@ -307,7 +307,7 @@ export default function NewAccountScreen() {
                         {/* Loan / Credit Specifics */}
                         {(form.tipo === 'prestamo' || form.tipo === 'inversion') && (
                             <View className="gap-4 p-4 bg-primary-50/50 dark:bg-primary-950/20 rounded-2xl border border-primary-100 dark:border-primary-900">
-                                <Text className="text-primary-800 dark:text-primary-300 font-black text-[10px] uppercase tracking-widest">
+                                <Text className="text-primary-800 dark:text-primary-300 font-black text-[10px] tracking-widest">
                                     {t('finance.loan_details')}
                                 </Text>
 
@@ -344,7 +344,7 @@ export default function NewAccountScreen() {
                                         />
 
                                         <View>
-                                            <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase mb-2">
+                                            <Text className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black mb-2">
                                                 {t('finance.target_account')}
                                             </Text>
                                             <ThemedScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">

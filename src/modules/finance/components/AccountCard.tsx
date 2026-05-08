@@ -15,7 +15,7 @@ interface AccountCardProps {
  */
 export const AccountCard = ({ cuenta, onPress }: AccountCardProps) => {
     const { t } = useTranslate();
-    const { isDark } = useAppTheme();
+    const { theme, isDark } = useAppTheme();
     
     // Safety check for malformed account data
     if (!cuenta) return null;
@@ -30,49 +30,67 @@ export const AccountCard = ({ cuenta, onPress }: AccountCardProps) => {
 
     const getIcon = () => {
         const tipo = (cuenta.tipo || '').toLowerCase();
-        if (tipo === 'banco' || tipo === 'ahorro') return <CurrencyDollarIcon size={18} color="white" />;
-        if (tipo === 'credito' || tipo === 'tarjeta' || tipo === 'credit_card') return <CreditCardIcon size={18} color="white" />;
-        return <WalletIcon size={18} color="white" />;
+        const iconColor = theme.primary600;
+        if (tipo === 'banco' || tipo === 'ahorro') return <CurrencyDollarIcon size={18} color={iconColor} />;
+        if (tipo === 'credito' || tipo === 'tarjeta' || tipo === 'credit_card') return <CreditCardIcon size={18} color={iconColor} />;
+        return <WalletIcon size={18} color={iconColor} />;
     };
 
     return (
         <Pressable 
             onPress={onPress}
-            className="bg-white dark:bg-secondary-900 rounded-xl p-4 border border-secondary-100 dark:border-secondary-800 shadow-sm mr-4 min-w-[160px]"
-            style={{ width: 160 }}
+            className="bg-white dark:bg-secondary-900 rounded-2xl p-4 border border-secondary-100 dark:border-secondary-800 shadow-sm mr-4 min-w-[180px]"
+            style={{ width: 180 }}
         >
-            <View className="flex-row items-start justify-between mb-3">
+            {/* Fila 1: Icono + (Tipo + Nombre) */}
+            <View className="flex-row items-center mb-4">
                 <View 
-                    className="w-10 h-10 rounded-lg items-center justify-center"
-                    style={{ backgroundColor: cuenta.color || '#6366f1' }}
+                    className="w-9 h-9 rounded-xl items-center justify-center mr-3"
+                    style={{ backgroundColor: isDark ? `${theme.primary900}33` : `${theme.primary100}88` }}
                 >
                     {getIcon()}
                 </View>
-                <View 
-                    className="w-3 h-3 rounded-full border-2 border-white dark:border-secondary-900"
-                    style={{ backgroundColor: statusColor }}
-                />
+                <View className="flex-1">
+                    <Text 
+                        className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black mb-0.5"
+                        numberOfLines={1}
+                    >
+                        {cuenta.banco || (cuenta.tipo ? t(`finance.type_${cuenta.tipo.toLowerCase()}`) : 'General')}
+                    </Text>
+                    <Text 
+                        className="text-secondary-900 dark:text-white font-black text-xs"
+                        numberOfLines={1}
+                    >
+                        {cuenta.nombre || 'Sin nombre'}
+                    </Text>
+                </View>
             </View>
 
-            <View>
-                <Text 
-                    className="text-secondary-400 dark:text-secondary-500 text-[10px] font-black uppercase tracking-wider mb-0.5"
-                    numberOfLines={1}
-                >
-                    {cuenta.banco || cuenta.tipo || 'General'}
-                </Text>
-                <Text 
-                    className="text-secondary-900 dark:text-white font-black text-sm mb-2"
-                    numberOfLines={1}
-                >
-                    {cuenta.nombre || 'Sin nombre'}
-                </Text>
-                <Text 
-                    className="font-black text-lg"
-                    style={{ color: statusColor }}
-                >
-                    {formatCurrency(cuenta.saldo_actual ?? cuenta.saldo ?? 0)}
-                </Text>
+            {/* Fila 2: Balance (Izquierda) + Indicador (Derecha) */}
+            <View className="flex-row items-end justify-between">
+                <View>
+                    <Text 
+                        className="text-secondary-400 dark:text-secondary-500 text-[8px] font-black uppercase tracking-tighter mb-0.5"
+                    >
+                        {t('finance.balance', 'Balance')}
+                    </Text>
+                    <Text 
+                        className="font-black text-base"
+                        style={{ color: statusColor }}
+                    >
+                        {formatCurrency(cuenta.saldo_actual ?? cuenta.saldo ?? 0)}
+                    </Text>
+                </View>
+                
+                <View className="flex-row items-center bg-secondary-50 dark:bg-secondary-800 px-2 py-1 rounded-full mb-1">
+                    <View 
+                        className="w-2 h-2 rounded-full mr-1.5"
+                        style={{ backgroundColor: statusColor }}
+                    />
+                    <Text className="text-secondary-500 dark:text-secondary-400 text-[8px] font-black uppercase">
+                        {cuenta.estado === 'active' || !cuenta.estado ? t('common.active', 'Activa') : t('common.inactive', 'Inactiva')}
+                    </Text>
+                </View>
             </View>
         </Pressable>
     );
