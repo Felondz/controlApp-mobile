@@ -26,6 +26,11 @@ export interface Cuenta {
     saldo_inicial: number;
     saldo_actual: number;
     estado: string;
+    banco?: string;
+    color?: string;
+    icono?: string;
+    tasa_interes_anual?: number;
+    limite_credito?: number;
 }
 
 export interface Categoria {
@@ -42,8 +47,13 @@ export interface Transaccion {
     categoria_id: string;
     monto: number;
     titulo?: string;
+    descripcion?: string;
     fecha: string;
     status: string;
+    numero_factura?: string;
+    fecha_emision?: string;
+    fecha_vencimiento?: string;
+    fecha_pago?: string;
     cuenta?: Cuenta;
     categoria?: Categoria;
 }

@@ -7,12 +7,18 @@ export interface Cuenta {
     nombre: string;
     tipo: string;
     saldo: number;
+    saldo_inicial?: number;
     saldo_actual?: number;
     banco?: string;
     moneda: string;
     color?: string;
     icono?: string;
     estado: string;
+    dia_pago?: number;
+    dia_corte?: number;
+    limite_credito?: number;
+    tasa_interes_anual?: number;
+    descripcion?: string;
     created_at: string;
 }
 
@@ -61,7 +67,7 @@ export const useTransacciones = (
     options?: { status?: string }
 ) => {
     return useQuery({
-        queryKey: ['transacciones', proyectoId, options],
+        queryKey: ['transacciones', proyectoId.toString(), options],
         queryFn: async () => {
             const client = await getGraphQLClient();
             const response = await client.request<TransaccionesResponse>(
@@ -76,7 +82,7 @@ export const useTransacciones = (
 
 export const useCuentas = (proyectoId: string) => {
     return useQuery({
-        queryKey: ['cuentas', proyectoId],
+        queryKey: ['cuentas', proyectoId.toString()],
         queryFn: async () => {
             console.log(`[useCuentas] Fetching accounts for project: ${proyectoId}`);
             const client = await getGraphQLClient();
@@ -93,7 +99,7 @@ export const useCuentas = (proyectoId: string) => {
 
 export const useCategorias = (proyectoId: string) => {
     return useQuery({
-        queryKey: ['categorias', proyectoId],
+        queryKey: ['categorias', proyectoId.toString()],
         queryFn: async () => {
             const client = await getGraphQLClient();
             const response = await client.request<CategoriasResponse>(
@@ -121,7 +127,11 @@ export const useCreateTransaccion = () => {
             status?: string;
             is_recurring?: boolean;
             recurrence_day?: number;
-            cuotas?: number;
+            numero_factura?: string;
+            fecha_emision?: string;
+            fecha_vencimiento?: string;
+            cuenta_predeterminada_id?: string;
+            debito_automatico?: boolean;
         }) => {
             const client = await getGraphQLClient();
             const response = await client.request<{ createTransaccion: Transaccion }>(
@@ -130,9 +140,33 @@ export const useCreateTransaccion = () => {
             );
             return response.createTransaccion;
         },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['transacciones', variables.proyecto_id] });
-            queryClient.invalidateQueries({ queryKey: ['cuentas', variables.proyecto_id] });
+        onSuccess: async (_, variables) => {
+            console.log(`[useCreateTransaccion] Success! Invalidating queries for project: ${variables.proyecto_id}`);
+            await queryClient.invalidateQueries({ 
+                queryKey: ['cuentas', variables.proyecto_id.toString()] 
+            });
+            await queryClient.invalidateQueries({ 
+                queryKey: ['transacciones', variables.proyecto_id.toString()] 
+            });
+        },
+    });
+};
+
+export const usePayTransaccion = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ id, proyecto_id }: { id: string, proyecto_id: string }) => {
+            const client = await getGraphQLClient();
+            const response = await client.request<{ payBillDirectly: Transaccion }>(
+                FINANCE_MUTATIONS.PAY_TRANSACCION,
+                { id }
+            );
+            return response.payBillDirectly;
+        },
+        onSuccess: async (data, variables) => {
+            await queryClient.invalidateQueries({ queryKey: ['cuentas', variables.proyecto_id.toString()] });
+            await queryClient.invalidateQueries({ queryKey: ['transacciones', variables.proyecto_id.toString()] });
         },
     });
 };
@@ -149,8 +183,11 @@ export const useUpdateTransaccion = () => {
             );
             return response.updateTransaccion;
         },
-        onSuccess: (_, variables) => {
-            // Need proyecto_id to invalidate correctly
+        onSuccess: async (data) => {
+            if (data?.proyecto_id) {
+                await queryClient.invalidateQueries({ queryKey: ['cuentas', data.proyecto_id.toString()] });
+                await queryClient.invalidateQueries({ queryKey: ['transacciones', data.proyecto_id.toString()] });
+            }
         },
     });
 };
@@ -159,13 +196,17 @@ export const useDeleteTransaccion = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (id: string) => {
+        mutationFn: async ({ id, proyecto_id }: { id: string, proyecto_id: string }) => {
             const client = await getGraphQLClient();
             await client.request(
                 FINANCE_MUTATIONS.DELETE_TRANSACCION,
                 { id }
             );
-            return id;
+            return { id, proyecto_id };
+        },
+        onSuccess: async (data) => {
+            await queryClient.invalidateQueries({ queryKey: ['cuentas', data.proyecto_id.toString()] });
+            await queryClient.invalidateQueries({ queryKey: ['transacciones', data.proyecto_id.toString()] });
         },
     });
 };
@@ -179,6 +220,13 @@ export const useCreateCuenta = () => {
             nombre: string;
             tipo: string;
             saldo_inicial: number;
+            banco?: string;
+            moneda?: string;
+            dia_pago?: number;
+            dia_corte?: number;
+            limite_credito?: number;
+            tasa_interes_anual?: number;
+            descripcion?: string;
         }) => {
             const client = await getGraphQLClient();
             const response = await client.request<{ createCuenta: Cuenta }>(

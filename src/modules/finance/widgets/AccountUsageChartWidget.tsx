@@ -51,31 +51,39 @@ export const AccountUsageChartWidget = ({
         );
     }
 
-    // Colors palette for pie chart if account doesn't have one
+    // Vibrant colors palette for pie chart
     const colors = [
         theme?.primary500 || '#6366f1',
         '#10b981', // Emerald
         '#f59e0b', // Amber
-        '#ec4899', // Pink
+        '#f43f5e', // Rose
         '#8b5cf6', // Violet
         '#06b6d4', // Cyan
+        '#f97316', // Orange
+        '#ec4899', // Pink
+        '#14b8a6', // Teal
+        '#3b82f6', // Blue
+        '#a855f7', // Purple
+        '#84cc16', // Lime
     ];
 
     const totalSaldo = filteredItems.reduce((acc, c) => acc + (c.saldo_actual ?? c.saldo ?? 0), 0);
 
     // Transform data for PieChart
-    const pieData = filteredItems.map((cuenta, index) => {
-        const saldo = cuenta.saldo_actual ?? cuenta.saldo ?? 0;
-        const percentage = Math.round((saldo / totalSaldo) * 100);
-        
-        return {
-            value: saldo,
-            color: cuenta.color || colors[index % colors.length],
-            text: `${percentage}%`,
-            label: cuenta.nombre,
-            focused: index === 0, // Focus the largest one (assuming sorted)
-        };
-    }).sort((a, b) => b.value - a.value);
+    const pieData = filteredItems
+        .sort((a, b) => (b.saldo_actual ?? b.saldo ?? 0) - (a.saldo_actual ?? a.saldo ?? 0))
+        .map((cuenta, index) => {
+            const saldo = cuenta.saldo_actual ?? cuenta.saldo ?? 0;
+            const percentage = Math.round((saldo / totalSaldo) * 100);
+            
+            return {
+                value: saldo,
+                color: colors[index % colors.length],
+                text: `${percentage}%`,
+                label: cuenta.nombre,
+                focused: index === 0,
+            };
+        });
 
     return (
         <View className="bg-white dark:bg-secondary-900 rounded-3xl p-6 border border-secondary-100 dark:border-secondary-800 shadow-sm">
@@ -106,16 +114,6 @@ export const AccountUsageChartWidget = ({
                         radius={65}
                         innerRadius={45}
                         innerCircleColor={isDark ? '#111827' : '#ffffff'}
-                        centerLabelComponent={() => (
-                            <View className="items-center justify-center">
-                                <Text className="text-secondary-900 dark:text-white font-black text-xs">
-                                    {pieData[0].text}
-                                </Text>
-                                <Text className="text-secondary-400 dark:text-secondary-500 text-[8px] font-black">
-                                    Max
-                                </Text>
-                            </View>
-                        )}
                     />
                 </View>
 

@@ -37,7 +37,8 @@
         {
           "photosPermission": "ControlApp necesita acceder a tus fotos para permitirte adjuntar capturas de pantalla en reportes de error o personalizar tu perfil."
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ]
   }
 }

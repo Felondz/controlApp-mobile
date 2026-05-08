@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, Alert, Pressable, Switch } from 'react-native';
+import { View, Text, ScrollView, Alert, Pressable, Switch, Platform } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslate, useAppTheme } from '../../../shared/hooks';
 import { useCreateTransaccion, useCuentas, useCategorias } from '../../../hooks/graphql/useFinance';
 import { translateCategoryName } from '../../../shared/category';
-import Modal from '../../../shared/components/Modal';
-import Input from '../../../shared/components/Input';
-import InputLabel from '../../../shared/components/InputLabel';
-import PrimaryButton from '../../../shared/components/PrimaryButton';
-import SecondaryButton from '../../../shared/components/SecondaryButton';
-import { maskCurrency, parseToCents } from '../../../shared/currency';
+import { Input, PrimaryButton, SecondaryButton, Modal, DatePicker, InputLabel } from '../../../shared/components';
 import { 
     TruckIcon, 
     ShoppingBagIcon, 
@@ -30,6 +26,7 @@ interface TransactionModalProps {
 export const TransactionModal = ({ visible, onClose, proyectoId, type }: TransactionModalProps) => {
     const { t } = useTranslate();
     const { theme } = useAppTheme();
+    const queryClient = useQueryClient();
     const { mutateAsync: createTransaccion, isPending } = useCreateTransaccion();
     const { data: accounts } = useCuentas(proyectoId);
     const { data: categories } = useCategorias(proyectoId);
@@ -42,11 +39,15 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
         categoria_id: '',
         is_recurring: false,
         recurrence_day: new Date().getDate().toString(),
-        cuenta_predeterminada_id: '',
+        cuenta_predeterminada_id: accounts?.[0]?.id || '',
         custom_category_id: '',
+        numero_factura: '',
+        fecha_emision: '',
+        fecha_vencimiento: new Date().toISOString().split('T')[0],
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
+
 
     const gridCategories = useMemo(() => {
         if (type === 'income') {
@@ -80,6 +81,9 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                 recurrence_day: new Date().getDate().toString(),
                 cuenta_predeterminada_id: accounts?.[0]?.id || '',
                 custom_category_id: '',
+                numero_factura: '',
+                fecha_emision: '',
+                fecha_vencimiento: new Date().toISOString().split('T')[0],
             });
             setErrors({});
         }
@@ -108,8 +112,11 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
         const amountValue = parseToCents(form.monto, accountCurrency);
         
         if (amountValue === 0) newErrors.monto = t('common.required');
-        if (!form.cuenta_id) newErrors.cuenta_id = t('common.required'); // Required for all in GraphQL
-        if (type === 'invoice' && !form.titulo) newErrors.titulo = t('common.required');
+        if (!form.cuenta_id) newErrors.cuenta_id = t('common.required'); 
+        if (type === 'invoice') {
+            if (!form.titulo) newErrors.titulo = t('common.required');
+            if (!form.fecha_vencimiento) newErrors.fecha_vencimiento = t('finance.error_due_date');
+        }
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -123,17 +130,6 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
             const isIncome = type === 'income';
             const catType = isIncome ? 'ingreso' : 'egreso';
 
-            // Diagnostic log
-            console.log(`[TransactionModal] Validating category. Type: ${type}, Searching for: ${catType}`);
-            console.log(`[TransactionModal] Available categories count: ${categories?.length}`);
-            if (categories && categories.length > 0) {
-                console.log(`[TransactionModal] First category sample:`, JSON.stringify(categories[0]));
-            }
-
-            // 1. Prioritize explicitly selected category (DB or Grid)
-            // 2. Fallback to default "Bills" category for invoices
-            // 3. Fallback to first available category of the same type (case-insensitive)
-            // 4. Absolute fallback to the first category in the list
             const fallbackCat = categories?.find(c => 
                 c.tipo?.toLowerCase() === catType && 
                 (type === 'invoice' ? c.nombre.toLowerCase().includes('factura') : true)
@@ -159,17 +155,28 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                 cuenta_id: form.cuenta_id,
                 categoria_id: finalCategoryId,
                 monto: finalAmount,
-                fecha: form.fecha,
+                fecha: type === 'invoice' ? form.fecha_vencimiento : form.fecha,
+                titulo: form.titulo || undefined,
                 descripcion: form.titulo || undefined,
                 status: type === 'invoice' ? 'pending' : 'completed',
                 is_recurring: form.is_recurring,
                 recurrence_day: (form.is_recurring && form.recurrence_day) ? parseInt(form.recurrence_day) : undefined,
                 cuenta_predeterminada_id: form.is_recurring ? form.cuenta_predeterminada_id : undefined,
+                numero_factura: type === 'invoice' ? form.numero_factura : undefined,
+                fecha_emision: type === 'invoice' ? form.fecha_emision : undefined,
+                fecha_vencimiento: type === 'invoice' ? form.fecha_vencimiento : undefined,
             };
 
             console.log('[TransactionModal] Variables:', JSON.stringify(variables));
 
             await createTransaccion(variables);
+            
+            // Invalidate and refetch immediately to ensure UI consistency
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['cuentas', proyectoId.toString()] }),
+                queryClient.invalidateQueries({ queryKey: ['transacciones', proyectoId.toString()] })
+            ]);
+
             onClose();
         } catch (error: any) {
             console.error('Full Error Object:', JSON.stringify(error, null, 2));
@@ -219,6 +226,37 @@ export const TransactionModal = ({ visible, onClose, proyectoId, type }: Transac
                             value={form.titulo}
                             onChangeText={(text) => setForm({ ...form, titulo: text })}
                             error={errors.titulo}
+                            required={type === 'invoice'}
+                        />
+
+                        {type === 'invoice' && (
+                            <View className="flex-row gap-4">
+                                <View className="flex-1">
+                                    <Input
+                                        label={t('finance.invoice_number')}
+                                        placeholder="Ej. FAC-123"
+                                        value={form.numero_factura}
+                                        onChangeText={(text) => setForm({ ...form, numero_factura: text })}
+                                    />
+                                </View>
+                                <View className="flex-1">
+                                    <DatePicker
+                                        label={t('finance.emission_date')}
+                                        value={form.fecha_emision}
+                                        onChange={(date) => setForm({ ...form, fecha_emision: date })}
+                                    />
+                                </View>
+                            </View>
+                        )}
+
+                        <DatePicker
+                            label={type === 'invoice' ? t('finance.due_date') : t('common.date')}
+                            value={type === 'invoice' ? form.fecha_vencimiento : form.fecha}
+                            onChange={(date) => setForm({ 
+                                ...form, 
+                                [type === 'invoice' ? 'fecha_vencimiento' : 'fecha']: date 
+                            })}
+                            error={type === 'invoice' ? errors.fecha_vencimiento : errors.fecha}
                             required={type === 'invoice'}
                         />
 

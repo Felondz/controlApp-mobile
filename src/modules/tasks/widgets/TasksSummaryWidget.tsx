@@ -7,18 +7,20 @@ import { CheckListIcon } from '../../../shared/icons';
 import { ThemeColors } from '../../../shared/themes';
 
 interface TasksSummaryWidgetProps {
-    project: { id: string };
+    project?: { id: string };
+    proyectoId?: string;
     compact?: boolean;
     theme?: ThemeColors;
     [key: string]: any;
 }
 
-export const TasksSummaryWidget = ({ project, compact = false, theme: providedTheme, ...props }: TasksSummaryWidgetProps) => {
+export const TasksSummaryWidget = ({ project, proyectoId, compact = false, theme: providedTheme, ...props }: TasksSummaryWidgetProps) => {
     const { t } = useTranslate();
     const { theme: appTheme } = useAppTheme();
     const theme = providedTheme || appTheme;
     
-    const { tasks, loading } = useTasks(project.id);
+    const targetId = proyectoId || project?.id || '';
+    const { tasks, loading } = useTasks(targetId);
 
     const stats = useMemo(() => {
         if (!tasks) return null;

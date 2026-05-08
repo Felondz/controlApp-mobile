@@ -10,7 +10,7 @@ import {
     CheckIcon,
     ChevronDownIcon
 } from '../../../shared/icons';
-import { Input, PrimaryButton, SecondaryButton, Modal } from '../../../shared/components';
+import { Input, PrimaryButton, SecondaryButton, Modal, DatePicker } from '../../../shared/components';
 import { useTranslate, useAppTheme } from '../../../shared/hooks';
 
 interface CreateLoteProps {
@@ -108,12 +108,10 @@ export default function CreateLote({ proyectoId, onSuccess, onCancel }: CreateLo
                     </View>
 
                     {/* Start Date */}
-                    <Input
+                    <DatePicker
                         label={t('operations.start_date', 'Fecha de Inicio')}
                         value={startDate}
-                        onChangeText={setStartDate}
-                        placeholder="YYYY-MM-DD"
-                        autoCapitalize="none"
+                        onChange={setStartDate}
                     />
 
                     {/* Notes/Input */}

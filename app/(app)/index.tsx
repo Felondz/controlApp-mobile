@@ -1,6 +1,6 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState, useMemo, memo } from 'react';
 import { View, Text, Pressable, ActivityIndicator, ScrollView, useWindowDimensions, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuthStore } from "../../src/stores/authStore";
 import { useDashboardStore } from "../../src/stores/dashboardStore";
 import { useProjectStore, Proyecto } from "../../src/stores/projectStore";
@@ -40,14 +40,32 @@ function DashboardScreen() {
 
     // Centralized Data for Finance Widgets in Overview
     const proyectoId = activeProject?.id || '';
-    const { data: cuentasData, isLoading: loadingCuentas } = useCuentas(proyectoId);
+    const { data: cuentasData, isLoading: loadingCuentas, refetch: refetchCuentas } = useCuentas(proyectoId);
     const cuentas = Array.isArray(cuentasData) ? cuentasData : [];
 
     const isTablet = width >= 768;
     const isLoading = dashboardLoading || projectLoading;
 
+    // Correctly calculate total balance (subtracting credit cards)
+    const totalBalance = useMemo(() => {
+        return cuentas.reduce((acc, c) => {
+            const balance = c.saldo_actual ?? c.saldo ?? 0;
+            return c.tipo === 'credito' ? acc - balance : acc + balance;
+        }, 0);
+    }, [cuentas]);
+
     // Get project-specific theme
     const projectTheme = getTheme(activeProject?.theme || 'purple-modern');
+
+    // Auto-refresh when screen gains focus
+    useFocusEffect(
+        React.useCallback(() => {
+            if (activeProject?.id) {
+                refetchCuentas();
+            }
+            return () => {};
+        }, [activeProject?.id])
+    );
 
     useEffect(() => {
         setIsMounted(true);
@@ -98,15 +116,15 @@ function DashboardScreen() {
                         </View>
                         
                         <View className="gap-6">
-                            {visibleWidgets.finance_balance && (activeProject.modules?.some(m => m.toLowerCase() === 'finance') || true) && (
+                            {visibleWidgets.finance_balance && activeProject.modules?.some(m => m.toLowerCase() === 'finance') && (
                                 <BalanceSummaryWidget 
-                                    totalBalance={cuentas.reduce((acc, c) => acc + (c.saldo_actual ?? c.saldo ?? 0), 0)}
+                                    totalBalance={totalBalance}
                                     accountCount={cuentas.length}
                                     t={t}
                                 />
                             )}
 
-                            {visibleWidgets.finance_charts && (activeProject.modules?.some(m => m.toLowerCase() === 'finance') || true) && (
+                            {visibleWidgets.finance_charts && activeProject.modules?.some(m => m.toLowerCase() === 'finance') && (
                                 <AccountUsageChartWidget 
                                     cuentas={cuentas}
                                     t={t}
@@ -116,39 +134,21 @@ function DashboardScreen() {
                                 />
                             )}
 
-                            {visibleWidgets.inventory && (activeProject.modules?.includes('Inventory') || true) && (
+                            {visibleWidgets.inventory && activeProject.modules?.some(m => m.toLowerCase() === 'inventory') && (
                                 <InventorySummaryWidget proyectoId={activeProject.id} />
                             )}
 
-                            {visibleWidgets.operations && (activeProject.modules?.includes('Operations') || true) && (
+                            {visibleWidgets.operations && activeProject.modules?.some(m => m.toLowerCase() === 'operations') && (
                                 <OperationsSummaryWidget proyectoId={activeProject.id} />
                             )}
 
-                            <View className="mt-4">
-                                <Text className="text-sm font-black text-secondary-400 dark:text-secondary-500 tracking-widest mb-4 ml-1">
-                                    {t('dashboard.quick_access')}
-                                </Text>
-                                <View className="flex-row flex-wrap gap-4">
-                                    <Pressable 
-                                        onPress={() => router.push('/(app)/finance')}
-                                        className="bg-white dark:bg-secondary-900 rounded-xl p-6 border border-secondary-200 dark:border-secondary-800 flex-1 min-w-[140px] items-center active:bg-secondary-50 dark:active:bg-secondary-800 shadow-sm"
-                                    >
-                                        <View className="mb-3">
-                                            <CalculatorIcon size={32} color={projectTheme.primary600} />
-                                        </View>
-                                        <Text className="font-black text-secondary-900 dark:text-secondary-100 text-sm tracking-widest">{t('finance.title')}</Text>
-                                    </Pressable>
-                                    <Pressable 
-                                        onPress={() => router.push('/(app)/inventory')}
-                                        className="bg-white dark:bg-secondary-900 rounded-xl p-6 border border-secondary-200 dark:border-secondary-800 flex-1 min-w-[140px] items-center active:bg-secondary-50 dark:active:bg-secondary-800 shadow-sm"
-                                    >
-                                        <View className="mb-3">
-                                            <PackageIcon size={32} color={projectTheme.primary600} />
-                                        </View>
-                                        <Text className="font-black text-secondary-900 dark:text-secondary-100 text-sm tracking-widest">{t('inventory.title')}</Text>
-                                    </Pressable>
-                                </View>
-                            </View>
+                            {visibleWidgets.tasks && activeProject.modules?.some(m => m.toLowerCase() === 'tasks') && (
+                                <TasksSummaryWidget proyectoId={activeProject.id} />
+                            )}
+
+                            {visibleWidgets.chat && activeProject.modules?.some(m => m.toLowerCase() === 'chat') && (
+                                <ChatWidget projectId={activeProject.id} />
+                            )}
                         </View>
                     </View>
                 ) : (
@@ -249,13 +249,13 @@ function DashboardScreen() {
                 >
                     <View className="gap-3">
                         {[
-                            { key: 'finance_balance', label: t('dashboard.widgets.finance_balance'), icon: CalculatorIcon },
-                            { key: 'finance_charts', label: t('dashboard.widgets.finance_charts'), icon: CalculatorIcon },
-                            { key: 'tasks', label: t('dashboard.widgets.tasks'), icon: CheckIcon },
-                            { key: 'chat', label: t('dashboard.widgets.chat'), icon: UsersIcon },
-                            { key: 'inventory', label: t('dashboard.widgets.inventory'), icon: PackageIcon },
-                            { key: 'operations', label: t('dashboard.widgets.operations'), icon: FactoryIcon },
-                        ].map((widget) => {
+                            { key: 'finance_balance', label: t('dashboard.widgets.finance_balance'), icon: CalculatorIcon, module: 'finance' },
+                            { key: 'finance_charts', label: t('dashboard.widgets.finance_charts'), icon: CalculatorIcon, module: 'finance' },
+                            { key: 'tasks', label: t('dashboard.widgets.tasks'), icon: CheckIcon, module: 'tasks' },
+                            { key: 'chat', label: t('dashboard.widgets.chat'), icon: UsersIcon, module: 'chat' },
+                            { key: 'inventory', label: t('dashboard.widgets.inventory'), icon: PackageIcon, module: 'inventory' },
+                            { key: 'operations', label: t('dashboard.widgets.operations'), icon: FactoryIcon, module: 'operations' },
+                        ].filter(w => activeProject.modules?.some(m => m.toLowerCase() === w.module)).map((widget) => {
                             const isVisible = visibleWidgets[widget.key];
                             return (
                                 <Pressable

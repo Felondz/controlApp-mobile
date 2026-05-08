@@ -14,6 +14,9 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: ^2.2.0
         version: 2.2.0(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))
+      '@react-native-community/datetimepicker':
+        specifier: 8.4.4
+        version: 8.4.4(expo@54.0.34)(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       '@react-native-community/hooks':
         specifier: ^100.1.0
         version: 100.1.0(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -104,6 +107,9 @@ importers:
       react-native:
         specifier: 0.81.5
         version: 0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0)
+      react-native-calendars:
+        specifier: ^1.1314.0
+        version: 1.1314.0(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react-native-draggable-flatlist:
         specifier: ^4.0.3
         version: 4.0.3(@babel/core@7.28.6)(react-native-gesture-handler@2.28.0(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-reanimated@4.1.6(@babel/core@7.28.6)(react-native-worklets@0.5.1(@babel/core@7.28.6)(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))
@@ -1236,6 +1242,19 @@ packages:
     resolution: {integrity: sha512-48GRnGfm1+4ueV8ESNJmKAKW01QdbB8H6qrVxCqpHYvuRkeFBaPpwRY2bEjSwqruw3Pn9ppzGfpAxYQDiUWQxQ==}
     engines: {node: '>=20.19.4'}
     hasBin: true
+
+  '@react-native-community/datetimepicker@8.4.4':
+    resolution: {integrity: sha512-bc4ZixEHxZC9/qf5gbdYvIJiLZ5CLmEsC3j+Yhe1D1KC/3QhaIfGDVdUcid0PdlSoGOSEq4VlB93AWyetEyBSQ==}
+    peerDependencies:
+      expo: '>=52.0.0'
+      react: '*'
+      react-native: '*'
+      react-native-windows: '*'
+    peerDependenciesMeta:
+      expo:
+        optional: true
+      react-native-windows:
+        optional: true
 
   '@react-native-community/hooks@100.1.0':
     resolution: {integrity: sha512-aXESGr6WcnwyeIl+SiCLNFpbApzTmupyYzm2OkGjMuwHr42+a3G65xxTxN/xHuNdTVWO0dXbOwyLgEkQ0i/qZg==}
@@ -3058,6 +3077,9 @@ packages:
   lodash.throttle@4.1.1:
     resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
 
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
+
   log-symbols@2.2.0:
     resolution: {integrity: sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==}
     engines: {node: '>=4'}
@@ -3259,6 +3281,9 @@ packages:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
     engines: {node: '>=10'}
     hasBin: true
+
+  moment@2.30.1:
+    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
 
   ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
@@ -3553,6 +3578,9 @@ packages:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
     engines: {node: '>= 6'}
 
+  prop-types@15.8.1:
+    resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
+
   proxy-from-env@2.1.0:
     resolution: {integrity: sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==}
     engines: {node: '>=10'}
@@ -3626,6 +3654,10 @@ packages:
 
   react-is@19.2.3:
     resolution: {integrity: sha512-qJNJfu81ByyabuG7hPFEbXqNcWSU3+eVus+KJs+0ncpGfMyYdvSmxiJxbWR65lYi1I+/0HBcliO029gc4F+PnA==}
+
+  react-native-calendars@1.1314.0:
+    resolution: {integrity: sha512-4DLAVto8Qo9L3ggL2vsY9Gk8FFpJWtne8F/3wN8yUb7Xha9/SKS4B+vs7xlhWjKeqZUHws/Vi/q/6IZ8s60kcQ==}
+    engines: {node: '>=18'}
 
   react-native-css-interop@0.2.1:
     resolution: {integrity: sha512-B88f5rIymJXmy1sNC/MhTkb3xxBej1KkuAt7TiT9iM7oXz3RM8Bn+7GUrfR02TvSgKm4cg2XiSuLEKYfKwNsjA==}
@@ -3702,6 +3734,9 @@ packages:
       react: '*'
       react-native: '*'
 
+  react-native-swipe-gestures@1.0.5:
+    resolution: {integrity: sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw==}
+
   react-native-worklets@0.5.1:
     resolution: {integrity: sha512-lJG6Uk9YuojjEX/tQrCbcbmpdLCSFxDK1rJlkDhgqkVi1KZzG7cdcBFQRqyNOOzR9Y0CXNuldmtWTGOyM0k0+w==}
     peerDependencies:
@@ -3768,6 +3803,12 @@ packages:
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
+
+  recyclerlistview@4.2.3:
+    resolution: {integrity: sha512-STR/wj/FyT8EMsBzzhZ1l2goYirMkIgfV3gYEPxI3Kf3lOnu6f7Dryhyw7/IkQrgX5xtTcDrZMqytvteH9rL3g==}
+    peerDependencies:
+      react: '>= 15.2.1'
+      react-native: '>= 0.30.0'
 
   regenerate-unicode-properties@10.2.2:
     resolution: {integrity: sha512-m03P+zhBeQd1RGnYxrGyDAPpWX/epKirLrp8e3qevZdVkKtnCrjjWczIbYc8+xd6vcTStVlqfycTx1KR4LOr0g==}
@@ -4158,6 +4199,9 @@ packages:
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
+  ts-object-utils@0.0.5:
+    resolution: {integrity: sha512-iV0GvHqOmilbIKJsfyfJY9/dNHCs969z3so90dQWsO1eMMozvTpnB1MEaUbb3FYtZTGjv5sIy/xmslEz0Rg2TA==}
+
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
@@ -4389,6 +4433,9 @@ packages:
   xcode@3.0.1:
     resolution: {integrity: sha512-kCz5k7J7XbJtjABOvkc5lJmkiDh8VhjVCGNiqdKCscmVpdVUpEAyXv1xmCLkQJ5dsHqx3IPO4XW+NTDhU/fatA==}
     engines: {node: '>=10.0.0'}
+
+  xdate@0.8.3:
+    resolution: {integrity: sha512-1NhJWPJwN+VjbkACT9XHbQK4o6exeSVtS2CxhMPwUE7xQakoEFTlwra9YcqV/uHQVyeEUYoYC46VGDJ+etnIiw==}
 
   xml2js@0.6.0:
     resolution: {integrity: sha512-eLTh0kA8uHceqesPqSE+VvO1CDDJWMwlQfB6LuN6T8w6MaDJ8Txm8P7s5cHD0miF0V+GGTZrDQfxPZQVsur33w==}
@@ -5905,6 +5952,14 @@ snapshots:
       - supports-color
       - typescript
       - utf-8-validate
+
+  '@react-native-community/datetimepicker@8.4.4(expo@54.0.34)(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      invariant: 2.2.4
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0)
+    optionalDependencies:
+      expo: 54.0.34(@babel/core@7.28.6)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(graphql@16.13.1)(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
 
   '@react-native-community/hooks@100.1.0(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -7887,6 +7942,8 @@ snapshots:
 
   lodash.throttle@4.1.1: {}
 
+  lodash@4.18.1: {}
+
   log-symbols@2.2.0:
     dependencies:
       chalk: 2.4.2
@@ -8172,6 +8229,9 @@ snapshots:
 
   mkdirp@1.0.4: {}
 
+  moment@2.30.1:
+    optional: true
+
   ms@2.0.0: {}
 
   ms@2.1.3: {}
@@ -8439,6 +8499,12 @@ snapshots:
       kleur: 3.0.3
       sisteransi: 1.0.5
 
+  prop-types@15.8.1:
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      react-is: 16.13.1
+
   proxy-from-env@2.1.0: {}
 
   pump@3.0.4:
@@ -8513,6 +8579,21 @@ snapshots:
   react-is@18.3.1: {}
 
   react-is@19.2.3: {}
+
+  react-native-calendars@1.1314.0(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      hoist-non-react-statics: 3.3.2
+      lodash: 4.18.1
+      memoize-one: 5.2.1
+      prop-types: 15.8.1
+      react-native-swipe-gestures: 1.0.5
+      recyclerlistview: 4.2.3(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      xdate: 0.8.3
+    optionalDependencies:
+      moment: 2.30.1
+    transitivePeerDependencies:
+      - react
+      - react-native
 
   react-native-css-interop@0.2.1(78dc90a7cc6f2fc0585230fd62ef42fd):
     dependencies:
@@ -8593,6 +8674,8 @@ snapshots:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0)
       warn-once: 0.1.1
+
+  react-native-swipe-gestures@1.0.5: {}
 
   react-native-worklets@0.5.1(@babel/core@7.28.6)(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -8704,6 +8787,14 @@ snapshots:
   readdirp@3.6.0:
     dependencies:
       picomatch: 2.3.1
+
+  recyclerlistview@4.2.3(react-native@0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      lodash.debounce: 4.0.8
+      prop-types: 15.8.1
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.28.6)(@react-native-community/cli@20.1.2(typescript@5.9.3))(@react-native/metro-config@0.84.1(@babel/core@7.28.6))(@types/react@19.1.17)(react@19.1.0)
+      ts-object-utils: 0.0.5
 
   regenerate-unicode-properties@10.2.2:
     dependencies:
@@ -9116,6 +9207,8 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
+  ts-object-utils@0.0.5: {}
+
   tslib@2.8.1: {}
 
   tweetnacl@1.0.3: {}
@@ -9272,6 +9365,8 @@ snapshots:
     dependencies:
       simple-plist: 1.3.1
       uuid: 7.0.3
+
+  xdate@0.8.3: {}
 
   xml2js@0.6.0:
     dependencies:

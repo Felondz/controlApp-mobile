@@ -1,6 +1,6 @@
 import React, { useState, useMemo, memo } from 'react';
 import { View, Text, ActivityIndicator, RefreshControl, Switch, Alert, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useProjectStore } from '../../../stores/projectStore';
 import { useSettingsStore } from '../../../stores/settingsStore';
 import { useTranslate, useAppTheme } from '../../../shared/hooks';
@@ -46,6 +46,16 @@ const FinanceDashboardScreenComponent = () => {
 
     const { data: transacciones = [], isLoading: loadingTransacciones } = useTransacciones(proyectoId);
     const { data: obligations = [], isLoading: loadingPending } = useTransacciones(proyectoId, { status: 'pending' });
+
+    // Auto-refresh when screen gains focus
+    useFocusEffect(
+        React.useCallback(() => {
+            if (proyectoId) {
+                refetchCuentas();
+            }
+            return () => {};
+        }, [proyectoId])
+    );
 
     const filteredAccounts = useMemo(() => {
         if (!cuentas || !Array.isArray(cuentas)) return [];

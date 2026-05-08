@@ -7,7 +7,11 @@ export const FINANCE_QUERIES = {
                 monto
                 fecha
                 status
-                descripcion
+                proyecto_id
+                numero_factura
+                fecha_emision
+                fecha_vencimiento
+                fecha_pago
                 categoria {
                     id
                     nombre
@@ -28,10 +32,15 @@ export const FINANCE_QUERIES = {
                 id
                 nombre
                 tipo
+                saldo_inicial
                 saldo_actual
                 moneda
                 color
                 icono
+                estado
+                banco
+                tasa_interes_anual
+                limite_credito
             }
         }
     `,
@@ -55,6 +64,7 @@ export const FINANCE_MUTATIONS = {
             $categoria_id: ID!
             $monto: Float!
             $fecha: String!
+            $titulo: String
             $descripcion: String
             $notas: String
             $status: String
@@ -64,6 +74,9 @@ export const FINANCE_MUTATIONS = {
             $recurrence_day: Int
             $cuotas: Int
             $task_id: ID
+            $numero_factura: String
+            $fecha_emision: String
+            $fecha_vencimiento: String
         ) {
             createTransaccion(
                 proyecto_id: $proyecto_id
@@ -71,6 +84,7 @@ export const FINANCE_MUTATIONS = {
                 categoria_id: $categoria_id
                 monto: $monto
                 fecha: $fecha
+                titulo: $titulo
                 descripcion: $descripcion
                 notas: $notas
                 status: $status
@@ -80,22 +94,90 @@ export const FINANCE_MUTATIONS = {
                 recurrence_day: $recurrence_day
                 cuotas: $cuotas
                 task_id: $task_id
+                numero_factura: $numero_factura
+                fecha_emision: $fecha_emision
+                fecha_vencimiento: $fecha_vencimiento
             ) {
                 id
+                titulo
                 descripcion
                 monto
                 status
+                numero_factura
+                fecha_emision
+                fecha_vencimiento
+                fecha_pago
+            }
+        }
+    `,
+
+    UPDATE_TRANSACCION: `
+        mutation UpdateTransaccion(
+            $id: ID!
+            $cuenta_id: ID
+            $categoria_id: ID
+            $monto: Float
+            $fecha: String
+            $titulo: String
+            $descripcion: String
+            $notas: String
+            $status: String
+            $numero_factura: String
+            $fecha_emision: String
+            $fecha_vencimiento: String
+        ) {
+            updateTransaccion(
+                id: $id
+                cuenta_id: $cuenta_id
+                categoria_id: $categoria_id
+                monto: $monto
+                fecha: $fecha
+                titulo: $titulo
+                descripcion: $descripcion
+                notas: $notas
+                status: $status
+                numero_factura: $numero_factura
+                fecha_emision: $fecha_emision
+                fecha_vencimiento: $fecha_vencimiento
+            ) {
+                id
+                titulo
+                descripcion
+                monto
+                status
+                numero_factura
+                fecha_emision
+                fecha_vencimiento
             }
         }
     `,
 
     CREATE_CUENTA: `
-        mutation CreateCuenta($proyecto_id: ID!, $nombre: String!, $tipo: String!, $saldo_inicial: Int!) {
+        mutation CreateCuenta(
+            $proyecto_id: ID!
+            $nombre: String!
+            $tipo: String!
+            $saldo_inicial: Int!
+            $banco: String
+            $moneda: String
+            $dia_pago: Int
+            $dia_corte: Int
+            $limite_credito: Int
+            $tasa_interes_anual: Float
+            $descripcion: String
+        ) {
             createCuenta(
                 proyecto_id: $proyecto_id
                 nombre: $nombre
                 tipo: $tipo
                 saldo_inicial: $saldo_inicial
+                banco: $banco
+                moneda: $moneda
+                dia_pago: $dia_pago
+                dia_corte: $dia_corte
+                limite_credito: $limite_credito
+                tasa_interes_anual: $tasa_interes_anual
+                descripcion: $descripcion
             ) {
                 id
                 nombre
@@ -114,6 +196,22 @@ export const FINANCE_MUTATIONS = {
             ) {
                 nuevo_saldo_tc
             }
+        }
+    `,
+
+    PAY_TRANSACCION: `
+        mutation PayBillDirectly($id: ID!) {
+            payBillDirectly(id: $id) {
+                id
+                status
+                fecha_pago
+            }
+        }
+    `,
+
+    DELETE_TRANSACCION: `
+        mutation DeleteTransaccion($id: ID!) {
+            deleteTransaccion(id: $id)
         }
     `,
 };

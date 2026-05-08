@@ -13,7 +13,6 @@ import {
     Platform,
     ViewStyle,
     Dimensions,
-    ScrollView,
 } from 'react-native';
 import { useAppTheme } from '../hooks';
 import { ThemedScrollView } from './ThemedScrollView';

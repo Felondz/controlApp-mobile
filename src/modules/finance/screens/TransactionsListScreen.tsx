@@ -1,10 +1,12 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { 
     useTransacciones, 
     useCuentas, 
     useCategorias,
     useDeleteTransaccion,
+    usePayTransaccion,
     Transaccion 
 } from '../../finance/useFinance';
 import { 
@@ -12,8 +14,7 @@ import {
     FunnelIcon,
     ArrowTrendingUpIcon,
     ArrowTrendingDownIcon,
-    PencilIcon,
-    TrashIcon,
+    CheckIcon,
 } from '../../../shared/icons';
 import PrimaryButton from '../../../shared/components/PrimaryButton';
 import SecondaryButton from '../../../shared/components/SecondaryButton';
@@ -27,13 +28,19 @@ interface TransactionsListScreenProps {
     proyectoId: string;
     onAdd?: () => void;
     onEdit?: (transaction: Transaccion) => void;
+    initialAccountId?: string;
 }
 
-export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: TransactionsListScreenProps) {
+export default function TransactionsListScreen({ 
+    proyectoId, 
+    onAdd, 
+    onEdit,
+    initialAccountId 
+}: TransactionsListScreenProps) {
     const { t } = useTranslate();
     const { isDark } = useSettingsStore();
 
-    const [selectedAccount, setSelectedAccount] = useState('all');
+    const [selectedAccount, setSelectedAccount] = useState(initialAccountId || 'all');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [showFilters, setShowFilters] = useState(false);
     const [deleteModalTransaction, setDeleteModalTransaction] = useState<Transaccion | null>(null);
@@ -41,10 +48,25 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
     const [activeTab, setActiveTab] = useState<'all' | 'income' | 'expense'>('all');
 
     const { data: transactionsData, loading: loadingTransactions, refetch: refetchTransactions } = useTransacciones(proyectoId);
+    const { mutateAsync: deleteTransaccion } = useDeleteTransaccion();
+    const { mutateAsync: payTransaccion } = usePayTransaccion();
+    const [payingId, setPayingId] = useState<string | null>(null);
+
+    const handlePay = async (trans: Transaccion) => {
+        try {
+            setPayingId(trans.id);
+            await payTransaccion({ id: trans.id, proyecto_id: proyectoId });
+            Alert.alert(t('common.success'), t('finance.bill_paid_success'));
+        } catch (error) {
+            console.error('Error paying transaction:', error);
+            Alert.alert(t('common.error'), t('finance.transaction_update_error'));
+        } finally {
+            setPayingId(null);
+        }
+    };
+
     const { data: accountsData } = useCuentas(proyectoId);
     const { data: categoriesData } = useCategorias(proyectoId);
-
-    const [deleteTransaccion, { loading: deleting }] = useDeleteTransaccion();
 
     const transactions = transactionsData || [];
     const accounts = accountsData || [];
@@ -54,8 +76,8 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
         return transactions.filter((trans: Transaccion) => {
             if (activeTab === 'income' && trans.monto <= 0) return false;
             if (activeTab === 'expense' && trans.monto > 0) return false;
-            if (selectedAccount !== 'all' && trans.cuenta_id !== selectedAccount) return false;
-            if (selectedCategory !== 'all' && trans.categoria_id !== selectedCategory) return false;
+            if (selectedAccount !== 'all' && trans.cuenta?.id !== selectedAccount) return false;
+            if (selectedCategory !== 'all' && trans.categoria?.id !== selectedCategory) return false;
             return true;
         }).sort((a: Transaccion, b: Transaccion) => {
             const dateComparison = new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
@@ -89,6 +111,12 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
         await refetchTransactions();
         setRefreshing(false);
     }, [refetchTransactions]);
+
+    useFocusEffect(
+        useCallback(() => {
+            refetchTransactions();
+        }, [refetchTransactions])
+    );
 
     const handleDelete = async () => {
         if (!deleteModalTransaction) return;
@@ -244,8 +272,7 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                                         return (
                                             <TouchableOpacity
                                                 key={trans.id}
-                                                activeOpacity={0.7}
-                                                onPress={() => onEdit?.(trans)}
+                                                activeOpacity={1}
                                                 className={`bg-white dark:bg-secondary-800 rounded-2xl border border-secondary-200 dark:border-secondary-700 shadow-sm overflow-hidden`}
                                             >
                                                 <View className="flex-row items-center p-4">
@@ -270,22 +297,27 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
 
                                                     {/* Details */}
                                                     <View className="flex-1">
-                                                        <Text className={`text-base font-bold text-secondary-900 dark:text-secondary-100 mb-1`} numberOfLines={1}>
-                                                            {trans.titulo || t('finance.no_description', 'Sin descripción')}
+                                                        <Text className={`text-base font-bold text-secondary-900 dark:text-secondary-100 mb-0.5`} numberOfLines={1}>
+                                                            {trans.descripcion || t('finance.no_description', 'Sin descripción')}
                                                         </Text>
+                                                        {trans.numero_factura && (
+                                                            <Text className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest mb-1">
+                                                                {t('finance.invoice_number')}: {trans.numero_factura}
+                                                            </Text>
+                                                        )}
                                                         <View className="flex-row items-center">
-                                                            <Text className={`text-sm font-medium px-2 py-0.5 rounded-md bg-secondary-100 dark:bg-secondary-700 text-secondary-600 dark:text-secondary-400`}>
+                                                            <Text className={`text-xs font-medium px-2 py-0.5 rounded-md bg-secondary-100 dark:bg-secondary-700 text-secondary-600 dark:text-secondary-400`}>
                                                                 {trans.categoria?.nombre || t('finance.no_category', 'Otros')}
                                                             </Text>
-                                                            {trans.cuenta?.nombre && (
-                                                                <Text className={`text-sm font-medium text-secondary-400 dark:text-secondary-500 ml-2`} numberOfLines={1}>
-                                                                    • {trans.cuenta.nombre}
+                                                            {trans.status === 'completed' && trans.fecha_pago && (
+                                                                <Text className={`text-[10px] font-medium text-green-600 dark:text-green-400 ml-2`}>
+                                                                    ✓ {t('finance.payment_date')}: {trans.fecha_pago.split(' ')[0]}
                                                                 </Text>
                                                             )}
                                                         </View>
                                                     </View>
 
-                                                    {/* Amount */}
+                                                    {/* Amount & Actions */}
                                                     <View className="items-end ml-2">
                                                         <Text className={`text-base font-black ${
                                                             isIncome
@@ -294,29 +326,20 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                                                         }`}>
                                                             {isIncome ? '+' : '-'}{formatCurrency(trans.monto, trans.cuenta?.moneda || 'COP')}
                                                         </Text>
+                                                        
+                                                        {trans.status === 'pending' && (
+                                                            <TouchableOpacity
+                                                                onPress={() => handlePay(trans)}
+                                                                disabled={payingId === trans.id}
+                                                                className="mt-2 bg-primary-600 px-3 py-1.5 rounded-lg flex-row items-center"
+                                                            >
+                                                                <CheckIcon size={12} color="white" />
+                                                                <Text className="text-white text-[10px] font-bold ml-1 uppercase">
+                                                                    {payingId === trans.id ? t('common.loading') : t('finance.pay')}
+                                                                </Text>
+                                                            </TouchableOpacity>
+                                                        )}
                                                     </View>
-                                                </View>
-
-                                                {/* Inline Actions */}
-                                                <View className={`flex-row border-t border-secondary-100 dark:border-secondary-700/50 bg-secondary-50/50 dark:bg-secondary-800/50 px-4 py-2.5 justify-end gap-6`}>
-                                                    <TouchableOpacity
-                                                        onPress={() => onEdit?.(trans)}
-                                                        className={`flex-row items-center`}
-                                                    >
-                                                        <PencilIcon size={16} color={isDark ? '#818cf8' : '#6366f1'} />
-                                                        <Text className={`text-sm font-bold ml-1.5 ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
-                                                            {t('common.edit', 'Editar')}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity
-                                                        onPress={() => setDeleteModalTransaction(trans)}
-                                                        className="flex-row items-center"
-                                                    >
-                                                        <TrashIcon size={16} color="#ef4444" />
-                                                        <Text className="text-sm font-bold ml-1.5 text-red-500">
-                                                            {t('common.delete', 'Eliminar')}
-                                                        </Text>
-                                                    </TouchableOpacity>
                                                 </View>
                                             </TouchableOpacity>
                                         );
@@ -340,41 +363,6 @@ export default function TransactionsListScreen({ proyectoId, onAdd, onEdit }: Tr
                     </TouchableOpacity>
                 </View>
             )}
-
-            <Modal
-                visible={!!deleteModalTransaction}
-                onClose={() => setDeleteModalTransaction(null)}
-                size="sm"
-            >
-                <View className={`p-6 bg-white dark:bg-secondary-800 rounded-2xl`}>
-                    <View className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-full items-center justify-center mb-5 self-center">
-                        <TrashIcon size={28} color="#ef4444" />
-                    </View>
-                    <Text className={`text-xl font-bold text-secondary-900 dark:text-secondary-100 mb-2 text-center`}>
-                        {t('common.confirm_delete', '¿Eliminar Transacción?')}
-                    </Text>
-                    <Text className={`text-base text-secondary-500 dark:text-secondary-400 mb-6 text-center`}>
-                        {t('transactions.confirm_delete_msg', 'Esta acción no se puede deshacer y afectará el saldo de tu cuenta.')}
-                    </Text>
-                    <View className="flex-row justify-center gap-3">
-                        <SecondaryButton 
-                            onPress={() => setDeleteModalTransaction(null)}
-                            className="flex-1"
-                        >
-                            {t('common.cancel', 'Volver')}
-                        </SecondaryButton>
-                        <PrimaryButton 
-                            onPress={handleDelete}
-                            loading={deleting}
-                            className="flex-1"
-                            variant="filled"
-                            style={{ backgroundColor: '#ef4444' }}
-                        >
-                            <Text className="text-white font-bold">{t('common.delete', 'Eliminar')}</Text>
-                        </PrimaryButton>
-                    </View>
-                </View>
-            </Modal>
         </View>
     );
 }
