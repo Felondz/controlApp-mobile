@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, TextInput, RefreshControl, ActivityIndicator, useWindowDimensions, Pressable } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 // import { FlashList } from '@shopify/flash-list';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { useTranslate, useAppTheme } from '../../../shared/hooks';
 import { useTasks, Task } from '../useTasks';
 import { 
@@ -23,6 +23,7 @@ import SecondaryButton from '../../../shared/components/SecondaryButton';
 import DangerButton from '../../../shared/components/DangerButton';
 import Modal from '../../../shared/components/Modal';
 import { SkeletonList } from '../../../shared/components/Skeleton';
+import { AppImage } from '../../../shared/components/media/AppImage';
 interface TasksListScreenProps {
     proyectoId: string;
     onAdd?: () => void;
@@ -31,27 +32,27 @@ interface TasksListScreenProps {
 
 const getStatusBadgeStyle = (status: string, isDark: boolean) => {
     switch (status) {
-        case 'pending':
-            return isDark ? 'bg-amber-900/30 text-amber-500' : 'bg-amber-100 text-amber-600';
+        case 'todo':
+            return isDark ? 'bg-orange-600' : 'bg-orange-500';
         case 'in_progress':
-            return isDark ? 'bg-sky-900/30 text-sky-500' : 'bg-sky-100 text-sky-600';
-        case 'completed':
-            return isDark ? 'bg-green-900/30 text-green-500' : 'bg-green-100 text-green-600';
+            return isDark ? 'bg-sky-600' : 'bg-sky-500';
+        case 'done':
+            return isDark ? 'bg-emerald-600' : 'bg-emerald-500';
         default:
-            return isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800';
+            return isDark ? 'bg-gray-600' : 'bg-gray-500';
     }
 };
 
 const getPriorityBadgeStyle = (priority: string, isDark: boolean) => {
     switch (priority) {
         case 'high':
-            return isDark ? 'bg-red-900/30 text-red-500' : 'bg-red-100 text-red-600';
+            return isDark ? 'bg-rose-600' : 'bg-rose-500';
         case 'medium':
-            return isDark ? 'bg-amber-900/30 text-amber-500' : 'bg-amber-100 text-amber-600';
+            return isDark ? 'bg-amber-600' : 'bg-amber-500';
         case 'low':
-            return isDark ? 'bg-blue-900/30 text-blue-500' : 'bg-blue-100 text-blue-600';
+            return isDark ? 'bg-indigo-600' : 'bg-indigo-500';
         default:
-            return isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800';
+            return isDark ? 'bg-gray-600' : 'bg-gray-500';
     }
 };
 
@@ -63,13 +64,19 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
-    const [showFilters, setShowFilters] = useState(false);
+    const [selectedPriority, setSelectedPriority] = useState('');
     const [deleteModalTask, setDeleteModalTask] = useState<Task | null>(null);
     const [refreshing, setRefreshing] = useState(false);
 
     const isTablet = width >= 768;
 
     const { tasks, loading, refetch } = useTasks(proyectoId);
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [refetch])
+    );
 
     const filteredTasks = useMemo(() => {
         let result = tasks;
@@ -86,8 +93,12 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
             result = result.filter(task => task.status === selectedStatus);
         }
 
+        if (selectedPriority) {
+            result = result.filter(task => task.priority === selectedPriority);
+        }
+
         return result;
-    }, [tasks, searchQuery, selectedStatus]);
+    }, [tasks, searchQuery, selectedStatus, selectedPriority]);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
@@ -107,9 +118,9 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
 
     const getStatusLabel = (status: string) => {
         const labels: Record<string, string> = {
-            pending: t('tasks.status.pending', 'Pendiente'),
+            todo: t('tasks.status.todo', 'Por hacer'),
             in_progress: t('tasks.status.in_progress', 'En Progreso'),
-            completed: t('tasks.status.completed', 'Completada'),
+            done: t('tasks.status.done', 'Completada'),
         };
         return labels[status] || status;
     };
@@ -129,172 +140,144 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
     };
 
     const renderItem = ({ item }: { item: Task }) => {
-        const overdue = isOverdue(item.due_date) && item.status !== 'completed';
+        const overdue = isOverdue(item.due_date) && item.status !== 'done';
         
         return (
-            <View className={`p-2 ${isTablet ? 'w-1/2' : 'w-full'}`}>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => handleEdit(item)}
-                    className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl overflow-hidden shadow-sm h-full"
-                >
-                    <View className="p-4">
-                        <View className="flex-row items-start justify-between mb-3">
-                            <View className="flex-1 mr-2">
-                                <Text className="text-secondary-900 dark:text-secondary-50 font-bold text-base leading-tight" numberOfLines={2}>
-                                    {item.title}
+            <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => handleEdit(item)}
+                onLongPress={() => setDeleteModalTask(item)}
+                className="bg-white dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl px-4 py-3.5 mb-3 mx-4 shadow-sm flex-row items-center justify-between"
+            >
+                <View className="flex-1 pr-3">
+                    <Text className="text-secondary-900 dark:text-secondary-50 font-bold text-base mb-1.5 leading-tight" numberOfLines={1}>
+                        {item.title}
+                    </Text>
+                    {item.description ? (
+                        <Text className="text-secondary-500 dark:text-secondary-400 text-sm mb-2.5" numberOfLines={1}>
+                            {item.description}
+                        </Text>
+                    ) : null}
+                    
+                    <View className="flex-row items-center gap-3">
+                        {item.due_date && (
+                            <View className="flex-row items-center bg-secondary-50 dark:bg-secondary-800/50 px-2 py-1 rounded-md">
+                                <ClockIcon size={12} color={overdue ? '#ef4444' : isDark ? '#9ca3af' : '#6b7280'} />
+                                <Text className={`text-xs font-semibold ml-1 ${overdue ? 'text-red-600 dark:text-red-500 font-bold' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                                    {new Date(item.due_date).toLocaleDateString()}
                                 </Text>
                             </View>
-                            <View className={`px-2 py-0.5 rounded-full ${getStatusBadgeStyle(item.status, isDark)}`}>
-                                <Text className="text-sm font-bold">
-                                    {getStatusLabel(item.status)}
-                                </Text>
-                            </View>
-                        </View>
-
-                        {item.description ? (
-                            <Text className="text-secondary-500 dark:text-secondary-400 text-sm mb-4" numberOfLines={2}>
-                                {item.description}
-                            </Text>
-                        ) : null}
-
-                        <View className="flex-row flex-wrap gap-2 mt-auto">
-                            <View className={`px-2 py-0.5 rounded-full flex-row items-center ${getPriorityBadgeStyle(item.priority, isDark)}`}>
-                                <Text className="text-sm font-bold">
-                                    {getPriorityLabel(item.priority)}
-                                </Text>
-                            </View>
-
-                            {item.due_date && (
-                                <View className={`px-2 py-0.5 rounded-full flex-row items-center ${overdue ? 'bg-red-50 dark:bg-red-900/20' : 'bg-secondary-100 dark:bg-secondary-800'}`}>
-                                    <ClockIcon size={12} color={overdue ? '#ef4444' : isDark ? '#9ca3af' : '#6b7280'} />
-                                    <Text className={`text-sm font-bold ml-1 ${overdue ? 'text-red-600 dark:text-red-500' : 'text-secondary-600 dark:text-secondary-400'}`}>
-                                        {new Date(item.due_date).toLocaleDateString()}
-                                    </Text>
-                                </View>
-                            )}
-
-                            {item.assigned && (
-                                <View className="px-2 py-0.5 rounded-full flex-row items-center bg-secondary-100 dark:bg-secondary-800">
-                                    <UserCircleIcon size={12} color={isDark ? '#9ca3af' : '#6b7280'} />
-                                    <Text className="text-sm font-bold ml-1 text-secondary-600 dark:text-secondary-400">
-                                        {item.assigned.name}
-                                    </Text>
-                                </View>
-                            )}
-                        </View>
-
-                        {overdue && (
-                            <View className="flex-row items-center mt-3 bg-danger-50 dark:bg-danger-900/10 px-2.5 py-1.5 rounded-xl self-start border border-danger-100 dark:border-danger-900/20">
-                                <ExclamationTriangleIcon size={12} color="#ef4444" />
-                                <Text className="text-sm font-bold text-danger-500 ml-1.5">
-                                    {t('tasks.overdue', 'Vencida')}
+                        )}
+                        {item.assignee && (
+                            <View className="flex-row items-center bg-secondary-50 dark:bg-secondary-800/50 px-2 py-1 rounded-md">
+                                <UserCircleIcon size={12} color={isDark ? '#9ca3af' : '#6b7280'} />
+                                <Text className="text-xs font-semibold ml-1 text-secondary-600 dark:text-secondary-400">
+                                    {item.assignee.name}
                                 </Text>
                             </View>
                         )}
                     </View>
+                </View>
 
-                    <View className="flex-row border-t border-secondary-100 dark:border-secondary-800/50 bg-secondary-50/30 dark:bg-secondary-800/30">
-                        <TouchableOpacity 
-                            onPress={() => handleEdit(item)} 
-                            className="flex-row items-center justify-center flex-1 py-3 active:bg-secondary-100 dark:active:bg-secondary-800"
-                        >
-                            <PencilIcon size={14} color={theme.primary600} />
-                            <Text className="text-sm font-bold ml-2" style={{ color: theme.primary600 }}>
-                                {t('common.edit', 'Editar')}
-                            </Text>
-                        </TouchableOpacity>
-                        <View className="w-[1px] bg-secondary-100 dark:border-secondary-800/50" />
-                        <TouchableOpacity 
-                            onPress={() => setDeleteModalTask(item)} 
-                            className="flex-row items-center justify-center flex-1 py-3 active:bg-danger-50 dark:active:bg-danger-900/10"
-                        >
-                            <TrashIcon size={14} color="#ef4444" />
-                            <Text className="text-sm font-bold ml-2 text-danger-500">
-                                {t('common.delete', 'Eliminar')}
-                            </Text>
-                        </TouchableOpacity>
+                <View className="items-end gap-2 flex-shrink-0">
+                    <View className={`${getStatusBadgeStyle(item.status, isDark)} px-2.5 py-1 rounded-lg shadow-sm`}>
+                        <Text className="text-xs font-bold text-white" numberOfLines={1}>
+                            {getStatusLabel(item.status)}
+                        </Text>
                     </View>
-                </TouchableOpacity>
-            </View>
+                    <View className={`${getPriorityBadgeStyle(item.priority, isDark)} px-2.5 py-1 rounded-lg shadow-sm`}>
+                        <Text className="text-xs font-bold text-white" numberOfLines={1}>
+                            {getPriorityLabel(item.priority)}
+                        </Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
         );
     };
 
     return (
         <View className="flex-1 bg-secondary-50 dark:bg-secondary-950">
-            {/* Header / Search */}
-            <View className="px-5 pt-4 pb-6 bg-white dark:bg-secondary-950 border-b border-secondary-100 dark:border-secondary-900">
-                <View className="flex-row items-center justify-between mb-6 px-1">
-                    <Text className="text-3xl font-black tracking-tighter text-secondary-900 dark:text-secondary-50">
-                        {t('tasks.title', 'Tareas')}
+            <Stack.Screen 
+                options={{
+                    title: t('tasks.title', 'Tareas'),
+                    headerLargeTitle: true,
+                    headerSearchBarOptions: {
+                        placeholder: t('tasks.search_placeholder', 'Buscar tareas...'),
+                        onChangeText: (e) => setSearchQuery(e.nativeEvent.text),
+                        hideWhenScrolling: false,
+                    },
+                }}
+            />
+
+            <View className="bg-white dark:bg-secondary-950 border-b border-secondary-200 dark:border-secondary-900 pb-3 shadow-sm z-10">
+                <View className="px-4 py-2">
+                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2">
+                        {t('tasks.filter_status', 'Estado')}
                     </Text>
-                    <TouchableOpacity
-                        onPress={() => setShowFilters(!showFilters)}
-                        className={`w-11 h-11 rounded-2xl items-center justify-center border ${showFilters ? 'bg-primary-50 dark:bg-primary-900/20' : 'bg-white dark:bg-secondary-900'} ${showFilters ? 'border-primary-200 dark:border-primary-800' : 'border-secondary-200 dark:border-secondary-800'}`}
-                    >
-                        <FunnelIcon 
-                            size={20} 
-                            color={showFilters ? theme.primary600 : isDark ? '#9ca3af' : '#6b7280'} 
-                        />
-                    </TouchableOpacity>
-                </View>
-
-                <View className="flex-row items-center bg-secondary-100/50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-800 rounded-2xl px-4 shadow-sm">
-                    <SearchIcon size={20} color={isDark ? '#4b5563' : '#9ca3af'} />
-                    <TextInput
-                        className="flex-1 py-4 px-3 text-secondary-900 dark:text-secondary-50 font-bold"
-                        placeholder={t('tasks.search_placeholder', 'Buscar tareas...')}
-                        placeholderTextColor={isDark ? '#4b5563' : '#9ca3af'}
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
+                    <FlashList 
+                        data={['', 'todo', 'in_progress', 'done']}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        // @ts-ignore
+                        estimatedItemSize={100}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item: status }) => (
+                            <TouchableOpacity
+                                onPress={() => setSelectedStatus(status)}
+                                className={`mr-2.5 px-4 py-2 rounded-xl border ${
+                                    selectedStatus === status
+                                        ? 'bg-primary-600 border-primary-600'
+                                        : 'bg-secondary-50 dark:bg-secondary-900 border-secondary-200 dark:border-secondary-800'
+                                }`}
+                            >
+                                <Text numberOfLines={1} className={`text-sm font-bold ${
+                                    selectedStatus === status ? 'text-white' : 'text-secondary-600 dark:text-secondary-400'
+                                }`}>
+                                    {status === '' 
+                                        ? t('common.all', 'Todos')
+                                        : getStatusLabel(status)
+                                    }
+                                </Text>
+                            </TouchableOpacity>
+                        )}
                     />
-                    {searchQuery.length > 0 && (
-                        <TouchableOpacity 
-                            onPress={() => setSearchQuery('')}
-                            className="w-8 h-8 rounded-full bg-secondary-200 dark:bg-secondary-800 items-center justify-center"
-                        >
-                            <XIcon size={16} color={isDark ? '#9ca3af' : '#6b7280'} />
-                        </TouchableOpacity>
-                    )}
                 </View>
-
-                {showFilters && (
-                    <View className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <Text className="text-sm font-black text-secondary-400 dark:text-secondary-500 uppercase tracking-widest mb-3 ml-1">
-                            {t('tasks.filter_by_status', 'Filtrar por estado')}
-                        </Text>
-                        <FlashList 
-                            data={['', 'pending', 'in_progress', 'completed']}
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            // @ts-ignore
-                            estimatedItemSize={100}
-                            keyExtractor={(item) => item}
-                            renderItem={({ item: status }) => (
-                                <TouchableOpacity
-                                    onPress={() => setSelectedStatus(status)}
-                                    className={`mr-3 px-5 py-2.5 rounded-2xl border ${
-                                        selectedStatus === status
-                                            ? 'bg-primary-600 border-primary-600'
-                                            : 'bg-white dark:bg-secondary-900 border-secondary-200 dark:border-secondary-800'
-                                    }`}
-                                >
-                                    <Text className={`text-sm font-black uppercase tracking-wider ${
-                                        selectedStatus === status ? 'text-white' : 'text-secondary-600 dark:text-secondary-400'
-                                    }`}>
-                                        {status === '' 
-                                            ? t('common.all', 'Todas')
-                                            : getStatusLabel(status)
-                                        }
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
-                        />
-                    </View>
-                )}
+                
+                <View className="px-4 mt-2">
+                    <Text className="text-sm font-bold text-secondary-500 dark:text-secondary-400 mb-2">
+                        {t('tasks.filter_priority', 'Severidad')}
+                    </Text>
+                    <FlashList 
+                        data={['', 'high', 'medium', 'low']}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        // @ts-ignore
+                        estimatedItemSize={100}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item: priority }) => (
+                            <TouchableOpacity
+                                onPress={() => setSelectedPriority(priority)}
+                                className={`mr-2.5 px-4 py-2 rounded-xl border ${
+                                    selectedPriority === priority
+                                        ? 'bg-secondary-800 dark:bg-secondary-200 border-secondary-800 dark:border-secondary-200'
+                                        : 'bg-secondary-50 dark:bg-secondary-900 border-secondary-200 dark:border-secondary-800'
+                                }`}
+                            >
+                                <Text numberOfLines={1} className={`text-sm font-bold ${
+                                    selectedPriority === priority ? 'text-white dark:text-secondary-900' : 'text-secondary-600 dark:text-secondary-400'
+                                }`}>
+                                    {priority === '' 
+                                        ? t('common.all', 'Todas')
+                                        : getPriorityLabel(priority)
+                                    }
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+                    />
+                </View>
             </View>
 
-            <View className="flex-1">
+            <View className="flex-1 pt-3">
                 {loading && !refreshing ? (
                     <View className="p-5">
                         <SkeletonList count={5} />
@@ -334,9 +317,9 @@ export default function TasksListScreen({ proyectoId, onAdd, onEdit }: TasksList
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id.toString()}
                         // @ts-ignore
-                            estimatedItemSize={180}
-                        numColumns={isTablet ? 2 : 1}
-                        contentContainerStyle={{ padding: 12, paddingBottom: 100 }}
+                            estimatedItemSize={80}
+                        contentInsetAdjustmentBehavior="automatic"
+                        contentContainerStyle={{ paddingBottom: 100 }}
                         refreshControl={
                             <RefreshControl 
                                 refreshing={refreshing} 

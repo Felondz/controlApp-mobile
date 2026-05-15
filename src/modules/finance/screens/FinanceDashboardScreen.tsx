@@ -78,9 +78,27 @@ const FinanceDashboardScreenComponent = () => {
         setRefreshing(false);
     };
 
-    const handleAction = (type: 'income' | 'expense' | 'invoice' | 'new_account') => {
+    const handleAction = (type: 'income' | 'expense' | 'invoice' | 'new_account' | 'subscriptions' | 'export') => {
         if (type === 'new_account') {
             setAccountModalVisible(true);
+        } else if (type === 'subscriptions') {
+            router.push(`/(app)/finance/subscriptions?id=${proyectoId}`);
+        } else if (type === 'export') {
+            Alert.alert(
+                t('finance.export_title', 'Exportar Reporte'),
+                t('finance.export_desc', 'Selecciona el formato del reporte financiero.'),
+                [
+                    { text: t('common.cancel'), style: 'cancel' },
+                    { 
+                        text: 'PDF', 
+                        onPress: () => Alert.alert('PDF', t('common.feature_coming_soon', 'Funcionalidad en desarrollo.')) 
+                    },
+                    { 
+                        text: 'CSV', 
+                        onPress: () => Alert.alert('CSV', t('common.feature_coming_soon', 'Funcionalidad en desarrollo.')) 
+                    }
+                ]
+            );
         } else {
             // Requisito: No se puede realizar transacciones sin una cuenta
             if (!cuentas || cuentas.length === 0) {

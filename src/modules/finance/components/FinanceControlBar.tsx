@@ -6,13 +6,15 @@ import {
     CurrencyDollarIcon, 
     DocumentTextIcon, 
     Cog6ToothIcon,
-    WalletIcon
+    WalletIcon,
+    ArrowPathIcon,
+    DocumentArrowDownIcon
 } from '../../../shared/icons';
 
 interface FinanceControlBarProps {
     showInactive: boolean;
     onToggleInactive: (value: boolean) => void;
-    onAction: (type: 'income' | 'expense' | 'invoice' | 'new_account') => void;
+    onAction: (type: 'income' | 'expense' | 'invoice' | 'new_account' | 'subscriptions' | 'export') => void;
     onConfigureWidgets: () => void;
 }
 
@@ -43,9 +45,9 @@ export const FinanceControlBar = ({
             className={`flex-1 items-center justify-center p-3 rounded-xl border ${colorClass} active:opacity-70`}
         >
             <View className="mb-1">
-                <Icon size={20} color={iconColor} />
+                <Icon size={18} color={iconColor} />
             </View>
-            <Text className="text-[10px] font-black tracking-tighter text-center" style={{ color: iconColor }}>
+            <Text className="text-[9px] font-black tracking-tighter text-center" style={{ color: iconColor }}>
                 {label}
             </Text>
         </Pressable>
@@ -75,35 +77,53 @@ export const FinanceControlBar = ({
                 </Pressable>
             </View>
 
-            <View className="flex-row gap-2">
-                <ActionButton 
-                    label={t('finance.income', 'Ingreso')} 
-                    icon={PlusIcon} 
-                    colorClass="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-900/30" 
-                    iconColor="#10b981" 
-                    onPress={() => onAction('income')} 
-                />
-                <ActionButton 
-                    label={t('finance.expense', 'Gasto')} 
-                    icon={CurrencyDollarIcon} 
-                    colorClass="bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30" 
-                    iconColor="#ef4444" 
-                    onPress={() => onAction('expense')} 
-                />
-                <ActionButton 
-                    label={t('finance.invoice', 'Factura')} 
-                    icon={DocumentTextIcon} 
-                    colorClass="bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/30" 
-                    iconColor="#3b82f6" 
-                    onPress={() => onAction('invoice')} 
-                />
-                <ActionButton 
-                    label={t('finance.new_account_short', 'Cuenta')} 
-                    icon={WalletIcon} 
-                    colorClass="bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-900/30" 
-                    iconColor="#6366f1" 
-                    onPress={() => onAction('new_account')} 
-                />
+            <View className="gap-2">
+                <View className="flex-row gap-2">
+                    <ActionButton 
+                        label={t('finance.income', 'Ingreso')} 
+                        icon={PlusIcon} 
+                        colorClass="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-900/30" 
+                        iconColor="#10b981" 
+                        onPress={() => onAction('income')} 
+                    />
+                    <ActionButton 
+                        label={t('finance.expense', 'Gasto')} 
+                        icon={CurrencyDollarIcon} 
+                        colorClass="bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30" 
+                        iconColor="#ef4444" 
+                        onPress={() => onAction('expense')} 
+                    />
+                    <ActionButton 
+                        label={t('finance.invoice', 'Factura')} 
+                        icon={DocumentTextIcon} 
+                        colorClass="bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/30" 
+                        iconColor="#3b82f6" 
+                        onPress={() => onAction('invoice')} 
+                    />
+                </View>
+                <View className="flex-row gap-2">
+                    <ActionButton 
+                        label={t('finance.subscriptions', 'Suscrip.')} 
+                        icon={ArrowPathIcon} 
+                        colorClass="bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-900/30" 
+                        iconColor="#f59e0b" 
+                        onPress={() => onAction('subscriptions')} 
+                    />
+                    <ActionButton 
+                        label={t('finance.export_pdf', 'PDF')} 
+                        icon={DocumentArrowDownIcon} 
+                        colorClass="bg-secondary-50 dark:bg-secondary-800 border-secondary-100 dark:border-secondary-700" 
+                        iconColor={isDark ? '#e5e7eb' : '#4b5563'} 
+                        onPress={() => onAction('export')} 
+                    />
+                    <ActionButton 
+                        label={t('finance.new_account_short', 'Cuenta')} 
+                        icon={WalletIcon} 
+                        colorClass="bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-900/30" 
+                        iconColor="#6366f1" 
+                        onPress={() => onAction('new_account')} 
+                    />
+                </View>
             </View>
         </View>
     );

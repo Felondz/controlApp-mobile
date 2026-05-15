@@ -167,10 +167,25 @@
             "crm": "CRM",
             "available": "Available Modules"
         },
-        "settings": "Project Settings"
+        "settings": "Project Settings",
+        "members": {
+            "title": "Team Members",
+            "active": "Active Members",
+            "invitations": "Sent Invitations",
+            "role_changed": "Role updated",
+            "member_removed": "Member removed",
+            "invite_button": "Invite Member",
+            "remove_confirm": "Remove {name} from project?",
+            "invite_title": "Invite to Project",
+            "invite_desc": "Send an email invitation for them to join your team.",
+            "email_placeholder": "email@example.com",
+            "send_invite": "Send Invitation",
+            "invite_success": "Invitation sent successfully"
+        }
     },
     "finance": {
         "title": "Finance",
+        "personal_finance": "Personal Finance",
         "balance": "Global Balance",
         "global_balance": "General Balance",
         "active_accounts": "Active accounts",
@@ -290,7 +305,15 @@
         "error_due_date": "Please enter a due date.",
         "bill_paid_success": "Bill paid successfully",
         "error_no_default_account": "This invoice has no default account.",
-        "error_already_paid": "This invoice has already been paid."
+        "error_already_paid": "This invoice has already been paid.",
+        "subscriptions": "Subscriptions",
+        "export_pdf": "Export PDF",
+        "export_title": "Export Report",
+        "export_desc": "Select the financial report format.",
+        "subscription_details_placeholder": "Subscription details coming soon.",
+        "active_subscriptions": "Recurring Payments",
+        "subscriptions_desc": "Manage your services and scheduled automatic payments.",
+        "no_subscriptions": "You have no active subscriptions."
     },
     "inventory": {
         "title": "Inventory",
@@ -316,7 +339,43 @@
         "pending": "Pending",
         "in_progress": "In Progress",
         "done": "Done",
-        "overdue_count": "overdue tasks"
+        "overdue_count": "overdue tasks",
+        "search_placeholder": "Search tasks...",
+        "filter_by_status": "Filter by status",
+        "filter_status": "Status",
+        "filter_priority": "Severity",
+        "empty": "No Tasks",
+        "no_results": "No results",
+        "empty_description": "Add your first task to start organizing your work.",
+        "try_adjusting_filters": "Try adjusting the filters to find what you're looking for.",
+        "new_task": "New Task",
+        "delete_task": "Delete task?",
+        "confirm_delete": "This action cannot be undone. Task \"{title}\" will be permanently deleted.",
+        "overdue": "Overdue",
+        "status": {
+            "todo": "To Do",
+            "in_progress": "In Progress",
+            "done": "Done"
+        },
+        "priority": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High"
+        },
+        "create_title": "Create Task",
+        "create_success": "Task created successfully",
+        "create_error": "Error creating task",
+        "form": {
+            "title": "Task Title",
+            "title_placeholder": "E.g. Design new screen",
+            "description": "Description",
+            "description_placeholder": "Additional details about the task...",
+            "status": "Status",
+            "priority": "Priority",
+            "due_date": "Due Date",
+            "assignee": "Assignee",
+            "assignees": "Assigned members"
+        }
     },
     "settings": {
         "title": "Settings",
@@ -325,11 +384,15 @@
         "theme": {
             "title": "Appearance",
             "subtitle": "Customize your interface colors"
-        }
+        },
+        "notifications": "Notifications",
+        "push_notifications": "Push Notifications",
+        "ai_notifications": "AI Assistant"
     },
     "tools": {
         "financial_calculator": "Financial Calculator",
-        "financial_calculator_desc": "Simulate loans, interests, and profitability of your investments."
+        "financial_calculator_desc": "Simulate loans, interests, and profitability of your investments.",
+        "ai_chat_coming_soon": "Our AI is learning to manage your projects. It will be available very soon to help you with reports, tasks and real-time queries."
     },
     "profile": {
         "edit": "Edit Profile",
@@ -341,7 +404,12 @@
         "danger_zone": "Danger Zone",
         "delete_account": "Delete Account",
         "delete_account_confirm": "Are you absolutely sure? This action cannot be undone.",
-        "delete_account_instruction": "For security reasons, to delete your account and all associated data, you must submit a request from our web platform or contact support@controlapp.site."
+        "delete_account_instruction": "For security reasons, to delete your account and all associated data, you must submit a request from our web platform or contact support@controlapp.site.",
+        "security": "Security",
+        "change_password": "Change Password",
+        "last_changed": "Periodic updates are recommended.",
+        "update_password": "Update Password",
+        "password_change_success": "Password updated successfully."
     },
     "inbox": {
         "title": "Inbox"
@@ -414,6 +482,10 @@
         "available_tools": "Available Tools",
         "no_tools": "No more tools available at this time.",
         "looking_for_more": "Looking for more features?",
-        "looking_for_more_desc": "We are working on new integrated tools to improve your workflow."
+        "looking_for_more_desc": "We are working on new integrated tools to improve your workflow.",
+        "tools": "Tools",
+        "products": "Products",
+        "select_project_to_view_products": "Select a project to view its available products.",
+        "no_products_found": "No products available for sale in this project."
     }
 }

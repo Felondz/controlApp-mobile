@@ -1,10 +1,18 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform, Pressable, TouchableOpacity, InteractionManager } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuthStore } from '../../src/stores/authStore';
 import { useTranslate, useAppTheme } from '../../src/shared/hooks';
-import { Input, PrimaryButton } from '../../src/shared/components';
-import { UserIcon, CameraIcon, TrashIcon, CheckCircleIcon, ExclamationTriangleIcon } from '../../src/shared/icons';
+import { Input, PrimaryButton, PasswordInput } from '../../src/shared/components';
+import { 
+    UserIcon, 
+    CameraIcon, 
+    TrashIcon, 
+    CheckCircleIcon, 
+    ExclamationTriangleIcon,
+    LockClosedIcon,
+    ChevronRightIcon
+} from '../../src/shared/icons';
 import { useRouter } from 'expo-router';
 import { authApi } from '../../src/services/api';
 import { Modal } from '../../src/shared/components/Modal';
@@ -17,24 +25,37 @@ export default function ProfileScreen() {
     const { theme, isDark } = useAppTheme();
     const router = useRouter();
 
+    const [isReady, setIsReady] = useState(false);
     const [name, setName] = useState(user?.name || '');
     const [image, setImage] = useState<string | null>(user?.profile_photo_url || null);
     const [imageChanged, setImageChanged] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+    const [passwordForm, setPasswordForm] = useState({
+        current_password: '',
+        password: '',
+        password_confirmation: ''
+    });
+    const [passwordLoading, setPasswordLoading] = useState(false);
+
     const [feedback, setFeedback] = useState<{ visible: boolean; type: 'success' | 'error'; message: string }>({ 
         visible: false, type: 'success', message: '' 
     });
 
-    // Resolve the display image URL (handles local picking vs remote URL)
+    useEffect(() => {
+        const task = InteractionManager.runAfterInteractions(() => setIsReady(true));
+        return () => task.cancel();
+    }, []);
+
     const displayImage = useMemo(() => {
-        if (imageChanged) return image; // Local URI from picker
+        if (imageChanged) return image;
         return resolveImageUrl(image);
     }, [image, imageChanged]);
 
     const handlePickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert(t('common.error'), t('profile.permission_denied', 'Se requiere permiso para acceder a la galería.'));
+            Alert.alert(t('common.error'), t('profile.permission_denied'));
             return;
         }
         
@@ -68,35 +89,54 @@ export default function ProfileScreen() {
                 const match = /\.(\w+)$/.exec(filename);
                 const type = match ? `image/${match[1]}` : `image/jpeg`;
                 // @ts-ignore
-                formData.append('image', {
-                    uri: image,
-                    name: filename,
-                    type,
-                });
+                formData.append('image', { uri: image, name: filename, type });
             }
 
             const response = await authApi.updateProfile(formData);
-            
-            if (response.data.user) {
-                setUser(response.data.user);
-            }
+            if (response.data.user) setUser(response.data.user);
 
             setFeedback({ 
                 visible: true, 
                 type: 'success', 
-                message: t('profile.update_success', 'Perfil actualizado correctamente.') 
+                message: t('profile.update_success') 
             });
         } catch (error: any) {
-            console.error('Profile update error:', error.response?.data || error.message);
             setFeedback({ 
                 visible: true, 
                 type: 'error', 
-                message: t('profile.update_error', 'Error al actualizar el perfil.') 
+                message: t('profile.update_error') 
             });
         } finally {
             setLoading(false);
         }
     };
+
+    const handlePasswordChange = async () => {
+        if (!passwordForm.current_password || !passwordForm.password || !passwordForm.password_confirmation) {
+            Alert.alert(t('common.error'), t('validation.required_fields'));
+            return;
+        }
+
+        if (passwordForm.password !== passwordForm.password_confirmation) {
+            Alert.alert(t('common.error'), t('validation.password_mismatch'));
+            return;
+        }
+
+        setPasswordLoading(true);
+        try {
+            await authApi.updatePassword(passwordForm);
+            setPasswordModalVisible(false);
+            setPasswordForm({ current_password: '', password: '', password_confirmation: '' });
+            Alert.alert(t('common.success'), t('profile.password_change_success'));
+        } catch (error: any) {
+            const msg = error.response?.data?.message || error.message;
+            Alert.alert(t('common.error'), msg);
+        } finally {
+            setPasswordLoading(false);
+        }
+    };
+
+    if (!isReady) return null;
 
     return (
         <KeyboardAvoidingView 
@@ -108,11 +148,9 @@ export default function ProfileScreen() {
                 contentContainerStyle={{ paddingBottom: 120, paddingTop: 24 }}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Image Picker (Reusing NewProject style) */}
                 <View className="px-6 mb-8 items-center">
                     <Pressable 
                         onPress={handlePickImage} 
-                        style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]} 
                         className="w-32 h-32 rounded-2xl bg-white dark:bg-secondary-800 border-2 border-dashed border-secondary-300 dark:border-secondary-600 items-center justify-center overflow-hidden shadow-sm"
                     >
                         {displayImage ? (
@@ -126,7 +164,6 @@ export default function ProfileScreen() {
                     </Pressable>
                 </View>
 
-                {/* Basic Info (Reusing NewProject style) */}
                 <View className="px-6 mb-6">
                     <View className="bg-white dark:bg-secondary-900 rounded-xl p-6 border border-secondary-200 dark:border-secondary-800 shadow-sm">
                         <Text className="text-xl font-black text-secondary-900 dark:text-white tracking-tighter mb-6">
@@ -146,77 +183,105 @@ export default function ProfileScreen() {
                                     {t('auth.email')}
                                 </Text>
                                 <View className="p-4 rounded-xl bg-secondary-50 dark:bg-secondary-800 border border-secondary-100 dark:border-secondary-700">
-                                    <Text className="text-secondary-400 dark:text-secondary-50 font-medium">
-                                        {user?.email}
-                                    </Text>
+                                    <Text className="text-secondary-400 dark:text-secondary-50 font-medium">{user?.email}</Text>
                                 </View>
-                                <Text className="text-[10px] text-secondary-400 mt-2 italic">
-                                    {t('profile.email_no_change_notice')}
-                                </Text>
                             </View>
                         </View>
                     </View>
                 </View>
 
-                {/* Danger Zone */}
+                <View className="px-6 mb-6">
+                    <View className="bg-white dark:bg-secondary-900 rounded-xl p-6 border border-secondary-200 dark:border-secondary-800 shadow-sm">
+                        <View className="flex-row items-center justify-between mb-6">
+                            <Text className="text-xl font-black text-secondary-900 dark:text-white tracking-tighter">
+                                {t('profile.security')}
+                            </Text>
+                            <LockClosedIcon size={20} color={theme.primary600} />
+                        </View>
+
+                        <TouchableOpacity 
+                            onPress={() => setPasswordModalVisible(true)}
+                            className="flex-row items-center justify-between p-4 bg-secondary-50 dark:bg-secondary-800 rounded-xl border border-secondary-100 dark:border-secondary-700 active:opacity-60"
+                        >
+                            <View className="flex-1">
+                                <Text className="text-sm font-bold text-secondary-900 dark:text-white">
+                                    {t('profile.change_password')}
+                                </Text>
+                                <Text className="text-[10px] text-secondary-500 mt-1">
+                                    {t('profile.last_changed')}
+                                </Text>
+                            </View>
+                            <ChevronRightIcon size={18} color={theme.secondary400} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
                 <View className="px-6 mb-6">
                     <View className="bg-red-50/50 dark:bg-red-950/20 rounded-xl p-6 border border-red-100 dark:border-red-900/30">
                         <Text className="text-xl font-black text-red-600 dark:text-red-400 tracking-tighter mb-4">
                             {t('profile.danger_zone')}
                         </Text>
-                        
                         <Text className="text-xs text-red-700/70 dark:text-red-400/60 mb-6 leading-5 font-medium">
                             {t('profile.delete_account_instruction')}
                         </Text>
-
                         <Pressable 
-                            onPress={() => {
-                                Alert.alert(
-                                    t('profile.delete_account'),
-                                    t('profile.delete_account_instruction')
-                                );
-                            }}
-                            style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+                            onPress={() => Alert.alert(t('profile.delete_account'), t('profile.delete_account_instruction'))}
                             className="flex-row items-center justify-center p-4 bg-red-600 dark:bg-red-700 rounded-xl shadow-sm"
                         >
                             <TrashIcon size={18} color="white" />
-                            <Text className="ml-2 text-sm font-bold text-white">
-                                {t('profile.delete_account')}
-                            </Text>
+                            <Text className="ml-2 text-sm font-bold text-white">{t('profile.delete_account')}</Text>
                         </Pressable>
                     </View>
                 </View>
             </ScrollView>
 
             <Modal 
+                visible={passwordModalVisible} 
+                onClose={() => setPasswordModalVisible(false)} 
+                title={t('profile.change_password')}
+            >
+                <View className="p-6 gap-5">
+                    <PasswordInput
+                        label={t('auth.current_password', 'Contraseña actual')}
+                        value={passwordForm.current_password}
+                        onChangeText={(val) => setPasswordForm({ ...passwordForm, current_password: val })}
+                    />
+                    <PasswordInput
+                        label={t('auth.new_password')}
+                        value={passwordForm.password}
+                        onChangeText={(val) => setPasswordForm({ ...passwordForm, password: val })}
+                    />
+                    <PasswordInput
+                        label={t('auth.confirm_password')}
+                        value={passwordForm.password_confirmation}
+                        onChangeText={(val) => setPasswordForm({ ...passwordForm, password_confirmation: val })}
+                    />
+                    <View className="mt-4">
+                        <PrimaryButton 
+                            onPress={handlePasswordChange} 
+                            loading={passwordLoading}
+                        >
+                            {t('profile.update_password')}
+                        </PrimaryButton>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal 
                 visible={feedback.visible} 
-                onClose={() => { 
-                    setFeedback({ ...feedback, visible: false }); 
-                    if (feedback.type === 'success') router.back(); 
-                }} 
+                onClose={() => { setFeedback({ ...feedback, visible: false }); if (feedback.type === 'success') router.back(); }} 
                 title={feedback.type === 'success' ? t('common.success') : t('common.error')}
                 headerTextColor={feedback.type === 'success' ? '#10b981' : '#ef4444'}
             >
                 <View className="items-center pt-10 pb-16 px-6">
-                    {feedback.type === 'success' ? (
-                        <CheckCircleIcon size={72} color="#10b981" />
-                    ) : (
-                        <ExclamationTriangleIcon size={72} color="#ef4444" />
-                    )}
-                    <Text className="text-xl font-black text-center mt-6 text-secondary-900 dark:text-white">
-                        {feedback.message}
-                    </Text>
+                    {feedback.type === 'success' ? <CheckCircleIcon size={72} color="#10b981" /> : <ExclamationTriangleIcon size={72} color="#ef4444" />}
+                    <Text className="text-xl font-black text-center mt-6 text-secondary-900 dark:text-white">{feedback.message}</Text>
                 </View>
             </Modal>
 
-            {/* Floating Action Button Style (Reusing NewProject style) */}
             <View className="absolute bottom-0 left-0 right-0 p-6 bg-white/90 dark:bg-secondary-900/90 backdrop-blur-xl border-t border-secondary-200 dark:border-secondary-800">
-                <PrimaryButton 
-                    onPress={handleUpdate} 
-                    loading={loading} 
-                    size="xl"
-                >
-                    {loading ? t('common.uploading_and_processing', 'Subiendo y procesando...') : t('common.save')}
+                <PrimaryButton onPress={handleUpdate} loading={loading} size="xl">
+                    {loading ? t('common.loading') : t('common.save')}
                 </PrimaryButton>
             </View>
         </KeyboardAvoidingView>

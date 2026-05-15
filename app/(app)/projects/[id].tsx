@@ -1,7 +1,8 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
 import { getTheme } from "../../../src/shared/themes";
-import { useTranslate } from "../../../src/shared/hooks";
+import { useTranslate, useAppTheme } from "../../../src/shared/hooks";
+import { UsersIcon, CogIcon } from "../../../src/shared/icons";
 
 // Widgets
 import { BalanceWidget } from '../../../src/modules/finance/widgets/BalanceWidget';
@@ -12,6 +13,7 @@ import { OperationsSummaryWidget } from '../../../src/modules/operations/widgets
 
 export default function ProjectDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
+    const { theme: appTheme, isDark } = useAppTheme();
     const theme = getTheme("purple-modern");
     const { t } = useTranslate();
     const router = useRouter();
@@ -24,6 +26,14 @@ export default function ProjectDetailScreen() {
                     title: `Proyecto #${id}`,
                     headerStyle: { backgroundColor: theme.primary500 },
                     headerTintColor: "white",
+                    headerRight: () => (
+                        <TouchableOpacity 
+                            onPress={() => router.push(`/(app)/projects/${id}/members`)}
+                            className="mr-2"
+                        >
+                            <UsersIcon size={24} color="white" />
+                        </TouchableOpacity>
+                    )
                 }}
             />
             <ScrollView className="flex-1 bg-secondary-50 dark:bg-secondary-950" showsVerticalScrollIndicator={false}>
@@ -33,12 +43,22 @@ export default function ProjectDetailScreen() {
                         className="rounded-3xl p-6 shadow-sm border border-white/10"
                         style={{ backgroundColor: theme.primary500 }}
                     >
-                        <Text className="text-white text-2xl font-black mb-1">
-                            Proyecto #{id}
-                        </Text>
-                        <Text className="text-white/80 font-medium">
-                            {t('dashboard.overview', 'Resumen del proyecto')}
-                        </Text>
+                        <View className="flex-row justify-between items-start">
+                            <View className="flex-1">
+                                <Text className="text-white text-2xl font-black mb-1">
+                                    Proyecto #{id}
+                                </Text>
+                                <Text className="text-white/80 font-medium">
+                                    {t('dashboard.overview', 'Resumen del proyecto')}
+                                </Text>
+                            </View>
+                            <TouchableOpacity 
+                                onPress={() => router.push(`/(app)/projects/edit?id=${id}`)}
+                                className="bg-white/20 p-2 rounded-xl"
+                            >
+                                <CogIcon size={20} color="white" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     {/* Dashboard Widgets */}
@@ -62,10 +82,12 @@ export default function ProjectDetailScreen() {
                         </Text>
                         <View className="flex-row flex-wrap gap-3">
                             {[
-                                { name: "Finanzas", color: "#10b981", href: "/(app)/finance" },
-                                { name: "Tareas", color: "#f59e0b", href: "/(app)/tasks" },
-                                { name: "Inventario", color: "#3b82f6", href: "/(app)/inventory" },
-                                { name: "Operaciones", color: "#8b5cf6", href: "/(app)/operations" },
+                                { name: "Finanzas", color: "#10b981", icon: "💰", href: "/(app)/finance" },
+                                { name: "Tareas", color: "#f59e0b", icon: "📋", href: "/(app)/tasks" },
+                                { name: "Inventario", color: "#3b82f6", icon: "📦", href: "/(app)/inventory" },
+                                { name: "Operaciones", color: "#8b5cf6", icon: "⚙️", href: "/(app)/operations" },
+                                { name: "Miembros", color: "#6366f1", icon: "👥", href: `/(app)/projects/${id}/members` },
+                                { name: "Ajustes", color: "#6b7280", icon: "🛠️", href: `/(app)/projects/edit?id=${id}` },
                             ].map((module) => (
                                 <Pressable
                                     key={module.name}
@@ -76,10 +98,7 @@ export default function ProjectDetailScreen() {
                                         className="w-12 h-12 rounded-2xl mb-4 items-center justify-center"
                                         style={{ backgroundColor: `${module.color}20` }}
                                     >
-                                        <View
-                                            className="w-6 h-6 rounded-lg"
-                                            style={{ backgroundColor: module.color }}
-                                        />
+                                        <Text className="text-xl">{module.icon}</Text>
                                     </View>
                                     <Text className="text-secondary-900 dark:text-white font-black uppercase tracking-widest text-sm">{module.name}</Text>
                                     <Text className="text-secondary-500 dark:text-secondary-400 text-sm mt-1">Ver más →</Text>

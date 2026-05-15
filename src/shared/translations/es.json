@@ -167,10 +167,25 @@
             "crm": "CRM",
             "available": "Módulos Disponibles"
         },
-        "settings": "Ajustes del Proyecto"
+        "settings": "Ajustes del Proyecto",
+        "members": {
+            "title": "Miembros del Equipo",
+            "active": "Miembros Activos",
+            "invitations": "Invitaciones Enviadas",
+            "role_changed": "Rol actualizado",
+            "member_removed": "Miembro eliminado",
+            "invite_button": "Invitar Miembro",
+            "remove_confirm": "¿Eliminar a {name} del proyecto?",
+            "invite_title": "Invitar al Proyecto",
+            "invite_desc": "Envía una invitación por correo para que se unan a tu equipo.",
+            "email_placeholder": "correo@ejemplo.com",
+            "send_invite": "Enviar Invitación",
+            "invite_success": "Invitación enviada correctamente"
+        }
     },
     "finance": {
         "title": "Finanzas",
+        "personal_finance": "Finanzas Personales",
         "balance": "Balance Global",
         "global_balance": "Balance General",
         "active_accounts": "Cuentas activas",
@@ -290,7 +305,15 @@
         "error_due_date": "Por favor ingresa una fecha de vencimiento.",
         "bill_paid_success": "Factura pagada correctamente",
         "error_no_default_account": "Esta factura no tiene cuenta predeterminada.",
-        "error_already_paid": "Esta factura ya fue pagada."
+        "error_already_paid": "Esta factura ya fue pagada.",
+        "subscriptions": "Suscripciones",
+        "export_pdf": "Exportar PDF",
+        "export_title": "Exportar Reporte",
+        "export_desc": "Selecciona el formato del reporte financiero.",
+        "subscription_details_placeholder": "Detalles de la suscripción próximamente.",
+        "active_subscriptions": "Pagos Recurrentes",
+        "subscriptions_desc": "Gestiona tus servicios y pagos automáticos programados.",
+        "no_subscriptions": "No tienes suscripciones activas."
     },
     "inventory": {
         "title": "Inventario",
@@ -316,7 +339,43 @@
         "pending": "Pendientes",
         "in_progress": "En Proceso",
         "done": "Listas",
-        "overdue_count": "tareas vencidas"
+        "overdue_count": "tareas vencidas",
+        "search_placeholder": "Buscar tareas...",
+        "filter_by_status": "Filtrar por estado",
+        "filter_status": "Estado",
+        "filter_priority": "Severidad",
+        "empty": "Sin Tareas",
+        "no_results": "Sin resultados",
+        "empty_description": "Agrega tu primera tarea para comenzar a organizar tu trabajo.",
+        "try_adjusting_filters": "Intenta ajustar los filtros para encontrar lo que buscas.",
+        "new_task": "Nueva Tarea",
+        "delete_task": "¿Eliminar tarea?",
+        "confirm_delete": "Esta acción no se puede deshacer. La tarea \"{title}\" será eliminada permanentemente.",
+        "overdue": "Vencida",
+        "status": {
+            "todo": "Por hacer",
+            "in_progress": "En Progreso",
+            "done": "Completada"
+        },
+        "priority": {
+            "low": "Baja",
+            "medium": "Media",
+            "high": "Alta"
+        },
+        "create_title": "Crear Tarea",
+        "create_success": "Tarea creada exitosamente",
+        "create_error": "Error al crear la tarea",
+        "form": {
+            "title": "Título de la Tarea",
+            "title_placeholder": "Ej: Diseñar nueva pantalla",
+            "description": "Descripción",
+            "description_placeholder": "Detalles adicionales sobre la tarea...",
+            "status": "Estado",
+            "priority": "Prioridad",
+            "due_date": "Fecha de Vencimiento",
+            "assignee": "Asignado a",
+            "assignees": "Miembros asignados"
+        }
     },
     "settings": {
         "title": "Ajustes",
@@ -325,11 +384,15 @@
         "theme": {
             "title": "Apariencia",
             "subtitle": "Personaliza los colores de tu interfaz"
-        }
+        },
+        "notifications": "Notificaciones",
+        "push_notifications": "Notificaciones Push",
+        "ai_notifications": "Asistente IA"
     },
     "tools": {
         "financial_calculator": "Calculadora Financiera",
-        "financial_calculator_desc": "Simula préstamos, intereses y rentabilidad de tus inversiones."
+        "financial_calculator_desc": "Simula préstamos, intereses y rentabilidad de tus inversiones.",
+        "ai_chat_coming_soon": "Nuestra IA está aprendiendo a gestionar tus proyectos. Estará disponible muy pronto para ayudarte con reportes, tareas y consultas en tiempo real."
     },
     "profile": {
         "edit": "Editar Perfil",
@@ -341,7 +404,12 @@
         "danger_zone": "Zona de Peligro",
         "delete_account": "Eliminar Cuenta",
         "delete_account_confirm": "¿Estás completamente seguro? Esta acción no se puede deshacer.",
-        "delete_account_instruction": "Por seguridad, para eliminar tu cuenta y todos tus datos asociados, debes enviar una solicitud desde nuestra plataforma web o contactar a soporte@controlapp.site."
+        "delete_account_instruction": "Por seguridad, para eliminar tu cuenta y todos tus datos asociados, debes enviar una solicitud desde nuestra plataforma web o contactar a soporte@controlapp.site.",
+        "security": "Seguridad",
+        "change_password": "Cambiar Contraseña",
+        "last_changed": "Se recomienda actualizarla periódicamente.",
+        "update_password": "Actualizar Contraseña",
+        "password_change_success": "Contraseña actualizada correctamente."
     },
     "inbox": {
         "title": "Buzón de entrada"
@@ -414,6 +482,10 @@
         "available_tools": "Herramientas Disponibles",
         "no_tools": "No hay más herramientas disponibles en este momento.",
         "looking_for_more": "¿Buscas más funciones?",
-        "looking_for_more_desc": "Estamos trabajando en nuevas herramientas integradas para mejorar tu flujo de trabajo."
+        "looking_for_more_desc": "Estamos trabajando en nuevas herramientas integradas para mejorar tu flujo de trabajo.",
+        "tools": "Herramientas",
+        "products": "Productos",
+        "select_project_to_view_products": "Selecciona un proyecto para ver sus productos disponibles.",
+        "no_products_found": "No hay productos disponibles para la venta en este proyecto."
     }
 }

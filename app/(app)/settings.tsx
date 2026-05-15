@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, ScrollView, Pressable, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, Pressable, Alert, Switch, InteractionManager } from "react-native";
 import { useAuthStore } from "../../src/stores/authStore";
 import { useSettingsStore } from "../../src/stores/settingsStore";
 import { getTheme, THEME_OPTIONS } from "../../src/shared/themes";
@@ -8,7 +8,7 @@ import { WidgetCard } from "../../src/shared/components/WidgetCard";
 import PrimaryButton from "../../src/shared/components/PrimaryButton";
 import DangerButton from "../../src/shared/components/DangerButton";
 import { ThemeToggle } from "../../src/shared/components/ThemeToggle";
-import { IconES, IconEN, UserIcon, CheckIcon } from "../../src/shared/icons";
+import { IconES, IconEN, UserIcon, CheckIcon, BellIcon, SparklesIcon } from "../../src/shared/icons";
 import { useRouter } from "expo-router";
 
 export default function SettingsScreen() {
@@ -18,16 +18,25 @@ export default function SettingsScreen() {
     const { t } = useTranslate();
     const router = useRouter();
 
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        const task = InteractionManager.runAfterInteractions(() => setIsReady(true));
+        return () => task.cancel();
+    }, []);
+
     const handleLogout = () => {
         Alert.alert(
             t('auth.logout'),
-            t('auth.confirm_logout_msg', '¿Estás seguro de que deseas cerrar sesión?'),
+            t('auth.confirm_logout_msg'),
             [
                 { text: t('common.cancel'), style: 'cancel' },
                 { text: t('auth.logout'), onPress: logout, style: 'destructive' }
             ]
         );
     };
+
+    if (!isReady) return null;
 
     return (
         <ScrollView 
@@ -139,8 +148,40 @@ export default function SettingsScreen() {
                 </View>
             </WidgetCard>
 
+            {/* Notification Preferences */}
+            <WidgetCard title={t('settings.notifications')}>
+                <View className="gap-3">
+                    <View className="flex-row items-center justify-between p-4 bg-white dark:bg-secondary-900 rounded-xl border border-secondary-100 dark:border-secondary-800 shadow-sm">
+                        <View className="flex-row items-center flex-1">
+                            <BellIcon size={18} color={theme.primary600} />
+                            <Text className="ml-3 font-bold text-secondary-900 dark:text-white">
+                                {t('settings.push_notifications')}
+                            </Text>
+                        </View>
+                        <Switch 
+                            value={true} 
+                            trackColor={{ false: '#d1d5db', true: theme.primary600 }}
+                            thumbColor="#fff"
+                        />
+                    </View>
+                    <View className="flex-row items-center justify-between p-4 bg-white dark:bg-secondary-900 rounded-xl border border-secondary-100 dark:border-secondary-800 shadow-sm">
+                        <View className="flex-row items-center flex-1">
+                            <SparklesIcon size={18} color={theme.primary600} />
+                            <Text className="ml-3 font-bold text-secondary-900 dark:text-white">
+                                {t('settings.ai_notifications')}
+                            </Text>
+                        </View>
+                        <Switch 
+                            value={false} 
+                            trackColor={{ false: '#d1d5db', true: theme.primary600 }}
+                            thumbColor="#fff"
+                        />
+                    </View>
+                </View>
+            </WidgetCard>
+
             {/* Account Actions */}
-            <View className="gap-3 mt-2">
+            <View className="gap-3 mt-4">
                 <PrimaryButton 
                     onPress={() => router.push('/(app)/profile')} 
                     variant="soft" 

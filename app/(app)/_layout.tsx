@@ -2,7 +2,7 @@ import { useWindowDimensions, View, Text, Pressable, ScrollView, AppState, AppSt
 import { useState, memo, useMemo, useCallback, useEffect } from "react";
 import { Tabs, useRouter, usePathname, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAppTheme, useTranslate } from "../../src/shared/hooks";
+import { useAppTheme, useTranslate, useNotifications } from "../../src/shared/hooks";
 import { useProjectStore } from "../../src/stores/projectStore";
 import { useAuthStore } from "../../src/stores/authStore";
 import { useDashboardStore } from "../../src/stores/dashboardStore";
@@ -24,7 +24,8 @@ import {
     FactoryIcon,
     UserIcon,
     ToolboxIcon,
-    CalculatorIcon
+    CalculatorIcon,
+    SparklesIcon
 } from "../../src/shared/icons";
 import { ApplicationLogo } from "../../src/shared/components/ApplicationLogo";
 import { ThemeToggle } from "../../src/shared/components/ThemeToggle";
@@ -47,21 +48,28 @@ const NavigationSheet = ({ visible, onClose, activeProject, t, router, theme, in
         if (user?.enabled_tools?.includes('calculator')) {
             tools.push({ id: 'calculator', label: t('tools.financial_calculator'), icon: CalculatorIcon, href: '/(app)/tools/calculator' });
         }
+        // AI Chat is always visible but leads to coming soon
+        tools.push({ id: 'ai-chat', label: 'AI Assistant', icon: SparklesIcon, href: '/(app)/tools/ai-chat', isComingSoon: true });
         return tools;
     }, [user, t]);
 
-    const renderIconItem = (key: string, label: string, Icon: any, href: string) => (
+    const renderIconItem = (key: string, label: string, Icon: any, href: string, isComingSoon?: boolean) => (
         <Pressable 
             key={key}
             onPress={() => { router.push(href); onClose(); }}
             className="w-1/4 items-center justify-center mb-8 active:opacity-60"
         >
-            <View className="w-12 h-12 items-center justify-center rounded-2xl bg-secondary-100 dark:bg-secondary-800/80 mb-2">
-                <Icon size={24} color={theme.primary600} />
+            <View className={`w-12 h-12 items-center justify-center rounded-2xl ${isComingSoon ? 'bg-amber-50 dark:bg-amber-900/10' : 'bg-secondary-100 dark:bg-secondary-800/80'} mb-2`}>
+                <Icon size={24} color={isComingSoon ? '#b45309' : theme.primary600} />
             </View>
-            <Text className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 text-center tracking-tighter" numberOfLines={1}>
+            <Text className={`text-[10px] font-bold ${isComingSoon ? 'text-amber-600' : 'text-secondary-500 dark:text-secondary-400'} text-center tracking-tighter`} numberOfLines={1}>
                 {label}
             </Text>
+            {isComingSoon && (
+                <View className="absolute -top-1 -right-1 bg-amber-500 rounded-full px-1">
+                    <Text className="text-[6px] font-black text-white uppercase">Soon</Text>
+                </View>
+            )}
         </Pressable>
     );
 
@@ -103,7 +111,7 @@ const NavigationSheet = ({ visible, onClose, activeProject, t, router, theme, in
                             </Text>
                         </View>
                         <View className="flex-row flex-wrap">
-                            {activeTools.map(tool => renderIconItem(tool.id, tool.label, tool.icon, tool.href))}
+                            {activeTools.map(tool => renderIconItem(tool.id, tool.label, tool.icon, tool.href, tool.isComingSoon))}
                         </View>
                     </>
                 )}
@@ -129,6 +137,9 @@ export default function AppLayout() {
     const router = useRouter();
     const pathname = usePathname();
     const segments = useSegments();
+    
+    // Initialize real-time notifications
+    useNotifications();
 
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [showAccountMenu, setShowAccountMenu] = useState(false);
@@ -239,7 +250,10 @@ export default function AppLayout() {
     const activeTools = useMemo(() => {
         const tools = [];
         if (user?.enabled_tools?.includes('calculator')) {
-            tools.push({ name: 'calculator', label: t('tools.financial_calculator'), icon: CalculatorIcon, href: '/(app)/tools/calculator' });
+            tools.push({ id: 'calculator', label: t('tools.financial_calculator'), icon: CalculatorIcon, href: '/(app)/tools/calculator' });
+        }
+        if (user?.enabled_tools?.includes('ai-chat')) {
+            tools.push({ id: 'ai-chat', label: 'AI Assistant', icon: SparklesIcon, href: '/(app)/tools/ai-chat', isComingSoon: true });
         }
         return tools;
     }, [user, t]);
@@ -285,7 +299,6 @@ export default function AppLayout() {
         return {
             main: [
                 { name: 'index', label: t('dashboard.title'), icon: DashboardIcon, href: '/(app)', active: current === 'index' },
-                { name: 'marketplace', label: t('modules.marketplace.title'), icon: PuzzleIcon, href: '/(app)/marketplace', active: current.includes('marketplace') },
                 { name: 'invitations', label: t('modules.invitations.title'), icon: EnvelopeIcon, href: '/(app)/invitations', active: current.includes('invitations') },
             ],
             tools: activeTools,
@@ -296,7 +309,7 @@ export default function AppLayout() {
     const getRouteTitle = () => {
         if (pathname.includes('marketplace')) return t('modules.marketplace.title', 'Mercado');
         if (pathname.includes('invitations')) return t('modules.invitations.title', 'Invitaciones');
-        if (pathname.includes('finance')) return t('finance.title', 'Finanzas');
+        if (pathname.includes('finance')) return t('finance.personal_finance', 'Finanzas Personales');
         if (pathname.includes('tasks')) return t('tasks.title', 'Tareas');
         if (pathname.includes('chat')) return t('chat.title', 'Chat');
         if (pathname.includes('inventory')) return t('inventory.title', 'Inventario');
@@ -394,10 +407,6 @@ export default function AppLayout() {
                             tabBarIcon: ({ color }) => <DashboardIcon size={26} color={getIconColor('home')} />,
                             tabBarButton: (props) => <Pressable {...props} onPress={() => { if (activeProject) handleExit(); else router.push('/(app)'); }} />
                         }} />
-                        <Tabs.Screen name="marketplace/index" options={{ 
-                            tabBarIcon: ({ color }) => activeProject ? <FolderIcon size={26} color={getIconColor('overview')} /> : <PuzzleIcon size={26} color={getIconColor('marketplace')} />,
-                            tabBarButton: (props) => <Pressable {...props} onPress={() => router.push(activeProject ? '/(app)' : '/(app)/marketplace')} />
-                        }} />
                         <Tabs.Screen name="invitations" options={{ 
                             tabBarIcon: ({ color }) => activeProject ? <EllipsisHorizontalIcon size={32} color={getIconColor('modules')} /> : <EnvelopeIcon size={26} color={getIconColor('invitations')} />,
                             tabBarButton: (props) => (
@@ -431,6 +440,7 @@ export default function AppLayout() {
                         <Tabs.Screen name="inventory" options={{ href: null }} />
                         <Tabs.Screen name="operations" options={{ href: null }} />
                         <Tabs.Screen name="tools/calculator" options={{ href: null }} />
+                        <Tabs.Screen name="tools/ai-chat" options={{ href: null }} />
                     </Tabs>
                 </View>
             </View>

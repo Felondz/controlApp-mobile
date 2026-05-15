@@ -668,3 +668,35 @@ export function BanknotesIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
         </Svg>
     );
 }
+
+export function ArrowPathIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </Svg>
+    );
+}
+
+export function DocumentArrowDownIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12l4.5 4.5m0 0l4.5-4.5M12 3v13.5" />
+        </Svg>
+    );
+}
+
+export function UserPlusIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M19 7.5l-3 3m0 0l-3-3m3 3v-6m-2.25 9h-10.5a2.25 2.25 0 00-2.25 2.25v1.35m11.35-.15a6.75 6.75 0 10-13.5 0" />
+        </Svg>
+    );
+}
+
+export function ShieldCheckIcon({ size = 24, color = DEFAULT_COLOR }: IconProps) {
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+        </Svg>
+    );
+}

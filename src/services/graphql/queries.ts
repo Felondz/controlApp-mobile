@@ -42,14 +42,18 @@ export const GET_TASKS = gql`
     query GetTasks($project_id: ID!) {
         tasks(project_id: $project_id) {
             id
+            uuid
             title
+            description
             status
             priority
             due_date
+            image_url
             assignee {
                 id
                 name
             }
+            created_at
         }
     }
 `;

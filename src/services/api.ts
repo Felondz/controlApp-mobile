@@ -125,6 +125,9 @@ export const authApi = {
 
     resetPassword: (data: { token: string; email: string; password: string; password_confirmation: string }) =>
         api.post('/reset-password', data),
+
+    updatePassword: (data: any) =>
+        api.put('/password', data),
 };
 
 // Projects API endpoints
@@ -153,14 +156,34 @@ export const financeApi = {
     getBalance: (projectUuid: string) => api.get(`/proyectos/${projectUuid}/finance/balance`),
     createTransaction: (projectUuid: string, data: any) =>
         api.post(`/proyectos/${projectUuid}/transacciones`, data),
+    payDirect: (projectUuid: string, transactionId: string) =>
+        api.post(`/proyectos/${projectUuid}/bills/${transactionId}/pay-direct`),
+};
+
+// Notifications API endpoints
+export const notificationsApi = {
+    delete: (uuid: string) => api.delete(`/notifications/${uuid}`),
+    clearAll: (projectUuid?: string) => {
+        const url = projectUuid ? `/notifications/all?project_uuid=${projectUuid}` : '/notifications/all';
+        return api.delete(url);
+    },
 };
 
 // Tasks API endpoints
 export const tasksApi = {
     getAll: (projectUuid: string) => api.get(`/proyectos/${projectUuid}/tasks`),
-    create: (projectUuid: string, data: any) => api.post(`/proyectos/${projectUuid}/tasks`, data),
-    update: (projectUuid: string, taskId: string, data: any) =>
-        api.put(`/proyectos/${projectUuid}/tasks/${taskId}`, data),
+    create: (projectUuid: string, data: any) => api.post(`/proyectos/${projectUuid}/tasks`, data, {
+        headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+    }),
+    update: (projectUuid: string, taskId: string, data: any) => {
+        if (data instanceof FormData) {
+            data.append('_method', 'PUT');
+            return api.post(`/proyectos/${projectUuid}/tasks/${taskId}`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+        }
+        return api.put(`/proyectos/${projectUuid}/tasks/${taskId}`, data);
+    },
     delete: (projectUuid: string, taskId: string) =>
         api.delete(`/proyectos/${projectUuid}/tasks/${taskId}`),
 };
@@ -191,6 +214,40 @@ export const operationsApi = {
 export const invitationsApi = {
     accept: (uuid: string) => api.post(`/invitations/${uuid}/accept`),
     reject: (uuid: string) => api.post(`/invitations/${uuid}/reject`),
+    
+    // Project specific invitations
+    getProjectInvitations: (projectUuid: string) => 
+        api.get(`/proyectos/${projectUuid}/invitaciones`),
+    create: (projectUuid: string, data: { email: string; nombre: string; rol?: string }) => 
+        api.post(`/proyectos/${projectUuid}/invitaciones`, data),
+    delete: (projectUuid: string, invitationId: string) => 
+        api.delete(`/proyectos/${projectUuid}/invitaciones/${invitationId}`),
+};
+
+// Members API endpoints
+export const membersApi = {
+    getAll: (projectUuid: string) => 
+        api.get(`/proyectos/${projectUuid}/miembros`),
+    update: (projectUuid: string, userId: string, data: { rol: string }) => 
+        api.put(`/proyectos/${projectUuid}/miembros/${userId}`, data),
+    delete: (projectUuid: string, userId: string) => 
+        api.delete(`/proyectos/${projectUuid}/miembros/${userId}`),
+};
+
+// Exports API endpoints
+export const exportApi = {
+    csv: (projectUuid: string, params: any) => 
+        api.get(`/proyectos/${projectUuid}/export/csv`, { params, responseType: 'blob' }),
+    pdf: (projectUuid: string, data: any) => 
+        api.post(`/proyectos/${projectUuid}/export/pdf`, data, { responseType: 'blob' }),
+};
+
+// AI Chat API endpoints
+export const aiApi = {
+    chat: (message: string, context?: any) => 
+        api.post('/ai/chat', { message, context }),
+    getModels: () => 
+        api.get('/llm/available-models'),
 };
 
 // Preferences API endpoints

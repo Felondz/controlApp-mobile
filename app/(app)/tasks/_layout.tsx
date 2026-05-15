@@ -6,6 +6,15 @@ export default function Layout() {
             screenOptions={{
                 headerShown: false,
             }}
-        />
+        >
+            <Stack.Screen name="index" />
+            <Stack.Screen 
+                name="new" 
+                options={{ 
+                    presentation: 'formSheet',
+                    sheetGrabberVisible: true
+                }} 
+            />
+        </Stack>
     );
 }
